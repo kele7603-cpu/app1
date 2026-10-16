@@ -1,0 +1,93 @@
+name: Build IPA
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile IPA
+        run: |
+          mkdir -p Payload/App.app
+          echo "static NSString *const kB64 = @\"$(base64 -i index.html | tr -d '\n')\";" > b64.h
+          printf '%s\n' \
+          '#import <UIKit/UIKit.h>' \
+          '#import <WebKit/WebKit.h>' \
+          '#import <AudioToolbox/AudioToolbox.h>' \
+          '#import "b64.h"' \
+          '@interface VC : UIViewController <WKUIDelegate, WKScriptMessageHandler>' \
+          '@property (strong, nonatomic) WKWebView *wv;' \
+          '@end' \
+          '@implementation VC' \
+          '- (UIStatusBarStyle)preferredStatusBarStyle { return UIStatusBarStyleLightContent; }' \
+          '- (void)viewDidLoad {' \
+          '  [super viewDidLoad];' \
+          '  self.view.backgroundColor = [UIColor colorWithRed:0.07 green:0.09 blue:0.12 alpha:1.0];' \
+          '  WKWebViewConfiguration *cfg = [WKWebViewConfiguration new];' \
+          '  [cfg.userContentController addScriptMessageHandler:self name:@"vib"];' \
+          '  WKUserScript *us = [[WKUserScript alloc] initWithSource:@"navigator.vibrate=function(p){window.webkit.messageHandlers.vib.postMessage(1);};" injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];' \
+          '  [cfg.userContentController addUserScript:us];' \
+          '  self.wv = [[WKWebView alloc] initWithFrame:CGRectZero configuration:cfg];' \
+          '  self.wv.UIDelegate = self; self.wv.opaque = NO;' \
+          '  self.wv.backgroundColor = self.view.backgroundColor;' \
+          '  self.wv.scrollView.bounces = NO;' \
+          '  self.wv.translatesAutoresizingMaskIntoConstraints = NO;' \
+          '  [self.view addSubview:self.wv];' \
+          '  UILayoutGuide *g = self.view.safeAreaLayoutGuide;' \
+          '  [NSLayoutConstraint activateConstraints:@[' \
+          '    [self.wv.topAnchor constraintEqualToAnchor:g.topAnchor],' \
+          '    [self.wv.bottomAnchor constraintEqualToAnchor:g.bottomAnchor],' \
+          '    [self.wv.leadingAnchor constraintEqualToAnchor:g.leadingAnchor],' \
+          '    [self.wv.trailingAnchor constraintEqualToAnchor:g.trailingAnchor]' \
+          '  ]];' \
+          '  NSData *d = [[NSData alloc] initWithBase64EncodedString:kB64 options:0];' \
+          '  NSString *h = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];' \
+          '  [self.wv loadHTMLString:h baseURL:[NSURL URLWithString:@"https://localhost"]];' \
+          '}' \
+          '- (void)userContentController:(WKUserContentController *)u didReceiveScriptMessage:(WKScriptMessage *)m { AudioServicesPlaySystemSound(1519); }' \
+          '- (void)webView:(WKWebView *)w runJavaScriptAlertPanelWithMessage:(NSString *)m initiatedByFrame:(WKFrameInfo *)f completionHandler:(void (^)(void))c {' \
+          '  UIAlertController *a = [UIAlertController alertControllerWithTitle:nil message:m preferredStyle:UIAlertControllerStyleAlert];' \
+          '  [a addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *x){ c(); }]];' \
+          '  [self presentViewController:a animated:YES completion:nil];' \
+          '}' \
+          '- (void)webView:(WKWebView *)w runJavaScriptConfirmPanelWithMessage:(NSString *)m initiatedByFrame:(WKFrameInfo *)f completionHandler:(void (^)(BOOL))c {' \
+          '  UIAlertController *a = [UIAlertController alertControllerWithTitle:nil message:m preferredStyle:UIAlertControllerStyleAlert];' \
+          '  [a addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction *x){ c(NO); }]];' \
+          '  [a addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *x){ c(YES); }]];' \
+          '  [self presentViewController:a animated:YES completion:nil];' \
+          '}' \
+          '@end' \
+          '@interface AppDelegate : UIResponder <UIApplicationDelegate>' \
+          '@property (strong, nonatomic) UIWindow *window;' \
+          '@end' \
+          '@implementation AppDelegate' \
+          '- (BOOL)application:(UIApplication *)app didFinishLaunchingWithOptions:(NSDictionary *)opts {' \
+          '  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];' \
+          '  self.window.rootViewController = [VC new];' \
+          '  [self.window makeKeyAndVisible];' \
+          '  return YES;' \
+          '}' \
+          '@end' \
+          'int main(int argc, char * argv[]) { @autoreleasepool { return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class])); } }' > main.m
+          xcrun --sdk iphoneos clang -arch arm64 main.m -framework UIKit -framework WebKit -framework Foundation -framework AudioToolbox -fobjc-arc -miphoneos-version-min=14.0 -o Payload/App.app/App
+          printf '%s\n' \
+          '<?xml version="1.0" encoding="UTF-8"?>' \
+          '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' \
+          '<plist version="1.0"><dict>' \
+          '<key>CFBundleExecutable</key><string>App</string>' \
+          '<key>CFBundleIdentifier</key><string>com.tz.helper.app</string>' \
+          '<key>CFBundleName</key><string>日常台账助手</string>' \
+          '<key>CFBundleDisplayName</key><string>日常台账助手</string>' \
+          '<key>CFBundleVersion</key><string>1.0</string>' \
+          '<key>CFBundleShortVersionString</key><string>1.0</string>' \
+          '<key>CFBundlePackageType</key><string>APPL</string>' \
+          '<key>LSRequiresIPhoneOS</key><true/>' \
+          '<key>UIDeviceFamily</key><array><integer>1</integer></array>' \
+          '<key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>' \
+          '<key>UILaunchScreen</key><dict/>' \
+          '</dict></plist>' > Payload/App.app/Info.plist
+          codesign -f -s - Payload/App.app
+          zip -qr DailyLedger.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IPA-Package
+          path: DailyLedger.ipa
