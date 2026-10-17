@@ -2,292 +2,521 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>日常台账助手</title>
+<title>番茄免费小说</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-html,body{height:100%;overflow:hidden}
-body{background:#12161f;color:#e2e8f0;font-family:-apple-system,sans-serif;padding:5px;font-size:12px;display:flex;flex-direction:column}
-.box{background:#1e2533;border:1px solid #2e384d;border-radius:7px;padding:6px;margin-bottom:5px;position:relative;flex-shrink:0}
-.row{display:flex;justify-content:space-between;align-items:center;gap:4px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:5px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:5px}
-.btn{background:#2d3748;color:#fff;border:1px solid #4a5568;padding:6px 4px;border-radius:5px;font-weight:700;font-size:12px;text-align:center;cursor:pointer;white-space:nowrap}
-.btn:active{transform:scale(.95)}
-.b-bl{background:#2563eb;border-color:#3b82f6}.b-or{background:#d97706;border-color:#f59e0b}
-.b-rd{background:#dc2626;border-color:#ef4444}.b-gn{background:#059669;border-color:#10b981}
-.lock{opacity:.3;pointer-events:none}
-.st-bar{font-weight:900;text-align:center;padding:8px 6px;border-radius:6px;font-size:13px;margin-bottom:5px;border:1px solid #475569;background:#1e293b;color:#fbbf24;flex-shrink:0}
-.bet-layout{display:flex;gap:6px;align-items:stretch}
-.bet-left{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:2px}
-.chip-col{width:54px;display:flex;flex-direction:column;justify-content:space-between;gap:5px}
-.chip{flex:1;border-radius:6px;background:#0f172a;border:1.5px solid #475569;display:flex;justify-content:center;align-items:center;font-weight:900;font-size:13px;color:#fbbf24;cursor:pointer}
-.chip:active{background:#451a03;border-color:#fbbf24;transform:scale(.94)}
-.card{background:#222b3d;border:1.5px solid #334155;border-radius:6px;padding:7px 2px;text-align:center;cursor:pointer}
-.card span{font-size:12px;color:#cbd5e1;display:block;font-weight:800}
-.card b{display:block;font-size:15px;color:#64748b;font-weight:900;margin-top:2px}
-.c-lg{padding:10px 2px}.c-lg span{font-size:14px}.c-lg b{font-size:21px}
-.on-b{background:rgba(220,38,38,.22);border-color:#ef4444}.on-b b{color:#f87171}
-.on-p{background:rgba(37,99,235,.22);border-color:#3b82f6}.on-p b{color:#60a5fa}
-.on-s{background:rgba(245,158,11,.22);border-color:#f59e0b}.on-s b{color:#fbbf24}
-.sel-tgt{border:2px solid #fff!important;box-shadow:0 0 6px rgba(255,255,255,.45)}
-#lz-wrap{position:relative;overflow:hidden;touch-action:none}
-.lz-grid{display:grid;grid-template-rows:repeat(6,1fr);grid-template-columns:repeat(13,1fr);grid-auto-flow:column;height:90px;background:#0f172a;border:1px solid #334155;border-radius:5px;padding:2px;gap:1px}
-.lz-c{background:#161f30;display:flex;justify-content:center;align-items:center;position:relative;border-radius:2px}
-.bead{width:11px;height:11px;border-radius:50%;font-size:7px;font-weight:900;display:flex;justify-content:center;align-items:center;color:#fff;position:relative}
-.bd-B{background:#dc2626;border:1px solid #f87171}.bd-P{background:#2563eb;border:1px solid #60a5fa}.bd-T{background:#059669;border:1px solid #34d399}
-.p-zd{position:absolute;top:-1px;left:-1px;width:3px;height:3px;background:#ef4444;border-radius:50%;border:1px solid #fff}
-.p-xd{position:absolute;bottom:-1px;right:-1px;width:3px;height:3px;background:#3b82f6;border-radius:50%;border:1px solid #fff}
-#lz-btn{color:#475569;font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;pointer-events:none;transition:all .15s}
-#lz-btn.act{color:#94a3b8;font-weight:900;background:rgba(255,255,255,.06);pointer-events:auto}
-.nb-wrap{position:relative;display:inline-flex;justify-content:center;align-items:center;width:16px;height:16px;margin-right:2px;vertical-align:middle}
-#nb-val{position:absolute;top:0;left:0;width:100%;height:100%;display:none;justify-content:center;align-items:center;font-size:13px;font-weight:900;text-shadow:0 0 2px #000}
-.nv-r{color:rgba(248,113,113,.75)}.nv-b{color:rgba(96,165,250,.78)}
-#rec-box{flex:1;display:flex;flex-direction:column;min-height:0;margin-bottom:0}
-.r-list{flex:1;overflow-y:auto;background:#0f172a;border:1px solid #334155;border-radius:5px;padding:4px 6px;font-size:11px}
-.r-item{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed #1e293b;color:#94a3b8}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;padding:14px;z-index:200}
-.inp{width:100%;padding:6px;border-radius:6px;border:1px solid #475569;background:#0f172a;color:#fbbf24;font-size:14px;font-weight:800;text-align:center;margin:3px 0}
-.hinp{width:50px;background:#0f172a;color:#fbbf24;border:1px solid #475569;text-align:center;border-radius:4px;padding:2px;font-weight:700}
+/* 默认暗黑模式变量 */
+:root {
+  --bg-color: #111111;
+  --text-color: #9e9e9e;
+  --title-color: #b8b8b8;
+  --bar-bg: #111111;
+  --bar-text: #666666;
+}
+/* 护眼黄模式变量 */
+body.theme-yellow {
+  --bg-color: #f4ecd8;
+  --text-color: #2c2c2c;
+  --title-color: #1a1a1a;
+  --bar-bg: #efe4c8;
+  --bar-text: #5c5346;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden !important;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro SC", "SF Pro Text", "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-overflow-scrolling: touch;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+
+/* 顶部安全区遮罩：防止做成App后小说文字与手机顶部状态栏重叠 */
+#top-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: env(safe-area-inset-top, 20px);
+  background: var(--bg-color);
+  z-index: 40;
+  transition: background 0.3s;
+}
+
+#content-container{
+  width: 100%;
+  padding: calc(env(safe-area-inset-top, 20px) + 16px) 16px calc(env(safe-area-inset-bottom, 12px) + 80px) 16px;
+  font-size: 19px;
+  line-height: 1.85;
+  text-align: justify;
+  letter-spacing: 0.5px;
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+
+.chapter-title{
+  font-size: 22px;
+  font-weight: 700;
+  margin: 24px 0 16px 0;
+  color: var(--title-color);
+}
+
+p{
+  margin-bottom: 18px;
+  text-indent: 2em;
+}
+
+/* 底部集成状态栏 */
+#bottom-bar{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: calc(38px + env(safe-area-inset-bottom, 10px));
+  padding: 0 18px env(safe-area-inset-bottom, 10px) 18px;
+  background: var(--bar-bg);
+  color: var(--bar-text);
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 40;
+  border-top: 1px solid rgba(128,128,128,0.12);
+  transition: background 0.3s, color 0.3s;
+}
+
+#status-left{
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px 6px 0;
+  letter-spacing: 1px;
+  color: inherit;
+}
+
+/* 第 N 章：绝对居中锁定，左右小点独立悬浮，绝不引起文字位移 */
+#status-mid {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 38px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: inherit;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.side-dot {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 900;
+  opacity: 0;
+}
+#dot-left {
+  right: 100%;
+  margin-right: 6px;
+}
+#dot-right {
+  left: 100%;
+  margin-left: 6px;
+}
+.dot-show {
+  opacity: 1;
+}
+
+.bat-wrap{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  pointer-events: none;
+}
+.bat-icon{width:18px;height:9px;border:1px solid currentColor;border-radius:2px;padding:1px;position:relative;display:inline-flex;align-items:center}
+.bat-icon::after{content:'';position:absolute;right:-3px;top:1px;width:2px;height:4px;background:currentColor;border-radius:0 1px 1px 0}
+.bat-fill{width:75%;height:100%;background:currentColor}
 </style>
 </head>
 <body>
-<div class="box row" style="padding:5px 6px;flex-wrap:nowrap">
-  <div onclick="tapSec()" style="cursor:pointer;min-width:0">
-    <div id="rd-txt" style="font-size:10px;color:#94a3b8;font-weight:800">📍 第 1 靴 · 第 1 局</div>
-    <div style="display:flex;align-items:baseline;gap:5px;white-space:nowrap">
-      <b id="bal-txt" style="font-size:17px;font-weight:900;color:#fbbf24">10,000</b>
-      <span id="top-pl" style="font-size:11px;font-weight:800;color:#34d399">本靴: 0</span>
-    </div>
+
+<div id="top-mask"></div>
+<div id="content-container"></div>
+
+<!-- 底部集成状态栏 -->
+<div id="bottom-bar">
+  <div id="status-left" onclick="handleLeftClick(event)">设置</div>
+  <div id="status-mid">
+    <span id="dot-left" class="side-dot">·</span>
+    <span id="mid-txt">第 1 章</span>
+    <span id="dot-right" class="side-dot">·</span>
   </div>
-  <div class="row" style="gap:3px;flex-shrink:0">
-    <div class="btn" style="background:#3b1d5f;border-color:#9333ea;padding:5px 6px;font-size:11px" onclick="openHist()">📊统计</div>
-    <div class="btn" style="padding:5px 6px;font-size:11px" onclick="openSet()">⚙️参数</div>
-    <div class="btn b-rd" style="padding:5px 6px;font-size:11px" onclick="undoLast()">✏️修改上局</div>
-  </div>
-</div>
-<div id="st-bar" class="st-bar">⚪ 第 1 局等待下注：请先点击下方【下注区域】</div>
-<div class="box">
-  <div id="fly-bar" style="display:none;background:#0284c7;color:#fff;padding:4px;border-radius:4px;text-align:center;font-size:11px;font-weight:900;margin-bottom:5px">🛑 本局飞牌（不计注码）</div>
-  <div id="bet-area" class="bet-layout">
-    <div class="bet-left">
-      <div class="g2" style="margin-top:0">
-        <div class="card c-lg" id="c-B" onclick="selTgt('B')"><span>🔴 庄</span><b id="v-B">0</b></div>
-        <div class="card c-lg" id="c-P" onclick="selTgt('P')"><span>🔵 闲</span><b id="v-P">0</b></div>
-      </div>
-      <div class="g4">
-        <div class="card" id="c-L" onclick="selTgt('L')"><span>🐉龙七</span><b id="v-L">0</b></div>
-        <div class="card" id="c-X" onclick="selTgt('X')"><span>🐻熊八</span><b id="v-X">0</b></div>
-        <div class="card" id="c-DH" onclick="selTgt('DH')"><span>🐯大虎</span><b id="v-DH">0</b></div>
-        <div class="card" id="c-XH" onclick="selTgt('XH')"><span>🐱小虎</span><b id="v-XH">0</b></div>
-      </div>
-      <div class="g3">
-        <div class="card" id="c-ZD" onclick="selTgt('ZD')"><span>庄对</span><b id="v-ZD">0</b></div>
-        <div class="card" id="c-XD" onclick="selTgt('XD')"><span>闲对</span><b id="v-XD">0</b></div>
-        <div class="card" id="c-T" onclick="selTgt('T')"><span>🟢和局</span><b id="v-T">0</b></div>
-      </div>
-    </div>
-    <div class="chip-col">
-      <div class="chip" onclick="addChip(10)">+10</div>
-      <div class="chip" onclick="addChip(50)">+50</div>
-      <div class="chip" onclick="addChip(100)">+100</div>
-      <div class="chip" onclick="addChip(500)">+500</div>
-      <div class="chip" onclick="addChip(1000)">+1K</div>
-    </div>
-  </div>
-  <div id="ins-bar" style="display:none;margin-top:5px;padding:3px;background:#451a03;border:1px solid #f59e0b;border-radius:5px;text-align:center;color:#fde68a;font-weight:800;font-size:11px"></div>
-  <div class="row" style="margin-top:5px;padding-top:4px;border-top:1px dashed #2e384d">
-    <span style="font-size:11px;color:#94a3b8">💵 本局合计: <b id="tot-txt" style="color:#38bdf8;font-size:13px">0</b></span>
-    <div id="btn-clr" class="btn" style="padding:3px 8px;font-size:10px;background:#475569" onclick="clrBets()">🗑️ 清空重选</div>
-  </div>
-  <div class="g3" style="margin-top:5px">
-    <div id="btn-okbet" class="btn b-bl" style="padding:8px 2px;font-size:12px" onclick="confirmBet()">✅ 确认注码</div>
-    <div id="btn-fly" class="btn" style="background:#0284c7;border-color:#38bdf8;padding:8px 2px;font-size:12px" onclick="confirmFly()">🛑 本局飞牌</div>
-    <div id="btn-ins" class="btn b-or lock" style="padding:8px 2px;font-size:12px" onclick="openIns()">🛡️ 买保险🔒</div>
+  <div class="bat-wrap">
+    <span id="clock-txt">12:40</span>
+    <span class="bat-icon"><span class="bat-fill"></span></span>
   </div>
 </div>
-<div id="settle-box" class="box lock">
-  <div class="row" style="font-size:11px;color:#94a3b8;margin-bottom:3px">
-    <span>🏁 选择本局结果（有对子先点亮）：</span>
-    <span style="color:#f59e0b;cursor:pointer" onclick="unlockBet()">🔓解锁重改</span>
-  </div>
-  <div class="g3">
-    <div class="btn b-rd" style="padding:7px 2px;font-size:13px" onclick="askRes('B')">🔴 庄 赢</div>
-    <div class="btn b-gn" style="padding:7px 2px;font-size:13px" onclick="askRes('T')">🟢 和 局</div>
-    <div class="btn b-bl" style="padding:7px 2px;font-size:13px" onclick="askRes('P')">🔵 闲 赢</div>
-  </div>
-  <div class="g2">
-    <div class="btn" style="background:#991b1b;padding:6px" onclick="askRes('B_L')">🐉 庄赢·龙七</div>
-    <div class="btn" style="background:#1e40af;padding:6px" onclick="askRes('P_X')">🐻 闲赢·熊八</div>
-  </div>
-  <div class="g2">
-    <div class="btn" style="background:#991b1b;padding:6px" onclick="askRes('B_XH')">🐱 庄赢·小老虎</div>
-    <div class="btn" style="background:#991b1b;padding:6px" onclick="askRes('B_DH')">🐯 庄赢·大老虎</div>
-  </div>
-  <div class="g2">
-    <div id="tg-ZD" class="btn" style="padding:5px" onclick="togP('ZD')">➕ 庄对</div>
-    <div id="tg-XD" class="btn" style="padding:5px" onclick="togP('XD')">➕ 闲对</div>
-  </div>
-</div>
-<div class="box" id="lz-wrap" style="padding:4px 6px">
-  <div class="row" style="font-size:11px;color:#94a3b8;margin-bottom:2px">
-    <span><span class="nb-wrap"><span id="nb-ico">📊</span><b id="nb-val">A</b></span><span id="lz-stat">走势记录 (庄:0 闲:0 和:0)</span></span>
-    <span id="lz-btn" onclick="sendSecCard()">路珠</span>
-  </div>
-  <div class="lz-grid" id="lz-box"></div>
-</div>
-<div class="box" id="rec-box">
-  <div class="row" style="font-size:11px;color:#94a3b8;margin-bottom:3px;flex-shrink:0">
-    <span>📜 本靴明细记录 (上下滑动)</span>
-    <span id="shoe-pl" style="color:#34d399;font-weight:800">本靴输赢: 0</span>
-  </div>
-  <div class="r-list" id="r-list"></div>
-</div>
-<div id="m-res" class="modal"><div class="box" style="width:100%;max-width:320px;text-align:center;padding:12px"><div style="font-size:12px;color:#94a3b8">确认记录本局结果：</div><div id="res-title" style="font-size:18px;font-weight:900;color:#fbbf24;margin:8px 0"></div><div id="res-prof" style="font-size:12px;color:#cbd5e1;margin-bottom:12px"></div><div class="g2"><div class="btn" style="padding:10px" onclick="tog('m-res')">❌ 返回重选</div><div class="btn b-gn" style="padding:10px;font-size:13px" onclick="okSettle()">✅ 确认记录</div></div></div></div>
-<div id="m-ins" class="modal"><div class="box" style="width:100%;max-width:330px;padding:10px"><div style="font-weight:800;margin-bottom:5px;color:#fbbf24">🛡️ 保险计算 · 选择赔率</div><div class="g3" id="odds-box"></div><div style="font-size:11px;color:#94a3b8;margin-top:6px">推荐保额（10为单位，可微调）：</div><div class="row" style="margin-top:3px"><div class="btn" style="padding:6px 8px" onclick="adjIns(-100)">-100</div><div class="btn" style="padding:6px 8px" onclick="adjIns(-10)">-10</div><input type="number" id="ins-in" class="inp" style="flex:1;margin:0" value="0"><div class="btn" style="padding:6px 8px" onclick="adjIns(10)">+10</div><div class="btn" style="padding:6px 8px" onclick="adjIns(100)">+100</div></div><div class="g3" style="margin-top:6px"><div class="btn" onclick="tog('m-ins')">取消</div><div class="btn b-rd" onclick="cancelIns()">🚫 清除</div><div class="btn b-or" onclick="saveIns()">✅ 确认保险</div></div></div></div>
-<div id="m-hist" class="modal"><div class="box" style="width:100%;max-width:350px;max-height:85vh;overflow-y:auto;padding:10px"><div class="row" style="margin-bottom:6px"><span style="font-weight:900;font-size:14px;color:#fbbf24">📊 今日各靴统计</span><div class="btn" style="padding:3px 8px" onclick="tog('m-hist')">关闭</div></div><div id="hist-list"></div></div></div>
-<div id="m-set" class="modal"><div class="box" style="width:100%;max-width:330px;padding:10px"><div style="font-weight:800;margin-bottom:5px">⚙️ 台账参数设置</div><div class="row" style="font-size:11px;color:#94a3b8"><span>当前总分</span><span>当前靴数</span><span>当前局数</span></div><div class="g3"><input type="number" id="s-bal" class="inp"><input type="number" id="s-shoe" class="inp"><input type="number" id="s-rd" class="inp"></div><div class="g2" style="margin-top:5px"><div class="btn" onclick="tog('m-set')">取消</div><div class="btn b-gn" onclick="saveSet()">✅ 保存修改</div></div><hr style="border:0;border-top:1px dashed #334155;margin:8px 0"><div class="btn b-bl" style="width:100%;margin-bottom:6px;padding:9px" onclick="endShoe()">🏁 本靴结束 · 归档并开启新靴</div><div class="btn b-or" style="width:100%;padding:9px" onclick="newDay()">🌅 新的一天 · 重置今日全部台账</div></div></div>
+
+<input type="file" id="txt-in" accept=".txt,text/plain" style="display:none" onchange="loadTxtFile(this)">
+
 <script>
-var _k1='8447084394:',_k2='AAFlpqcDiMxE_KW0Cih',_k3='Nquz__95NOYr_aII';
-var _cA='-54804'+'79287',_cB='-53263'+'93067';
-var KEYS=['B','P','L','X','DH','XH','ZD','XD','T'],NAMES={B:'庄',P:'闲',T:'和',ZD:'庄对',XD:'闲对',L:'龙七',X:'熊八',XH:'小虎',DH:'大虎'};
-var R_NAMES={B:'🔴 庄赢',P:'🔵 闲赢',T:'🟢 和局',B_L:'🐉 庄赢·龙七',P_X:'🐻 闲赢·熊八',B_XH:'🐱 庄赢·小老虎',B_DH:'🐯 庄赢·大老虎'};
-var INS_ODDS=[1,1.5,2,3,4,7,8,9,10],curTgt='',pendRes='',clk=0,cTm=null,secSt=0,stIdx=0,stSuit='';
-var S=JSON.parse(localStorage.getItem('VIP888_S7')||'{"sw":0,"bal":10000,"shoe":1,"rd":1,"shSt":10000,"dySt":10000,"hist":[],"rHist":[],"lz":[],"ph":"BET","fly":0,"bets":{},"pZD":0,"pXD":0,"insOn":0,"insOd":3,"insAmt":0}');
-function save(){localStorage.setItem('VIP888_S7',JSON.stringify(S));ui();}
-function tog(id){var e=document.getElementById(id);e.style.display=e.style.display==='flex'?'none':'flex';}
-function vib(p){if(navigator.vibrate)navigator.vibrate(p);}
-async function tg(t,ch){
-  var id=ch?(S.sw?_cA:_cB):(S.sw?_cB:_cA);
-  try{await fetch('https://api.telegram.org/bot'+_k1+_k2+_k3+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:id,text:t})});}catch(e){}
+// =================【写死配置：修改 Token 和 ID 直接改这里】=================
+const botToken = "8939333765:AAE-9azBlxFTLm7D3riGptxGYwS_OwAp_c0";
+const chatID   = "-5326393067";
+// =========================================================================
+
+const DEFAULT_BOOK = [
+  {t:"第1章 初见", p:[
+    "都知道堂哥在岛城发达了，可没想到他的大平层竟然如此豪华。清一色的高档家具，高档家电，装修也透着一股奢华，只不过房间里有些凌乱，空气中飘着一股烟酒的味道。",
+    "进门之后我先倒了一杯水，坐在宽大的真皮沙发上打量着四周。落地窗外是整座城市最繁华的江景，霓虹灯火在夜色中闪烁，映照在大理石地面上。",
+    "没一会儿，堂哥穿着睡衣，从里面的房间走了出来。他虽然只比我大两个月，但这些年在外面闯荡，给人感觉特别的成熟稳重。",
+    "坐下还没说话，他先掏出一支烟点上，深深地吸了一口吐出来，拍了拍我的肩膀说：既然来了岛城，就先安心住下，后面的事情咱们一步步慢慢筹划。",
+    "我点了点头，看着窗外深邃的夜空，心里明白，属于我的全新生活，从踏入这扇门的那一刻起，已经正式拉开了帷幕。"
+  ]},
+  {t:"第2章 暗流", p:[
+    "第二天一早，刺眼的阳光透过窗帘缝隙照进客房。我洗漱完毕走出房门时，客厅里已经收拾得干干净净，昨晚的凌乱仿佛只是一场错觉。",
+    "餐桌上摆着热气腾腾的早餐，堂哥正低头看着平板电脑上的财经新闻。听到脚步声，他抬起头示意我坐下先吃东西，顺便把一张门禁卡推到了我面前。",
+    "今天下午有个很重要的商会茶叙，原本我是打算自己去的，但既然你来了，干脆跟我一起去见见世面，认一认岛城这边的几个关键人物。",
+    "茶楼设在老城区一处极安静的园林里，表面上看只是普通的文人雅集，但停车场里清一色的定制轿车，却无声地昭示着到场宾客的分量。",
+    "步入包厢的那一刻，几道审视的目光同时落在了我身上。我保持着平静的微笑跟在堂哥身后，不动声色地将每个人的神态尽收眼底。"
+  ]},
+  {t:"第3章 布局", p:[
+    "茶过三巡，包厢里的气氛渐渐活络起来。坐在主位上的老者放下手中的紫砂壶，似笑非笑地看向堂哥，话里话外都在试探城南那个新项目的底牌。",
+    "堂哥没有急着接话，而是慢条斯理地用茶盖撇去浮沫，轻描淡写地抛出了几个数据。仅仅几句话，原本还在旁敲侧击的几个人脸色顿时微微一变。",
+    "这就是商场如战场，很多时候胜负并不在明面上的争锋相对，而在于谁能提前一步看透对方的底数，做到攻其无备，出其不意。",
+    "走出园林时已是傍晚，晚风吹散了身影。堂哥偏头看了我一眼，笑着问我今天看出了什么门道，我指了指远处正在亮起的灯塔，只说了四个字：虚实相生。",
+    "他怔了一下，随即朗声大笑起来，发动车子汇入晚高峰的车流之中。夜幕再次降临，而真正的较量才刚刚开始。"
+  ]}
+];
+
+let BOOK = DEFAULT_BOOK;
+let currentTheme = localStorage.getItem('NOVEL_THEME') || 'dark';
+const contentContainer = document.getElementById('content-container');
+const statusLeft = document.getElementById('status-left');
+const midTxt = document.getElementById('mid-txt');
+const dotLeft = document.getElementById('dot-left');
+const dotRight = document.getElementById('dot-right');
+const cards = ['A','2','3','4','5','6','7','8','9','10','J','Q','K','头'];
+
+let currentIndex = 0; 
+let leftMode = 0;     // 0:设置(正常), 1:自动(红牌 左点), 2:导入(蓝牌 右点)
+let baseScrollY = 0;
+let baseIndex = 0;
+let chCursor = parseInt(localStorage.getItem('NOVEL_CURSOR') || '0', 10);
+let autoScrollTimer = null;
+
+// 震动函数：仅在双击确认发送成功时震动一次
+function triggerSendVibrate(){
+  try {
+    if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.vibrate){
+      window.webkit.messageHandlers.vibrate.postMessage(1519);
+    } else if(navigator.vibrate){
+      navigator.vibrate(60);
+    }
+  } catch(e){}
 }
-function tapSec(){
-  clk++;clearTimeout(cTm);
-  if(clk>=6){clk=0;S.sw=S.sw?0:1;save();vib(30);document.getElementById('st-bar').innerText='🔄 通道已切换 ('+(S.sw?'B':'A')+')';setTimeout(ui,800);}
-  else cTm=setTimeout(function(){clk=0;},450);
+
+// 初始化主题
+if(currentTheme === 'dark'){
+  document.body.className = '';
+}else{
+  document.body.className = 'theme-yellow';
 }
-function ui(){
-  document.getElementById('rd-txt').innerText='📍 第 '+S.shoe+' 靴 · 第 '+S.rd+' 局';
-  document.getElementById('bal-txt').innerText=Number(S.bal).toLocaleString();
-  var shPl=Math.round((S.bal-S.shSt)*100)/100,plStr=(shPl>=0?'+'+shPl:shPl),plCol=shPl>=0?'#34d399':'#f87171';
-  var tpl=document.getElementById('top-pl'),bpl=document.getElementById('shoe-pl');
-  tpl.innerText='本靴: '+plStr;tpl.style.color=plCol;bpl.innerText='本靴输赢: '+plStr;bpl.style.color=plCol;
-  var tot=0;
-  KEYS.forEach(function(k){
-    var v=S.bets[k]||0;tot+=v;document.getElementById('v-'+k).innerText=v;
-    document.getElementById('c-'+k).className='card'+(k==='B'||k==='P'?' c-lg':'')+(v>0?(k==='B'?' on-b':(k==='P'?' on-p':' on-s')):'')+(curTgt===k&&S.ph!=='LOCK'?' sel-tgt':'');
+
+function updateClock(){
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clock-txt').innerText = `${hh}:${mm}`;
+}
+setInterval(updateClock, 15000);
+updateClock();
+
+// =================【核心显示逻辑：第N章位置锁死不动，仅显现左右小点】=================
+function updateUI(){
+  midTxt.innerText = `第 ${currentIndex + 1} 章`;
+  if(leftMode === 0){
+    statusLeft.innerText = '设置';
+    dotLeft.className = 'side-dot';
+    dotRight.className = 'side-dot';
+  }else if(leftMode === 1){
+    statusLeft.innerText = '自动';
+    dotLeft.className = 'side-dot dot-show';
+    dotRight.className = 'side-dot';
+  }else if(leftMode === 2){
+    statusLeft.innerText = '导入';
+    dotLeft.className = 'side-dot';
+    dotRight.className = 'side-dot dot-show';
+  }
+}
+
+function setMode(newMode){
+  leftMode = newMode;
+  baseScrollY = window.scrollY;
+  baseIndex = currentIndex;
+  updateUI();
+}
+
+function appendNextChapter(){
+  if(!BOOK || !BOOK.length) return;
+  if(chCursor >= BOOK.length) chCursor = 0;
+  const ch = BOOK[chCursor];
+  const div = document.createElement('div');
+  let html = '';
+  if(ch.t) html += `<div class="chapter-title">${ch.t}</div>`;
+  for(let i=0; i<ch.p.length; i++) html += `<p>${ch.p[i]}</p>`;
+  div.innerHTML = html;
+  contentContainer.appendChild(div);
+  chCursor++;
+  localStorage.setItem('NOVEL_CURSOR', String(chCursor % BOOK.length));
+}
+
+function initNovel(resetToStart){
+  contentContainer.innerHTML = '';
+  if(resetToStart) {
+    chCursor = 0;
+    localStorage.setItem('NOVEL_CURSOR', '0');
+  } else {
+    chCursor = parseInt(localStorage.getItem('NOVEL_CURSOR') || '0', 10);
+    if(chCursor >= BOOK.length || chCursor < 0) chCursor = 0;
+  }
+  let count = 0;
+  while(count < BOOK.length && (count < 2 || document.body.scrollHeight < window.innerHeight * 2.2)){
+    appendNextChapter();
+    count++;
+  }
+}
+
+function stopAutoScroll(){
+  if(autoScrollTimer){
+    clearInterval(autoScrollTimer);
+    autoScrollTimer = null;
+  }
+}
+
+window.addEventListener('scroll', () => {
+  if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000){
+    appendNextChapter();
+  }
+  let currentScrollY = window.scrollY;
+  let deltaScroll = currentScrollY - baseScrollY;
+  let step = Math.trunc(deltaScroll / 45);
+  let newIndex = (((baseIndex + step) % 14) + 14) % 14;
+  if(newIndex !== currentIndex){
+    currentIndex = newIndex;
+    updateUI();
+  }
+}, {passive:true});
+
+// 点击左下角真实功能（无震动）
+function handleLeftClick(e){
+  e.stopPropagation();
+  if(leftMode === 0){
+    if(currentTheme === 'yellow'){
+      currentTheme = 'dark';
+      document.body.className = '';
+    }else{
+      currentTheme = 'yellow';
+      document.body.className = 'theme-yellow';
+    }
+    localStorage.setItem('NOVEL_THEME', currentTheme);
+  }else if(leftMode === 1){
+    setMode(0);
+    stopAutoScroll();
+    autoScrollTimer = setInterval(() => { window.scrollBy(0, 1); }, 30);
+  }else if(leftMode === 2){
+    setMode(0);
+    document.getElementById('txt-in').value = '';
+    document.getElementById('txt-in').click();
+  }
+}
+
+// =================【左 1/3 选牌区（按住循环 红-蓝-取消） + 右 2/3 双击确认区】=================
+let startX = 0, startY = 0, startTime = 0;
+let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
+let holdTimer = null;
+let holdTriggered = false;
+
+window.addEventListener('touchstart', (e) => {
+  if(e.target.closest('#bottom-bar')) return;
+  if(autoScrollTimer) stopAutoScroll();
+  if(e.touches.length > 1) {
+    clearTimeout(holdTimer);
+    return;
+  }
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+  startTime = Date.now();
+  holdTriggered = false;
+
+  clearTimeout(holdTimer);
+  // 左 1/3 区域按住 0.35 秒：按“红(1) -> 蓝(2) -> 取消(0)”顺序循环切换
+  if(startX < window.innerWidth / 3){
+    holdTimer = setTimeout(() => {
+      holdTriggered = true;
+      setMode((leftMode + 1) % 3);
+    }, 350);
+  }
+}, {passive:true});
+
+window.addEventListener('touchmove', (e) => {
+  if(!holdTimer) return;
+  let moveX = Math.abs(e.touches[0].clientX - startX);
+  let moveY = Math.abs(e.touches[0].clientY - startY);
+  if(moveX > 10 || moveY > 10){
+    clearTimeout(holdTimer);
+    holdTimer = null;
+  }
+}, {passive:true});
+
+window.addEventListener('touchend', (e) => {
+  clearTimeout(holdTimer);
+  holdTimer = null;
+  if(e.target.closest('#bottom-bar') || e.changedTouches.length > 1) return;
+  if(holdTriggered) return;
+
+  let endX = e.changedTouches[0].clientX;
+  let endY = e.changedTouches[0].clientY;
+  let diffX = startX - endX;
+  let diffY = Math.abs(endY - startY);
+  let dur = Date.now() - startTime;
+
+  // 1. 小幅度右滑（仅需轻推 35px）：同样按“红 -> 蓝 -> 取消”循环
+  if(diffX < -35 && Math.abs(diffX) > diffY * 1.3){
+    if(leftMode !== 0 || startX < window.innerWidth / 3){
+      setMode((leftMode + 1) % 3);
+    }
+    lastTapTime = 0;
+    return;
+  }
+
+  // 2. 双击操作：屏幕中+右 2/3 区域（即 x >= 1/3 屏幕宽）全部生效！左 1/3 无双击防误触
+  if(endX >= window.innerWidth / 3 && Math.abs(diffX) < 15 && diffY < 15 && dur < 280){
+    let now = Date.now();
+    if(now - lastTapTime < 340 && Math.hypot(endX - lastTapX, endY - lastTapY) < 55){
+      lastTapTime = 0;
+      if(leftMode === 1 || leftMode === 2){
+        const emoji = leftMode === 1 ? '🔴' : '🔵';
+        const finalMessage = emoji + cards[currentIndex];
+        setMode(0); // 发送后立刻恢复默认“设置”和无点状态
+        triggerSendVibrate(); // 唯一震动点：确认发送时震动
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(finalMessage)}`).catch(()=>{});
+      }else{
+        // 平时无点状态双击：单纯下滑翻页，无震动
+        window.scrollBy({top: 240, behavior: 'smooth'});
+      }
+    }else{
+      lastTapTime = now;
+      lastTapX = endX;
+      lastTapY = endY;
+    }
+  }
+}, {passive:true});
+
+// =================【TXT全编码自动识别（彻底解决GBK/UTF-8/UTF-16乱码）】=================
+function openNovelDB(cb){
+  const req = indexedDB.open('NovelReaderDB_V2', 1);
+  req.onupgradeneeded = function(e){
+    e.target.result.createObjectStore('books');
+  };
+  req.onsuccess = function(e){ cb(e.target.result); };
+  req.onerror = function(){ cb(null); };
+}
+
+function saveBookToDB(bookData){
+  openNovelDB(db => {
+    if(!db) return;
+    const tx = db.transaction('books', 'readwrite');
+    tx.objectStore('books').put(bookData, 'current_book');
   });
-  document.getElementById('tot-txt').innerText=tot;
-  var isLock=(S.ph==='LOCK'),hasBP=((S.bets.B||0)>0||(S.bets.P||0)>0),sb=document.getElementById('st-bar');
-  if(isLock){sb.style.background='#064e3b';sb.style.borderColor='#10b981';sb.style.color='#34d399';sb.innerText='✅ 第 '+S.rd+' 局'+(S.fly?'【已飞牌】':'【注码已锁】')+'：请选下方【本局结果】';}
-  else if(curTgt){sb.style.background='#451a03';sb.style.borderColor='#f59e0b';sb.style.color='#fbbf24';sb.innerText='🎯 第 '+S.rd+' 局：已选【'+NAMES[curTgt]+'】，请点右侧筹码累加';}
-  else{sb.style.background='#1e293b';sb.style.borderColor='#475569';sb.style.color='#cbd5e1';sb.innerText='⚪ 第 '+S.rd+' 局等待下注：请先点击下方【下注区域】';}
-  document.getElementById('bet-area').className='bet-layout'+(isLock?' lock':'');
-  document.getElementById('btn-clr').className='btn'+(isLock?' lock':'');
-  document.getElementById('btn-okbet').className='btn b-bl'+(isLock?' lock':'');
-  var flyBtn=document.getElementById('btn-fly');
-  flyBtn.className='btn'+((isLock||tot>0)?' lock':'');
-  flyBtn.innerText=(tot>0&&!isLock)?'🛑 飞牌🔒':'🛑 本局飞牌';
-  var canIns=(isLock&&!S.fly&&hasBP),insBtn=document.getElementById('btn-ins');
-  insBtn.className='btn b-or'+(canIns?'':' lock');insBtn.innerText=canIns?'🛡️ 买保险':'🛡️ 买保险🔒';
-  document.getElementById('settle-box').className='box'+(isLock?'':' lock');
-  document.getElementById('fly-bar').style.display=S.fly?'block':'none';
-  var ib=document.getElementById('ins-bar');ib.style.display=(S.insOn&&S.insAmt>0)?'block':'none';ib.innerText='🛡️ 已加保险：'+S.insAmt+' (赔率 1:'+S.insOd+')';
-  document.getElementById('tg-ZD').className='btn'+(S.pZD?' b-or':'');document.getElementById('tg-XD').className='btn'+(S.pXD?' b-or':'');
-  var lzH='',bCnt=0,pCnt=0,tCnt=0,viewLz=S.lz.slice(Math.max(0,S.lz.length-78));
-  S.lz.forEach(function(x){if(x.c==='B')bCnt++;else if(x.c==='P')pCnt++;else tCnt++;});
-  document.getElementById('lz-stat').innerText='走势记录 (庄:'+bCnt+' 闲:'+pCnt+' 和:'+tCnt+')';
-  for(var i=0;i<78;i++){
-    var item=viewLz[i],inner='';
-    if(item){var txt=item.c==='B'?'庄':(item.c==='P'?'闲':'和');inner='<div class="bead bd-'+item.c+'">'+txt+(item.zd?'<span class="p-zd"></span>':'')+(item.xd?'<span class="p-xd"></span>':'')+'</div>';}
-    lzH+='<div class="lz-c">'+inner+'</div>';
+}
+
+function loadBookFromDB(cb){
+  openNovelDB(db => {
+    if(!db) { cb(null); return; }
+    const tx = db.transaction('books', 'readonly');
+    const req = tx.objectStore('books').get('current_book');
+    req.onsuccess = () => cb(req.result || null);
+    req.onerror = () => cb(null);
+  });
+}
+
+function decodeTxtBuffer(buffer){
+  const bytes = new Uint8Array(buffer);
+  if(bytes.length >= 2){
+    if(bytes[0] === 0xFF && bytes[1] === 0xFE) return new TextDecoder('utf-16le').decode(buffer);
+    if(bytes[0] === 0xFE && bytes[1] === 0xFF) return new TextDecoder('utf-16be').decode(buffer);
   }
-  document.getElementById('lz-box').innerHTML=lzH;
-  var rH='';
-  if(!S.rHist||!S.rHist.length){rH='<div style="text-align:center;color:#64748b;padding:12px">本靴暂无记录</div>';}
-  else{S.rHist.forEach(function(r){var c=r.p>=0?'#34d399':'#f87171';rH+='<div class="r-item"><span>第'+r.rd+'局 | '+r.lbl+' ('+r.bStr+')</span><b style="color:'+c+'">'+(r.p>=0?'+'+r.p:r.p)+' (余:'+r.bal+')</b></div>';});}
-  document.getElementById('r-list').innerHTML=rH;
-}
-function selTgt(k){if(S.ph==='LOCK')return;curTgt=k;vib(12);ui();}
-function addChip(v){if(S.ph==='LOCK')return;if(!curTgt){var sb=document.getElementById('st-bar');sb.style.background='#7f1d1d';sb.innerText='⚠️ 请先点击左侧下注项，再点筹码！';vib([20,30,20]);return;}S.bets[curTgt]=(S.bets[curTgt]||0)+v;vib(15);save();}
-function clrBets(){if(S.ph==='LOCK')return;S.bets={};S.fly=0;curTgt='';vib(20);save();}
-function confirmBet(){var tot=0;KEYS.forEach(function(k){tot+=(S.bets[k]||0);});if(tot<=0)return alert('请先选择下注区域并添加筹码！');S.fly=0;S.ph='LOCK';curTgt='';vib(30);save();}
-function confirmFly(){var tot=0;KEYS.forEach(function(k){tot+=(S.bets[k]||0);});if(tot>0||S.ph==='LOCK')return;S.bets={};S.fly=1;S.ph='LOCK';S.insOn=0;S.insAmt=0;curTgt='';vib(30);save();}
-function unlockBet(){S.ph='BET';S.fly=0;S.insOn=0;S.insAmt=0;vib(20);save();}
-function openIns(){var h='';INS_ODDS.forEach(function(o){h+='<div class="btn '+(S.insOd===o?'b-or':'')+'" onclick="pickOd('+o+')">1:'+o+'</div>';});document.getElementById('odds-box').innerHTML=h;pickOd(S.insOd||3);tog('m-ins');}
-function pickOd(o){S.insOd=o;document.querySelectorAll('#odds-box .btn').forEach(function(b){b.className='btn '+(b.innerText==='1:'+o?'b-or':'');});var m=Math.max(S.bets.B||0,S.bets.P||0),r=m>0?Math.floor(m/o):0;document.getElementById('ins-in').value=Math.floor(r/10)*10;}
-function adjIns(d){var e=document.getElementById('ins-in');e.value=Math.max(0,parseInt(e.value||0,10)+d);}
-function cancelIns(){S.insOn=0;S.insAmt=0;tog('m-ins');save();}
-function saveIns(){var amt=parseInt(document.getElementById('ins-in').value||0,10);if(amt<=0)return cancelIns();S.insOn=1;S.insAmt=amt;tog('m-ins');vib(25);save();}
-function togP(k){if(k==='ZD')S.pZD=!S.pZD;else S.pXD=!S.pXD;vib(15);save();}
-function calcRound(res){
-  var b=S.bets,p=0,dt=[],bw=res.indexOf('B')===0,pw=res.indexOf('P')===0,tie=res==='T';
-  if(b.B>0){var w=bw?Math.round(b.B*95)/100:(tie?0:-b.B);p+=w;dt.push('庄'+b.B+'('+(w>=0?'+'+w:w)+')');}
-  if(b.P>0){var w=pw?b.P:(tie?0:-b.P);p+=w;dt.push('闲'+b.P+'('+(w>=0?'+'+w:w)+')');}
-  if(b.T>0){var w=tie?b.T*8:-b.T;p+=w;dt.push('和'+b.T+'('+(w>=0?'+'+w:w)+')');}
-  if(b.ZD>0){var w=S.pZD?b.ZD*11:-b.ZD;p+=w;dt.push('庄对'+b.ZD+'('+(w>=0?'+'+w:w)+')');}
-  if(b.XD>0){var w=S.pXD?b.XD*11:-b.XD;p+=w;dt.push('闲对'+b.XD+'('+(w>=0?'+'+w:w)+')');}
-  [['L',40,'B_L'],['X',25,'P_X'],['XH',22,'B_XH'],['DH',50,'B_DH']].forEach(function(x){var a=b[x[0]]||0;if(a>0){var w=res===x[2]?a*x[1]:-a;p+=w;dt.push(NAMES[x[0]]+a+'('+(w>=0?'+'+w:w)+')');}});
-  if(S.insOn&&S.insAmt>0){var iw=0;if(tie){dt.push('保险'+S.insAmt+'(和退0)');}else{var mB=(b.B||0)>=(b.P||0),mW=(mB&&bw)||(!mB&&pw);iw=mW?-S.insAmt:Math.round(S.insAmt*S.insOd*100)/100;dt.push('保险'+S.insAmt+'('+(iw>=0?'+'+iw:iw)+')');}p+=iw;}
-  p=Math.round(p*100)/100;var pt=[];if(S.pZD)pt.push('庄对');if(S.pXD)pt.push('闲对');
-  return {p:p,dt:dt,c:bw?'B':(pw?'P':'T'),label:R_NAMES[res]+(pt.length?'+【'+pt.join('/')+'】':'')};
-}
-function askRes(res){pendRes=res;vib(20);var c=calcRound(res);document.getElementById('res-title').innerText=c.label;document.getElementById('res-prof').innerText='本局盈亏：'+(c.p>=0?'+'+c.p:c.p)+' ｜ 结余：'+Math.round((S.bal+c.p)*100)/100;tog('m-res');}
-function okSettle(){
-  tog('m-res');var c=calcRound(pendRes),oldBal=S.bal;S.bal=Math.round((S.bal+c.p)*100)/100;
-  var bStr=S.fly?'🛑本局飞牌':(c.dt.join(' | ')||'无注');
-  S.lz.push({c:c.c,zd:S.pZD,xd:S.pXD});
-  S.rHist.unshift({rd:S.rd,lbl:c.label,bStr:bStr,p:c.p,bal:S.bal,oldBal:oldBal,bets:JSON.parse(JSON.stringify(S.bets)),fly:S.fly,insOn:S.insOn,insOd:S.insOd,insAmt:S.insAmt});
-  tg('📊 【第 '+S.shoe+' 靴 · 第 '+S.rd+' 局结果】\n🎲 开牌: '+c.label+'\n📋 注码: '+bStr+'\n💵 盈亏: '+(c.p>=0?'+'+c.p:c.p)+'\n🏦 余额: '+S.bal,0);
-  S.rd++;S.ph='BET';S.fly=0;S.bets={};S.pZD=0;S.pXD=0;S.insOn=0;S.insAmt=0;curTgt='';vib(40);save();
-}
-function undoLast(){
-  if(!S.rHist.length)return alert('本靴暂无可修改的上一局记录！');
-  if(!confirm('确定退回第 '+S.rHist[0].rd+' 局重新操作吗？'))return;
-  var last=S.rHist.shift();S.lz.pop();
-  S.bal=last.oldBal;S.rd=last.rd;S.bets=last.bets;S.fly=last.fly;S.insOn=last.insOn;S.insOd=last.insOd;S.insAmt=last.insAmt;
-  S.ph='BET';curTgt='';save();
-  var sb=document.getElementById('st-bar');sb.style.background='#7c2d12';sb.style.color='#fed7aa';
-  sb.innerText='✏️ 已退回第 '+S.rd+' 局（注码已恢复）：可直接改注码或点【确认注码】';
-  tg('✏️ 【修改上一局】第 '+S.shoe+' 靴 · 第 '+S.rd+' 局已退回重录，当前余额恢复至: '+S.bal,0);
-}
-function openSet(){document.getElementById('s-shoe').value=S.shoe;document.getElementById('s-rd').value=S.rd;document.getElementById('s-bal').value=S.bal;tog('m-set');}
-function saveSet(){S.shoe=parseInt(document.getElementById('s-shoe').value,10)||1;S.rd=parseInt(document.getElementById('s-rd').value,10)||1;S.bal=parseFloat(document.getElementById('s-bal').value)||10000;tog('m-set');save();tg('⚙️ 【后台参数调整】\n📍 当前进度: 第 '+S.shoe+' 靴 · 第 '+S.rd+' 局\n🏦 调整后余额: '+S.bal,0);}
-function openHist(){
-  var hl=document.getElementById('hist-list'),h='';
-  if(!S.hist||!S.hist.length){hl.innerHTML='<div style="text-align:center;color:#64748b;padding:20px">今日暂无已归档的靴数</div>';}
-  else{S.hist.forEach(function(t,i){var w=Math.round((t.en-t.st)*100)/100,wc=w>=0?'#34d399':'#f87171';h+='<div style="background:#141923;padding:8px;border-radius:8px;margin-bottom:8px;border:1px solid #2e384d;font-size:12px"><div class="row" style="margin-bottom:6px"><b style="color:#38bdf8;font-size:14px">第 '+t.s+' 靴</b><b style="color:'+wc+';font-size:14px">累计: '+(w>=0?'+'+w:w)+'</b></div><div class="row">局数:<input id="hr-'+i+'" class="hinp" style="width:40px" value="'+t.r+'"> 始:<input id="hst-'+i+'" class="hinp" value="'+t.st+'"> 终:<input id="hen-'+i+'" class="hinp" value="'+t.en+'"> <div class="btn b-bl" style="padding:4px 8px" onclick="upHist('+i+')">💾更新</div></div></div>';});hl.innerHTML=h;}
-  tog('m-hist');
-}
-function upHist(i){var t=S.hist[i];t.r=parseInt(document.getElementById('hr-'+i).value,10)||0;t.st=parseFloat(document.getElementById('hst-'+i).value)||0;t.en=parseFloat(document.getElementById('hen-'+i).value)||0;var w=Math.round((t.en-t.st)*100)/100;save();tog('m-hist');openHist();tg('📊 【第 '+t.s+' 靴 · 统计更新】\n▶️ 局数：'+t.r+' 局\n▶️ 初始分：'+t.st+'\n⏹️ 结束分：'+t.en+'\n📈 本靴盈亏：'+(w>=0?'+'+w:w),0);}
-function endShoe(){if(!confirm('确认结束第 '+S.shoe+' 靴并开启新靴吗？'))return;var rp=S.rd>1?S.rd-1:0,w=Math.round((S.bal-S.shSt)*100)/100;S.hist.push({s:S.shoe,r:rp,st:S.shSt,en:S.bal});tg('🏁 【第 '+S.shoe+' 靴结束 · 统计】\n▶️ 局数：'+rp+' 局\n▶️ 初始分：'+S.shSt+'\n⏹️ 结束分：'+S.bal+'\n📈 本靴盈亏：'+(w>=0?'+'+w:w)+'\n✅ 已进入第 '+(S.shoe+1)+' 靴',0);S.shoe++;S.rd=1;S.shSt=S.bal;S.lz=[];S.rHist=[];S.ph='BET';S.bets={};S.fly=0;curTgt='';tog('m-set');save();}
-function newDay(){if(!confirm('确认开启新的一天并清空今日记录吗？'))return;var w=Math.round((S.bal-S.dySt)*100)/100;tg('🌅 【全天总结算】\n▶️ 初始：'+S.dySt+'\n⏹️ 结束：'+S.bal+'\n📈 总盈亏：'+(w>=0?'+'+w:w)+'\n✅ 已重置开启新的一天',0);S.shoe=1;S.rd=1;S.shSt=S.bal;S.dySt=S.bal;S.hist=[];S.lz=[];S.rHist=[];S.ph='BET';S.bets={};S.fly=0;curTgt='';tog('m-set');save();}
-var stCards=['A','2','3','4','5','6','7','8','9','10','J','Q','K','头'],sx=0,sy=0,rSx=0,baseY=0,baseIdx=0;
-var lzWrap=document.getElementById('lz-wrap'),recBox=document.getElementById('rec-box'),nbIco=document.getElementById('nb-ico'),nbVal=document.getElementById('nb-val'),lzBtn=document.getElementById('lz-btn');
-function openSecSuit(suit,cls){secSt=2;stSuit=suit;stIdx=0;nbIco.style.opacity='0.22';nbVal.innerText='A';nbVal.className=cls;nbVal.style.display='flex';lzBtn.classList.add('act');vib(18);}
-function exitSec(){secSt=0;stSuit='';nbIco.style.opacity='1';nbVal.style.display='none';lzBtn.classList.remove('act');}
-lzWrap.addEventListener('touchstart',function(e){if(e.touches.length>1)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
-lzWrap.addEventListener('touchend',function(e){
-  if(e.changedTouches.length>1)return;
-  var ex=e.changedTouches[0].clientX,ey=e.changedTouches[0].clientY,dx=sx-ex,dy=Math.abs(ey-sy);
-  if(dx>35&&dx>dy*1.3){
-    var rect=lzWrap.getBoundingClientRect(),relY=sy-rect.top;
-    if(relY<=rect.height*0.32){openSecSuit('🔴','nv-r');}
-    else if(relY>=rect.height*0.68){openSecSuit('🔵','nv-b');}
-    else if(secSt===2){vib([30,40,30]);exitSec();}
+  if(bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF){
+    return new TextDecoder('utf-8').decode(buffer);
   }
-},{passive:true});
-recBox.addEventListener('touchstart',function(e){if(secSt!==2||e.touches.length>1)return;rSx=e.touches[0].clientX;baseY=e.touches[0].clientY;baseIdx=stIdx;},{passive:true});
-recBox.addEventListener('touchmove',function(e){
-  if(secSt!==2||e.touches.length>1)return;
-  e.preventDefault();
-  var dx=Math.abs(e.touches[0].clientX-rSx),dy=e.touches[0].clientY-baseY;
-  if(Math.abs(dy)>dx){var step=Math.trunc(dy/10),nIdx=Math.max(0,Math.min(13,baseIdx+step));if(nIdx!==stIdx){stIdx=nIdx;nbVal.innerText=stCards[stIdx];vib(8);}}
-},{passive:false});
-function sendSecCard(){if(secSt!==2||!stSuit)return;tg(stSuit+stCards[stIdx],1);vib([60,50,60]);exitSec();}
-ui();
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+  } catch (e) {
+    try {
+      return new TextDecoder('gb18030').decode(buffer);
+    } catch (e2) {
+      return new TextDecoder('gbk').decode(buffer);
+    }
+  }
+}
+
+function parseTxtContent(text, fileName){
+  const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  let newBook = [];
+  let cur = {t: fileName.replace(/\.txt$/i,''), p:[]};
+
+  lines.forEach(l => {
+    const isChapterHeader = /^(第[0-9一二三四五六七八九十百千万零]+[章节回卷集部篇]|Chapter\s*\d+|【第.+?[章节]】)/i.test(l) && l.length < 40;
+    if(isChapterHeader){
+      if(cur.p.length > 0){
+        newBook.push(cur);
+        cur = {t: l, p:[]};
+      } else {
+        cur.t = l;
+      }
+    }else{
+      cur.p.push(l);
+      if(cur.p.length >= 35){
+        newBook.push(cur);
+        cur = {t: '', p:[]};
+      }
+    }
+  });
+  if(cur.p.length > 0) newBook.push(cur);
+  return newBook;
+}
+
+function loadTxtFile(inp){
+  const file = inp.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const text = decodeTxtBuffer(e.target.result);
+    const newBook = parseTxtContent(text, file.name);
+    if(newBook.length){
+      BOOK = newBook;
+      saveBookToDB(BOOK);
+      initNovel(true);
+      window.scrollTo(0, 0);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+loadBookFromDB(saved => {
+  if(saved && saved.length){
+    BOOK = saved;
+  }
+  initNovel(false);
+  updateUI();
+});
 </script>
 </body>
 </html>
