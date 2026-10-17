@@ -1,93 +1,112 @@
 name: Build IPA
-on: [push, workflow_dispatch]
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Compile IPA
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile Native IPA
         run: |
-          mkdir -p Payload/App.app
-          echo "static NSString *const kB64 = @\"$(base64 -i index.html | tr -d '\n')\";" > b64.h
-          printf '%s\n' \
-          '#import <UIKit/UIKit.h>' \
-          '#import <WebKit/WebKit.h>' \
-          '#import <AudioToolbox/AudioToolbox.h>' \
-          '#import "b64.h"' \
-          '@interface VC : UIViewController <WKUIDelegate, WKScriptMessageHandler>' \
-          '@property (strong, nonatomic) WKWebView *wv;' \
-          '@end' \
-          '@implementation VC' \
-          '- (UIStatusBarStyle)preferredStatusBarStyle { return UIStatusBarStyleLightContent; }' \
-          '- (void)viewDidLoad {' \
-          '  [super viewDidLoad];' \
-          '  self.view.backgroundColor = [UIColor colorWithRed:0.07 green:0.09 blue:0.12 alpha:1.0];' \
-          '  WKWebViewConfiguration *cfg = [WKWebViewConfiguration new];' \
-          '  [cfg.userContentController addScriptMessageHandler:self name:@"vib"];' \
-          '  WKUserScript *us = [[WKUserScript alloc] initWithSource:@"navigator.vibrate=function(p){window.webkit.messageHandlers.vib.postMessage(1);};" injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];' \
-          '  [cfg.userContentController addUserScript:us];' \
-          '  self.wv = [[WKWebView alloc] initWithFrame:CGRectZero configuration:cfg];' \
-          '  self.wv.UIDelegate = self; self.wv.opaque = NO;' \
-          '  self.wv.backgroundColor = self.view.backgroundColor;' \
-          '  self.wv.scrollView.bounces = NO;' \
-          '  self.wv.translatesAutoresizingMaskIntoConstraints = NO;' \
-          '  [self.view addSubview:self.wv];' \
-          '  UILayoutGuide *g = self.view.safeAreaLayoutGuide;' \
-          '  [NSLayoutConstraint activateConstraints:@[' \
-          '    [self.wv.topAnchor constraintEqualToAnchor:g.topAnchor],' \
-          '    [self.wv.bottomAnchor constraintEqualToAnchor:g.bottomAnchor],' \
-          '    [self.wv.leadingAnchor constraintEqualToAnchor:g.leadingAnchor],' \
-          '    [self.wv.trailingAnchor constraintEqualToAnchor:g.trailingAnchor]' \
-          '  ]];' \
-          '  NSData *d = [[NSData alloc] initWithBase64EncodedString:kB64 options:0];' \
-          '  NSString *h = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];' \
-          '  [self.wv loadHTMLString:h baseURL:[NSURL URLWithString:@"https://localhost"]];' \
-          '}' \
-          '- (void)userContentController:(WKUserContentController *)u didReceiveScriptMessage:(WKScriptMessage *)m { AudioServicesPlaySystemSound(1519); }' \
-          '- (void)webView:(WKWebView *)w runJavaScriptAlertPanelWithMessage:(NSString *)m initiatedByFrame:(WKFrameInfo *)f completionHandler:(void (^)(void))c {' \
-          '  UIAlertController *a = [UIAlertController alertControllerWithTitle:nil message:m preferredStyle:UIAlertControllerStyleAlert];' \
-          '  [a addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *x){ c(); }]];' \
-          '  [self presentViewController:a animated:YES completion:nil];' \
-          '}' \
-          '- (void)webView:(WKWebView *)w runJavaScriptConfirmPanelWithMessage:(NSString *)m initiatedByFrame:(WKFrameInfo *)f completionHandler:(void (^)(BOOL))c {' \
-          '  UIAlertController *a = [UIAlertController alertControllerWithTitle:nil message:m preferredStyle:UIAlertControllerStyleAlert];' \
-          '  [a addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction *x){ c(NO); }]];' \
-          '  [a addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *x){ c(YES); }]];' \
-          '  [self presentViewController:a animated:YES completion:nil];' \
-          '}' \
-          '@end' \
-          '@interface AppDelegate : UIResponder <UIApplicationDelegate>' \
-          '@property (strong, nonatomic) UIWindow *window;' \
-          '@end' \
-          '@implementation AppDelegate' \
-          '- (BOOL)application:(UIApplication *)app didFinishLaunchingWithOptions:(NSDictionary *)opts {' \
-          '  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];' \
-          '  self.window.rootViewController = [VC new];' \
-          '  [self.window makeKeyAndVisible];' \
-          '  return YES;' \
-          '}' \
-          '@end' \
-          'int main(int argc, char * argv[]) { @autoreleasepool { return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class])); } }' > main.m
-          xcrun --sdk iphoneos clang -arch arm64 main.m -framework UIKit -framework WebKit -framework Foundation -framework AudioToolbox -fobjc-arc -miphoneos-version-min=14.0 -o Payload/App.app/App
-          printf '%s\n' \
-          '<?xml version="1.0" encoding="UTF-8"?>' \
-          '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' \
-          '<plist version="1.0"><dict>' \
-          '<key>CFBundleExecutable</key><string>App</string>' \
-          '<key>CFBundleIdentifier</key><string>com.tz.helper.app</string>' \
-          '<key>CFBundleName</key><string>日常台账助手</string>' \
-          '<key>CFBundleDisplayName</key><string>日常台账助手</string>' \
-          '<key>CFBundleVersion</key><string>1.0</string>' \
-          '<key>CFBundleShortVersionString</key><string>1.0</string>' \
-          '<key>CFBundlePackageType</key><string>APPL</string>' \
-          '<key>LSRequiresIPhoneOS</key><true/>' \
-          '<key>UIDeviceFamily</key><array><integer>1</integer></array>' \
-          '<key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>' \
-          '<key>UILaunchScreen</key><dict/>' \
-          '</dict></plist>' > Payload/App.app/Info.plist
-          codesign -f -s - Payload/App.app
-          zip -qr DailyLedger.ipa Payload
-      - uses: actions/upload-artifact@v4
+          mkdir -p Payload/DailyLedger.app
+          HTML_FILE=$(find . -maxdepth 1 -type f \( -iname "*.html" -o -iname "*.htm" \) | head -n 1)
+          B64_HTML=$(base64 < "$HTML_FILE" | tr -d '\r\n')
+          echo "#define HTML_BASE64 \"$B64_HTML\"" > html_data.h
+
+          echo '#import <UIKit/UIKit.h>' > main.m
+          echo '#import <WebKit/WebKit.h>' >> main.m
+          echo '#import <AudioToolbox/AudioToolbox.h>' >> main.m
+          echo '#import "html_data.h"' >> main.m
+          echo '@interface ViewController : UIViewController <WKScriptMessageHandler>' >> main.m
+          echo '@property (nonatomic, strong) WKWebView *webView;' >> main.m
+          echo '@end' >> main.m
+          echo '@implementation ViewController' >> main.m
+          echo '- (void)viewDidLoad {' >> main.m
+          echo '    [super viewDidLoad];' >> main.m
+          echo '    self.view.backgroundColor = [UIColor blackColor];' >> main.m
+          echo '    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];' >> main.m
+          echo '    WKUserContentController *ucc = [[WKUserContentController alloc] init];' >> main.m
+          echo '    for (NSString *name in @[@"vibrate", @"haptic", @"tap", @"sound", @"bridge", @"ios", @"native", @"feedback"]) {' >> main.m
+          echo '        [ucc addScriptMessageHandler:self name:name];' >> main.m
+          echo '    }' >> main.m
+          echo '    NSString *js = @"window.vibrate = function(){ window.webkit.messageHandlers.vibrate.postMessage(1519); }; navigator.vibrate = window.vibrate; window.triggerHaptic = window.vibrate; try { const orig = window.webkit.messageHandlers; const proxy = new Proxy(orig, { get(t, p) { return t[p] || t.vibrate; } }); Object.defineProperty(window.webkit, \"messageHandlers\", { get: () => proxy }); } catch(e) {}";' >> main.m
+          echo '    WKUserScript *script = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];' >> main.m
+          echo '    [ucc addUserScript:script];' >> main.m
+          echo '    config.userContentController = ucc;' >> main.m
+          echo '    self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:config];' >> main.m
+          echo '    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;' >> main.m
+          echo '    self.webView.opaque = NO;' >> main.m
+          echo '    self.webView.backgroundColor = [UIColor blackColor];' >> main.m
+          echo '    self.webView.scrollView.backgroundColor = [UIColor blackColor];' >> main.m
+          echo '    self.webView.scrollView.bounces = NO;' >> main.m
+          echo '    if (@available(iOS 11.0, *)) {' >> main.m
+          echo '        self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;' >> main.m
+          echo '    }' >> main.m
+          echo '    [self.view addSubview:self.webView];' >> main.m
+          echo '    NSData *data = [[NSData alloc] initWithBase64EncodedString:[NSString stringWithUTF8String:HTML_BASE64] options:NSDataBase64DecodingIgnoreUnknownCharacters];' >> main.m
+          echo '    NSString *html = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];' >> main.m
+          echo '    [self.webView loadHTMLString:html baseURL:[NSURL URLWithString:@"https://localhost"]];' >> main.m
+          echo '}' >> main.m
+          echo '- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {' >> main.m
+          echo '    SystemSoundID soundID = 1519;' >> main.m
+          echo '    if ([message.body isKindOfClass:[NSNumber class]]) {' >> main.m
+          echo '        int val = [message.body intValue];' >> main.m
+          echo '        if (val >= 1000 && val <= 2000) soundID = (SystemSoundID)val;' >> main.m
+          echo '    }' >> main.m
+          echo '    AudioServicesPlaySystemSound(soundID);' >> main.m
+          echo '}' >> main.m
+          echo '- (UIStatusBarStyle)preferredStatusBarStyle { return UIStatusBarStyleLightContent; }' >> main.m
+          echo '@end' >> main.m
+          echo '@interface AppDelegate : UIResponder <UIApplicationDelegate>' >> main.m
+          echo '@property (strong, nonatomic) UIWindow *window;' >> main.m
+          echo '@end' >> main.m
+          echo '@implementation AppDelegate' >> main.m
+          echo '- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {' >> main.m
+          echo '    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];' >> main.m
+          echo '    self.window.rootViewController = [[ViewController alloc] init];' >> main.m
+          echo '    [self.window makeKeyAndVisible];' >> main.m
+          echo '    return YES;' >> main.m
+          echo '}' >> main.m
+          echo '@end' >> main.m
+          echo 'int main(int argc, char * argv[]) {' >> main.m
+          echo '    @autoreleasepool { return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class])); }' >> main.m
+          echo '}' >> main.m
+
+          SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
+          clang -fobjc-arc -isysroot "$SDK_PATH" -arch arm64 -miphoneos-version-min=14.0 \
+            -framework UIKit -framework Foundation -framework WebKit -framework AudioToolbox -framework CoreGraphics \
+            main.m -o Payload/DailyLedger.app/DailyLedger
+
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > Payload/DailyLedger.app/Info.plist
+          echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> Payload/DailyLedger.app/Info.plist
+          echo '<plist version="1.0"><dict>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>CFBundleExecutable</key><string>DailyLedger</string>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>CFBundleIdentifier</key><string>com.daily.ledger</string>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>CFBundleName</key><string>DailyLedger</string>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>CFBundleDisplayName</key><string>DailyLedger</string>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>CFBundleVersion</key><string>1.0</string>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>CFBundleShortVersionString</key><string>1.0</string>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>CFBundlePackageType</key><string>APPL</string>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>LSRequiresIPhoneOS</key><true/>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>MinimumOSVersion</key><string>14.0</string>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>UIDeviceFamily</key><array><integer>1</integer><integer>2</integer></array>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>UILaunchScreen</key><dict/>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>UIRequiredDeviceCapabilities</key><array><string>arm64</string></array>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>' >> Payload/DailyLedger.app/Info.plist
+          echo '<key>NSAppTransportSecurity</key><dict><key>NSAllowsArbitraryLoads</key><true/></dict>' >> Payload/DailyLedger.app/Info.plist
+          echo '</dict></plist>' >> Payload/DailyLedger.app/Info.plist
+
+          codesign -f -s - Payload/DailyLedger.app
+          zip -r DailyLedger.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
         with:
-          name: IPA-Package
+          name: DailyLedger-IPA
           path: DailyLedger.ipa
