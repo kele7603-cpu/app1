@@ -1,503 +1,3540 @@
+
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>日常台账助手</title>
+<title>手机竖屏精算终端 4.0</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-html,body{height:100%;overflow:hidden}
-body{background:#12161f;color:#e2e8f0;font-family:-apple-system,sans-serif;padding:54px 5px 8px 5px;padding-top:max(calc(env(safe-area-inset-top,0px) + 6px),54px);padding-bottom:max(calc(env(safe-area-inset-bottom,0px) * 0.35),6px);font-size:12px;display:flex;flex-direction:column}
-.box{background:#1e2533;border:1px solid #2e384d;border-radius:7px;padding:6px;margin-bottom:5px;position:relative;flex-shrink:0}
-.row{display:flex;justify-content:space-between;align-items:center;gap:4px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:5px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:5px}
-.btn{background:#2d3748;color:#fff;border:1px solid #4a5568;padding:6px 4px;border-radius:5px;font-weight:700;font-size:12px;text-align:center;cursor:pointer;white-space:nowrap}
-.btn:active{transform:scale(.95)}
-.b-bl{background:#2563eb;border-color:#3b82f6}.b-or{background:#d97706;border-color:#f59e0b}
-.b-rd{background:#dc2626;border-color:#ef4444}.b-gn{background:#059669;border-color:#10b981}
-.lock{opacity:.28;pointer-events:none}
-.st-bar{font-weight:900;text-align:center;height:38px;line-height:36px;padding:0 8px;border-radius:6px;font-size:13px;margin-bottom:5px;border:1px solid #475569;background:#1e293b;color:#fbbf24;flex-shrink:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.bet-layout{display:flex;gap:6px;align-items:stretch;height:132px}
-.bet-left{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:4px}
-.chip-col{width:54px;display:flex;flex-direction:column;justify-content:space-between;gap:4px}
-.chip{flex:1;border-radius:6px;background:#0f172a;border:1.5px solid #475569;display:flex;justify-content:center;align-items:center;font-weight:900;font-size:13px;color:#fbbf24;cursor:pointer}
-.chip:active{background:#451a03;border-color:#fbbf24;transform:scale(.94)}
-.card{background:#222b3d;border:2px solid #334155;border-radius:6px;padding:0 2px;text-align:center;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;height:40px;overflow:hidden}
-.card span{font-size:12px;color:#cbd5e1;display:block;font-weight:800;line-height:1.15}
-.card b{display:block;font-size:13px;color:#64748b;font-weight:900;line-height:1.15}
-.card b:empty{display:none}
-.c-lg{height:52px}.c-lg span{font-size:15px}.c-lg b{font-size:18px}
-.c-sm{height:32px}.c-sm span{font-size:11px}.c-sm b{font-size:12px}
-.on-b{background:rgba(220,38,38,.22);border-color:#ef4444}.on-b b{color:#f87171}
-.on-p{background:rgba(37,99,235,.22);border-color:#3b82f6}.on-p b{color:#60a5fa}
-.on-s{background:rgba(245,158,11,.22);border-color:#f59e0b}.on-s b{color:#fbbf24}
-.sel-tgt{border-color:#fff!important;box-shadow:0 0 6px rgba(255,255,255,.45)}
-.res-main-row .btn{padding:10px 2px;font-size:14px}
-.side-res-box{margin-top:6px;padding:5px;background:#161c28;border:1px solid #2e384d;border-radius:6px}
-.side-res-box .g3{margin-top:0;gap:5px}.side-res-box .g3+.g3{margin-top:5px}.side-res-box .btn{padding:6px 2px;font-size:12px}
-#lz-wrap{position:relative;overflow:hidden;touch-action:none}
-.lz-hdr{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#94a3b8;margin-bottom:3px}
-.lz-hdr-left{font-weight:800;color:#64748b;min-width:36px}.lz-hdr-right{min-width:36px}
-.lz-hdr-center{display:flex;align-items:center;justify-content:center;gap:2px;font-weight:700}
-.ico-wrap{display:inline-flex;align-items:center;justify-content:center;font-size:12px}
-.s-dot{display:inline-block;width:7px;text-align:center;font-weight:900;font-size:14px;line-height:1;color:#cbd5e1;opacity:0}
-.s-dot.on{opacity:1}
-.lz-grid{display:grid;grid-template-rows:repeat(6,1fr);grid-template-columns:repeat(14,1fr);grid-auto-flow:column;height:104px;background:#0f172a;border:1px solid #334155;border-radius:5px;padding:2px;gap:1px}
-.lz-c{background:#161f30;display:flex;justify-content:center;align-items:center;position:relative;border-radius:2px}
-.bead{width:15px;height:15px;border-radius:50%;font-size:9px;font-weight:900;display:flex;justify-content:center;align-items:center;color:#fff;position:relative}
-.bd-B{background:#dc2626;border:1px solid #f87171}.bd-P{background:#2563eb;border:1px solid #60a5fa}.bd-T{background:#059669;border:1px solid #34d399}
-.p-zd{position:absolute;top:-1px;left:-1px;width:4px;height:4px;background:#ef4444;border-radius:50%;border:1px solid #fff}
-.p-xd{position:absolute;bottom:-1px;right:-1px;width:4px;height:4px;background:#3b82f6;border-radius:50%;border:1px solid #fff}
-#rec-box{flex:1;display:flex;flex-direction:column;min-height:0;margin-bottom:0}
-#rec-hdr{padding:2px 0;margin-bottom:3px;flex-shrink:0;position:relative}
-.r-list{flex:1;overflow-y:auto;background:#0f172a;border:1px solid #334155;border-radius:5px;padding:4px 6px;font-size:11px;touch-action:pan-y}
-.r-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #1e293b;color:#94a3b8}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;padding:14px;z-index:200}
-#m-ins{align-items:flex-start;padding-top:11vh}
-.inp{width:100%;padding:6px;border-radius:6px;border:1px solid #475569;background:#0f172a;color:#fbbf24;font-size:14px;font-weight:800;text-align:center;margin:3px 0}
-.hinp{width:50px;background:#0f172a;color:#fbbf24;border:1px solid #475569;text-align:center;border-radius:4px;padding:2px;font-weight:700}
-#odds-box{gap:8px;margin:10px 0 12px 0}#odds-box .btn{padding:10px 4px;font-size:13px}
+  :root {
+    --bg-main: #dedbd4;
+    --panel-bg: #f6f5f1;
+    --panel-border: #cfccc4;
+    --red-card: #df564e;
+    --blue-card: #4885ed;
+    --pool-red: #ebd0ce;
+    --pool-blue: #cedceb;
+    --text-dark: #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  html, body {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--bg-main);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+    color: var(--text-dark);
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  /* 顶部非模态防误触提示横幅 */
+  #toast-banner {
+    position: fixed; top: 56px; left: 50%; transform: translateX(-50%) translateY(-130px);
+    background: #1e293b; color: #fff; padding: 6px 12px; border-radius: 8px;
+    font-size: 11.5px; font-weight: 800; box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    border: 1.5px solid #f59e0b; z-index: 10000; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none; white-space: nowrap; max-width: 94vw; overflow: hidden; text-overflow: ellipsis;
+  }
+  #toast-banner.show { transform: translateX(-50%) translateY(0); }
+  #toast-banner.err { background: #7f1d1d; border-color: #f87171; }
+  #toast-banner.ok { background: #064e3b; border-color: #34d399; }
+
+  /* 手机四层主容器：第3、4层固定高度整体下移，把所有弹性空间全部留给第2层【本靴记录】 */
+  .mobile-shell {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: max(3px, env(safe-area-inset-top)) 4px max(4px, env(safe-area-inset-bottom)) 4px;
+    gap: 3.5px;
+  }
+
+  /* ==================== 第 1 层：双行顶栏 + 右侧跨两层大确认键（绝不遮挡） ==================== */
+  .layer-1 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 58px;
+    gap: 4px;
+    background: #1e2430;
+    color: #f8fafc;
+    border-radius: 8px;
+    padding: 4px 5px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.14);
+  }
+  .l1-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 3.5px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .l1-row1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    font-weight: 900;
+    background: #0f172a;
+    padding: 2.5px 7px;
+    border-radius: 5px;
+    border: 1px solid #334155;
+    white-space: nowrap;
+  }
+  .l1-row2 {
+    display: grid;
+    grid-template-columns: auto auto repeat(5, 1fr);
+    align-items: center;
+    gap: 2.5px;
+    width: 100%;
+  }
+  .m-check {
+    display: flex; align-items: center; gap: 2px;
+    font-size: 10px; font-weight: 800; background: #0f172a;
+    height: 22px; padding: 0 4px; border-radius: 4px; border: 1px solid #334155; white-space: nowrap;
+  }
+  .m-check input { width: 12px; height: 12px; accent-color: #2563eb; }
+  .reb-box {
+    display: flex; align-items: center; gap: 1px;
+    font-size: 10px; font-weight: 800; background: #0f172a;
+    height: 22px; padding: 0 3px; border-radius: 4px; border: 1px solid #334155; white-space: nowrap;
+  }
+  .reb-inp {
+    width: 27px; height: 16px; background: #1e293b; color: #38bdf8;
+    border: 1px solid #475569; border-radius: 3px; text-align: center;
+    font-weight: 800; font-size: 10px;
+  }
+  .tb-mini-btn {
+    height: 22px; padding: 0 2px; border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.18); background: #334155;
+    color: #fff; font-size: 10px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    white-space: nowrap; cursor: pointer; min-width: 0;
+  }
+  .tb-mini-btn:active { transform: scale(0.95); }
+  .tb-mini-btn.blue { background: #2563eb; border-color: #60a5fa; }
+  .tb-mini-btn.red { background: #dc2626; border-color: #f87171; }
+  .tb-mini-btn.purple { background: #6d28d9; border-color: #a78bfa; }
+  .tb-mini-btn.amber { background: #d97706; border-color: #fbbf24; }
+
+  /* 跨两层高度的大确认键 */
+  .btn-confirm-tall {
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    border: 1.5px solid #86efac;
+    border-radius: 7px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.15;
+    box-shadow: 0 2px 6px rgba(22,163,74,0.35);
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  .btn-confirm-tall.warn-step {
+    background: linear-gradient(180deg, #f59e0b, #d97706);
+    border-color: #fde68a;
+    font-size: 11px;
+  }
+  .btn-confirm-tall:active { transform: scale(0.95); }
+
+  /* ==================== 第 2 层：自适应弹性高度（把iPhone 17/Pro Max多余空间全给本靴记录） ==================== */
+  .layer-2 {
+    flex: 1;
+    min-height: 106px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+    gap: 4px;
+  }
+  .l2-history {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 3px 5px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .l2-hdr {
+    font-size: 10px; font-weight: 800; color: #475569;
+    border-bottom: 1px solid #e2dfd9; padding-bottom: 2px; margin-bottom: 2px;
+    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+  }
+  .rec-scroll {
+    flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2.5px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .rec-item {
+    background: #fff; border: 1px solid #e5e2dc; border-radius: 4px;
+    padding: 2px 4px; font-size: 9.5px; line-height: 1.22;
+    display: flex; flex-direction: column; gap: 1px; flex-shrink: 0;
+  }
+  .rec-top { display: flex; justify-content: space-between; align-items: center; font-weight: 800; }
+  .rec-cards { display: flex; align-items: center; gap: 3px; color: #334155; font-weight: 700; flex-wrap: wrap; font-size: 9px; }
+  .dot-r, .dot-b { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 1px; vertical-align: 0px; }
+  .dot-r { background: var(--red-card); }
+  .dot-b { background: var(--blue-card); }
+  .hit-tag { font-size: 8.5px; padding: 0 2.5px; border-radius: 3px; font-weight: 800; }
+  .hit-tag.win { background: #dcfce7; color: #15803d; }
+  .hit-tag.lose { background: #fee2e2; color: #b91c1c; }
+  .mini-link { font-size: 9px; color: #2563eb; background: #dbeafe; padding: 0 4px; border-radius: 3px; font-weight: 800; cursor: pointer; }
+
+  .l2-stats {
+    background: #1e2430;
+    color: #f8fafc;
+    border-radius: 8px;
+    padding: 4px 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    font-size: 9.5px;
+  }
+  .st-row { display: flex; justify-content: space-between; align-items: center; line-height: 1.1; }
+  .st-lbl { color: #cbd5e1; font-weight: 600; }
+  .st-val { font-family: "SF Mono", Menlo, Consolas, monospace; font-weight: 800; }
+
+  /* ==================== 第 3 层：固定锁定·颜色区与牌池同版型·用牌区等比放大居中 ==================== */
+  .layer-3 {
+    --p-w: calc((100vw - 18px - 24px) / 13);
+    --p-h: 39px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 5px 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  /* 1. 颜色行：上下增加留白，飞/预/R/B及6色槽与下方牌池版型大小100%一致，2张一组明显隔开 */
+  .color-bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 3px 0;
+  }
+  .c-pair {
+    display: flex;
+    gap: 2px;
+    margin-right: 9px;
+  }
+  .c-pair:last-of-type {
+    margin-right: 0;
+  }
+  .c-slot, .rb-src {
+    width: var(--p-w);
+    height: var(--p-h);
+    border-radius: 5px;
+    background: #e6e4df;
+    border: 1.5px solid #ccc8be;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14.5px; font-weight: 900; color: #1e293b;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .c-slot.fly-slot {
+    border-style: dashed; border-color: #94a3b8; font-size: 13px; color: #64748b;
+    margin-right: auto; /* 飞牌居左，其余整体偏右对称 */
+  }
+  .c-slot.next-fly-vert {
+    border-style: dashed; border-color: #94a3b8; font-size: 11.5px; color: #64748b;
+    margin-left: 6px;
+  }
+  .c-slot.red { background: var(--red-card); border-color: #c53932; color: #fff; }
+  .c-slot.blue { background: var(--blue-card); border-color: #2b67ce; color: #fff; }
+  .c-slot .check-mark {
+    font-size: 11px; font-weight: 900; color: #16a34a;
+    background: rgba(255,255,255,0.92); width: 16px; height: 16px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .rb-btn-group { display: flex; gap: 3px; margin-left: 10px; padding-left: 8px; border-left: 1.5px solid #dfdcd5; }
+  .rb-src {
+    font-size: 15px; font-weight: 900; color: #fff;
+    box-shadow: 0 1.5px 3px rgba(0,0,0,0.18);
+  }
+  .rb-src:active { transform: scale(0.92); }
+  .rb-src.red-src { background: var(--red-card); border-color: #c53932; }
+  .rb-src.blue-src { background: var(--blue-card); border-color: #2b67ce; }
+
+  /* 2. 13列牌池：与颜色区同宽同高，牌值偏上醒目，余数紧贴底部微字 */
+  .pool-section { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+  .pool-row { display: grid; grid-template-columns: repeat(13, var(--p-w)); gap: 2px; justify-content: space-between; width: 100%; }
+  .p-card {
+    width: var(--p-w);
+    height: var(--p-h);
+    border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.1);
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding-top: 4px;
+  }
+  .p-card:active { transform: scale(0.93); }
+  .p-card.red-pool { background: var(--pool-red); color: #1e293b; }
+  .p-card.blue-pool { background: var(--pool-blue); color: #1e293b; }
+  .p-card.zero-gray { background: #d6d3cd !important; color: #9ca3af !important; opacity: 0.55; }
+  .p-card .c-rank { font-size: 15.5px; font-weight: 900; line-height: 1; pointer-events: none; }
+  .p-card .c-num {
+    position: absolute; bottom: 1px;
+    font-size: 7.5px; font-weight: 700; color: #64748b; opacity: 0.88;
+    line-height: 1; pointer-events: none;
+  }
+
+  /* 3. 用牌区：往中间靠拢，卡片严格按牌池同比例放大(1.22倍)，不变形、方便对牌 */
+  .hands-pure-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 1px 0;
+  }
+  .hand-group {
+    background: #ebe8e0;
+    border: 1.5px solid #d5d1c7;
+    border-radius: 8px;
+    padding: 3px 10px 5px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5px;
+  }
+  .hand-hdr { font-size: 11.5px; font-weight: 900; color: #1e293b; }
+  .hand-slots { display: flex; gap: 5px; justify-content: center; }
+  .u-slot {
+    width: calc(var(--p-w) * 1.22);
+    height: calc(var(--p-h) * 1.22);
+    border-radius: 6px;
+    background: #f7f6f2;
+    border: 1.5px solid #cbd5e1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18.5px; font-weight: 900;
+  }
+  .u-slot.red-card { background: var(--red-card); border-color: #c53932; color: #fff; }
+  .u-slot.blue-card { background: var(--blue-card); border-color: #2b67ce; color: #fff; }
+  .u-slot.locked-gray { background: #dedbd3 !important; border-color: #c5c1b8 !important; color: #78716c !important; border-style: dotted; font-size: 13px; }
+  .c-slot.drag-over, .u-slot.drag-over { outline: 2.5px solid #111; transform: scale(1.06); }
+
+  /* ==================== 第 4 层：死锁宽高比例，左栏三段EV与2位小数完整显示 ==================== */
+  .layer-4 {
+    height: 252px;
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 30.8% minmax(0, 1fr);
+    gap: 3.5px;
+  }
+
+  /* 第4层左列：紧凑内边距，确保三段EV与两位小数完整显示绝不截断 */
+  .l4-left {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 3px 2.5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    overflow: hidden;
+    gap: 2px;
+  }
+  /* 结果提示区：未出结果前空白，出结果后仅简明显示点数 */
+  .verdict-panel {
+    height: 35px;
+    border-radius: 6px;
+    background: #eceae3;
+    border: 1px solid #d5d1c8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 3px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .verdict-panel.win-banker { background: #dc2626; border-color: #991b1b; color: #fff; }
+  .verdict-panel.win-player { background: #2563eb; border-color: #1e40af; color: #fff; }
+  .verdict-panel.win-tie { background: #16a34a; border-color: #15803d; color: #fff; }
+  .vp-title { font-size: 12px; font-weight: 900; line-height: 1.1; }
+  .vp-sub { font-size: 8.5px; font-weight: 800; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+  .data-block {
+    background: #fff;
+    border: 1px solid #e5e2dc;
+    border-radius: 5px;
+    padding: 2px 2.5px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .db-title { font-size: 8px; font-weight: 800; color: #64748b; line-height: 1.1; }
+  .db-mono {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 8.2px; font-weight: 800;
+    letter-spacing: -0.45px;
+    white-space: nowrap;
+    line-height: 1.22;
+  }
+  .ev-neg { color: #c83e37; }
+  .ev-pos { color: #15803d; background: #dcfce7; padding: 0 1px; border-radius: 2px; }
+  .data-bot-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 0 1px;
+    white-space: nowrap;
+  }
+
+  /* 第4层右列：所有框死锁固定网格尺寸，绝不挤压 */
+  .l4-right {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 4px;
+    display: grid;
+    grid-template-rows: 98px 30px 1fr;
+    gap: 3.5px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* 右上：左闲、中[两行清晰保护提示+保护框]、右庄 */
+  .main-bet-zone {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr) minmax(0, 1fr);
+    gap: 3.5px;
+    height: 100%;
+  }
+  .ins-col-wrap {
+    display: grid;
+    grid-template-rows: 34px 1fr;
+    gap: 2.5px;
+    min-width: 0;
+    height: 100%;
+  }
+  /* 保护提示框：严格分两行（第1行：买不买 + EV | 第2行：几赔几 + 牌型） */
+  .lamp-bar {
+    height: 34px;
+    border-radius: 6px;
+    background: #e5e3dc;
+    border: 1.5px solid #cfccc4;
+    padding: 2px 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 9.5px;
+    font-weight: 900;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .lamp-bar.buy { background: #16a34a; border-color: #15803d; color: #fff; }
+  .lamp-bar.nobuy { background: #dc2626; border-color: #b91c1c; color: #fff; }
+  .lamp-bar.forbid { background: #d97706; border-color: #b45309; color: #fff; }
+  .lamp-r1, .lamp-r2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+  .lamp-r2 { font-size: 9px; opacity: 0.94; }
+
+  .main-box {
+    background: #eceae4;
+    border: 1.5px solid #d5d2c9;
+    border-radius: 7px;
+    padding: 3px 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    min-width: 0;
+    overflow: hidden;
+    height: 100%;
+  }
+  .main-box.ins-flat { padding: 2px 4px; }
+  .main-box.selected-box, .bet-card.selected-box {
+    border-color: #2563eb;
+    background: #eff6ff;
+    box-shadow: inset 0 0 0 1px rgba(37,99,235,0.25);
+  }
+  .main-box.has-bet, .bet-card.has-bet {
+    background: #fef9c3;
+    border-color: #eab308;
+  }
+  .mb-hdr { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 900; white-space: nowrap; }
+  .mb-amt {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 17px; font-weight: 900; text-align: center; color: #0f172a;
+    line-height: 1; min-height: 17px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .main-box.ins-flat .mb-amt { font-size: 14px; min-height: 14px; }
+  .mb-lock-sub {
+    font-size: 8px; color: #b45309; background: rgba(254,243,199,0.9);
+    border-radius: 3px; padding: 0 2px; text-align: center; font-weight: 800;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-height: 11px; line-height: 11px;
+  }
+
+  /* 右中：单横排居中筹码栏 + 全清 */
+  .chip-strip {
+    height: 30px;
+    background: #e5e2dc;
+    border: 1px solid #cfccc4;
+    border-radius: 6px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px;
+  }
+  .m-chip {
+    width: 25px; height: 25px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255,255,255,0.85);
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 9.5px; font-weight: 900; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .m-chip:active { transform: scale(0.9); }
+  .chip-5 { background: #dc2626; }
+  .chip-10 { background: #16a34a; }
+  .chip-50 { background: #2563eb; }
+  .chip-100 { background: #1e293b; }
+  .chip-500 { background: #7e22ce; }
+  .chip-1000 { background: #d97706; }
+  .btn-clear-all {
+    height: 22px; padding: 0 5px; border-radius: 4px;
+    border: 1px solid #cbd5e1; background: #fff; color: #dc2626;
+    font-size: 9.5px; font-weight: 900; cursor: pointer; white-space: nowrap;
+  }
+
+  /* 右下：8项旁注 (2×4 死锁等宽等高矩阵) */
+  .side-matrix {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 3px;
+    height: 100%;
+  }
+  .bet-card {
+    background: #eceae4;
+    border: 1.5px solid #d5d2c9;
+    border-radius: 6px;
+    padding: 2px 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .bc-top { display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; font-weight: 900; white-space: nowrap; }
+  .bc-ev { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.5px; font-weight: 800; color: #64748b; letter-spacing: -0.3px; }
+  .mb-hdr .bc-ev { font-size: 10px; }
+  .bc-ev.neg { color: #dc2626; }
+  .bc-ev.pos { color: #15803d; background: #dcfce7; padding: 0 1.5px; border-radius: 2px; }
+  .bc-amt {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px; font-weight: 900; text-align: center; color: #0f172a;
+    line-height: 1; min-height: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* 推荐条：无推荐时 visibility:hidden 保持框高度一动不动，有推荐时才显现 */
+  .bc-rec-btn {
+    height: 14px; border-radius: 3px;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.5px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    white-space: nowrap; overflow: hidden;
+    visibility: hidden;
+  }
+  .main-box .bc-rec-btn { height: 16px; font-size: 9px; }
+  .bc-rec-btn.hot { visibility: visible; background: #16a34a; color: #fff; }
+  .bc-rec-btn.forbid-btn { visibility: visible; background: #fef3c7; color: #b45309; border: 1px solid #f59e0b; }
+
+  /* 弹窗通用样式 */
+  .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 8px; }
+  .modal-box { width: 100%; max-width: 560px; max-height: 91dvh; background: #faf8f5; border-radius: 12px; border: 1px solid #d4cfc5; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.35); }
+  .modal-head { padding: 8px 12px; background: #1e2430; color: #fff; font-weight: 800; font-size: 12.5px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .modal-body { padding: 9px; overflow-y: auto; display: flex; flex-direction: column; gap: 7px; font-size: 11px; -webkit-overflow-scrolling: touch; }
+  .modal-foot { padding: 7px 10px; background: #ebe7df; display: flex; justify-content: space-between; align-items: center; gap: 5px; flex-wrap: wrap; flex-shrink: 0; }
+  .odds-group-title { font-weight: 800; color: #1d4ed8; border-bottom: 1px solid #e2ddd3; padding-bottom: 2px; margin-bottom: 3px; font-size: 11px; }
+  .odds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .odds-item { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #dcd7cd; border-radius: 5px; padding: 3px 5px; font-size: 10px; font-weight: 700; }
+  .odds-item input, .odds-item select { width: 50px; border: 1px solid #bbb; border-radius: 4px; text-align: center; font-weight: 800; font-size: 10.5px; padding: 1px 0; }
+
+  /* 精细大数据复盘表格样式 */
+  .rp-table { width: 100%; border-collapse: collapse; font-size: 9.8px; background: #fff; border-radius: 6px; overflow: hidden; }
+  .rp-table th { background: #1e2430; color: #fff; padding: 4px 3px; text-align: center; font-weight: 800; white-space: nowrap; }
+  .rp-table td { padding: 3.5px 3px; border-bottom: 1px solid #e5e2dc; text-align: center; }
+  .rp-table td:first-child { text-align: left; font-weight: 800; }
+
+  #drag-ghost { position: fixed; width: 38px; height: 50px; border-radius: 6px; pointer-events: none; z-index: 9999; display: none; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: #fff; opacity: 0.92; box-shadow: 0 5px 14px rgba(0,0,0,0.35); transform: translate(-50%, -50%); }
+  #drag-ghost.red { background: var(--red-card); }
+  #drag-ghost.blue { background: var(--blue-card); }
+  #drag-ghost.card { background: #1e293b; }
 </style>
 </head>
 <body>
-<div class="box row" style="padding:5px 6px;flex-wrap:nowrap">
-  <div onclick="tapSec()" style="cursor:pointer;min-width:0">
-    <div id="rd-txt" style="font-size:10px;color:#94a3b8;font-weight:800">📍 第 1 靴 · 第 1 局</div>
-    <div style="display:flex;align-items:baseline;gap:5px;white-space:nowrap">
-      <b id="bal-txt" style="font-size:17px;font-weight:900;color:#fbbf24">10,000</b>
-      <span id="top-pl" style="font-size:11px;font-weight:800;color:#34d399">本靴: 0</span>
-    </div>
-  </div>
-  <div class="row" style="gap:3px;flex-shrink:0">
-    <div class="btn" style="background:#3b1d5f;border-color:#9333ea;padding:5px 6px;font-size:11px" onclick="openHist()">📊统计</div>
-    <div class="btn" style="padding:5px 6px;font-size:11px" onclick="openSet()">⚙️参数</div>
-    <div class="btn b-rd" style="padding:5px 6px;font-size:11px" onclick="undoLast()">✏️修改上局</div>
-  </div>
-</div>
-<div id="st-bar" class="st-bar">⚪ 第 1 局等待下注：请先点击下方【下注区域】</div>
-<div class="box">
-  <div id="bet-area" class="bet-layout">
-    <div class="bet-left">
-      <div class="g2" style="margin-top:0">
-        <div class="card c-lg" id="c-B" onclick="selTgt('B')"><span>🔴 庄</span><b id="v-B"></b></div>
-        <div class="card c-lg" id="c-P" onclick="selTgt('P')"><span>🔵 闲</span><b id="v-P"></b></div>
+
+<div id="toast-banner">⚠️ 提示信息</div>
+
+<div class="mobile-shell">
+  <!-- ==================== 第 1 层：双行顶栏 + 右侧跨两层大确认键（绝不遮挡） ==================== -->
+  <div class="layer-1">
+    <div class="l1-left">
+      <div class="l1-row1">
+        <span id="top-shoe-info" style="color:#94a3b8;">第1靴·第1手</span>
+        <span>总:<b id="top-balance" style="color:#fbbf24;margin-left:2px;">20,000</b></span>
+        <span id="top-shoe-pl" style="color:#4ade80;">本靴:+0</span>
       </div>
-      <div class="g4" style="margin-top:0">
-        <div class="card" id="c-L" onclick="selTgt('L')"><span>龙七</span><b id="v-L"></b></div>
-        <div class="card" id="c-X" onclick="selTgt('X')"><span>熊八</span><b id="v-X"></b></div>
-        <div class="card" id="c-XH" onclick="selTgt('XH')"><span>小虎</span><b id="v-XH"></b></div>
-        <div class="card" id="c-DH" onclick="selTgt('DH')"><span>大虎</span><b id="v-DH"></b></div>
-      </div>
-      <div class="g3" style="margin-top:0">
-        <div class="card c-sm" id="c-ZD" onclick="selTgt('ZD')"><span>庄对</span><b id="v-ZD"></b></div>
-        <div class="card c-sm" id="c-XD" onclick="selTgt('XD')"><span>闲对</span><b id="v-XD"></b></div>
-        <div class="card c-sm" id="c-T" onclick="selTgt('T')"><span>和局</span><b id="v-T"></b></div>
+      <div class="l1-row2">
+        <label class="m-check">
+          <input type="checkbox" id="chk-fly-priority" onchange="toggleFlyPriority(this.checked)">
+          <span>飞牌</span>
+        </label>
+        <div class="reb-box">
+          <span>返</span>
+          <input type="number" step="0.1" class="reb-inp" id="top-rebate-inp" value="1.3" onchange="onQuickRebateChange(this.value)">
+          <span>%</span>
+        </div>
+        <button class="tb-mini-btn blue" id="btn-new-shoe" onclick="archiveAndStartNewShoe()">新靴</button>
+        <button class="tb-mini-btn red" id="btn-reset-day" onclick="resetAllTodayLedger()">重置</button>
+        <button class="tb-mini-btn purple" onclick="openReplayModal('today')">复盘</button>
+        <button class="tb-mini-btn amber" onclick="openHistoryDaysModal()">账本</button>
+        <button class="tb-mini-btn" onclick="openSettingsModal()">⚙️</button>
       </div>
     </div>
-    <div class="chip-col">
-      <div class="chip" onclick="addChip(10)">+10</div>
-      <div class="chip" onclick="addChip(50)">+50</div>
-      <div class="chip" onclick="addChip(100)">+100</div>
-      <div class="chip" onclick="addChip(500)">+500</div>
-      <div class="chip" onclick="addChip(1000)">+1K</div>
+    <button class="btn-confirm-tall" id="btn-confirm-hand" onclick="confirmHandRecord()">
+      <span id="confirm-icon">✅</span>
+      <span id="confirm-txt">确 认</span>
+    </button>
+  </div>
+
+  <!-- ==================== 第 2 层：弹性增高本靴记录(可显示多条) + 右单列统计 ==================== -->
+  <div class="layer-2">
+    <div class="l2-history">
+      <div class="l2-hdr">
+        <span>📋 本靴记录 <b id="rec-count-tag" style="color:#2563eb;">(0手)</b></span>
+        <span id="status-tip" style="color:#0284c7;font-size:9.5px;"></span>
+      </div>
+      <div class="rec-scroll" id="record-list"></div>
+    </div>
+
+    <div class="l2-stats" onclick="openReplayModal('today')" style="cursor:pointer;" title="点击打开大数据深度复盘">
+      <div class="st-row"><span class="st-lbl">此靴主项:</span><span class="st-val" id="st-shoe-main">0</span></div>
+      <div class="st-row"><span class="st-lbl">此靴保护:</span><span class="st-val" id="st-shoe-ins">0</span></div>
+      <div class="st-row"><span class="st-lbl">此靴旁项:</span><span class="st-val" id="st-shoe-side">0</span></div>
+      <div class="st-row"><span class="st-lbl">此靴返点:</span><span class="st-val" id="st-shoe-reb" style="color:#38bdf8;">+0</span></div>
+      <div class="st-row" style="border-top:1px dashed #334155;padding-top:1px;"><span class="st-lbl" style="color:#fbbf24;font-weight:800;">此靴净值:</span><span class="st-val" id="st-shoe-net" style="color:#fbbf24;">0</span></div>
+      <div class="st-row"><span class="st-lbl" style="color:#4ade80;font-weight:800;">今日净值:</span><span class="st-val" id="st-day-net" style="color:#4ade80;">0</span></div>
+      <div class="st-row"><span class="st-lbl">今日返点:</span><span class="st-val" id="st-day-reb" style="color:#38bdf8;">+0</span></div>
     </div>
   </div>
-  <div class="row" style="margin-top:5px;padding-top:4px;border-top:1px dashed #2e384d;height:24px">
-    <span style="font-size:11px;color:#94a3b8;white-space:nowrap">💵 合计: <b id="tot-txt" style="color:#38bdf8;font-size:13px">0</b></span>
-    <span id="sub-tag" style="font-size:11px;font-weight:800;color:#fde68a;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"></span>
-    <div id="btn-clr" class="btn" style="padding:3px 8px;font-size:10px;background:#475569" onclick="clrBets()">🗑️ 清空重选</div>
+
+  <!-- ==================== 第 3 层：统一立状卡片颜色区 + 13列牌池 + 纯净用牌区 ==================== -->
+  <div class="layer-3">
+    <!-- 颜色行：飞牌居左，其余6槽+R/B+立状下轮预备整体靠右对称，全部同尺寸 -->
+    <div class="color-bar">
+      <div class="c-slot fly-slot" data-cslot="fly" id="slot-fly"><span id="fly-content">飞</span></div>
+      <div class="c-pair">
+        <div class="c-slot" data-cslot="0" id="slot-0"><span id="cmark-0"></span></div>
+        <div class="c-slot" data-cslot="1" id="slot-1"><span id="cmark-1"></span></div>
+      </div>
+      <div class="c-pair">
+        <div class="c-slot" data-cslot="2" id="slot-2"><span id="cmark-2"></span></div>
+        <div class="c-slot" data-cslot="3" id="slot-3"><span id="cmark-3"></span></div>
+      </div>
+      <div class="c-pair">
+        <div class="c-slot" data-cslot="4" id="slot-4"><span id="cmark-4"></span></div>
+        <div class="c-slot" data-cslot="5" id="slot-5"><span id="cmark-5"></span></div>
+      </div>
+      <div class="rb-btn-group">
+        <div class="rb-src red-src" id="src-red" data-color="red">R</div>
+        <div class="rb-src blue-src" id="src-blue" data-color="blue">B</div>
+      </div>
+      <div class="c-slot next-fly-vert" data-cslot="next_fly" id="slot-next-fly">
+        <span id="next-fly-content">预</span>
+      </div>
+    </div>
+
+    <!-- 13列牌池 -->
+    <div class="pool-section">
+      <div class="pool-row" id="red-pool-row"></div>
+      <div class="pool-row" id="blue-pool-row"></div>
+    </div>
+
+    <!-- 纯净用牌区 -->
+    <div class="hands-pure-row">
+      <div class="hand-group">
+        <span class="hand-hdr" id="p-hand-title">闲家</span>
+        <div class="hand-slots">
+          <div class="u-slot" data-uslot="0" id="uslot-0"></div>
+          <div class="u-slot" data-uslot="1" id="uslot-1"></div>
+          <div class="u-slot" data-uslot="4" id="uslot-4"></div>
+        </div>
+      </div>
+      <div class="hand-group">
+        <span class="hand-hdr" id="b-hand-title">庄家</span>
+        <div class="hand-slots">
+          <div class="u-slot" data-uslot="2" id="uslot-2"></div>
+          <div class="u-slot" data-uslot="3" id="uslot-3"></div>
+          <div class="u-slot" data-uslot="5" id="uslot-5"></div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="g3" style="margin-top:5px">
-    <div id="btn-okbet" class="btn b-bl" style="padding:8px 2px;font-size:12px" onclick="confirmBet()">✅ 确认注码</div>
-    <div id="btn-fly" class="btn" style="background:#0284c7;border-color:#38bdf8;padding:8px 2px;font-size:12px" onclick="confirmFly()">本局飞牌</div>
-    <div id="btn-ins" class="btn b-or lock" style="padding:8px 2px;font-size:12px" onclick="openIns()">🛡️ 买保险🔒</div>
+
+  <!-- ==================== 第 4 层：固定死锁尺寸·左精简数据区 | 右清爽下注区 ==================== -->
+  <div class="layer-4">
+    <!-- 左栏：顶部极简结果区 + 5组紧凑数据 -->
+    <div class="l4-left">
+      <div class="verdict-panel" id="center-verdict-box">
+        <div class="vp-title" id="cv-title-txt"></div>
+        <div class="vp-sub" id="cv-sub-txt"></div>
+      </div>
+
+      <div class="data-block">
+        <div class="db-title">庄三段EV (基/返/综)</div>
+        <div class="db-mono" id="ev-3stage-banker">--/--/--</div>
+      </div>
+
+      <div class="data-block">
+        <div class="db-title">闲三段EV (基/返/综)</div>
+        <div class="db-mono" id="ev-3stage-player">--/--/--</div>
+      </div>
+
+      <div class="data-block">
+        <div class="db-mono" id="prob-line-b">庄:--%</div>
+        <div class="db-mono" id="prob-line-p">闲:--%</div>
+        <div class="db-mono" id="prob-line-t">和:--%</div>
+      </div>
+
+      <div class="data-block" style="color:#15803d;">
+        <div class="db-mono" id="gain-line-b">庄增:--%</div>
+        <div class="db-mono" id="gain-line-p">闲增:--%</div>
+      </div>
+
+      <div class="data-bot-row">
+        <span id="penetration-tag" style="color:#475569;">余416</span>
+        <span class="mini-link" onclick="openGainModal()">25项</span>
+      </div>
+    </div>
+
+    <!-- 右栏：死锁固定尺寸，0与无推荐自动隐藏，点击已选框金额直接回退筹码 -->
+    <div class="l4-right">
+      <!-- 上方：闲 / [两行保护提示+保护框] / 庄 -->
+      <div class="main-bet-zone">
+        <!-- 左：闲 -->
+        <div class="main-box selected-box" id="box-player" onclick="onBetBoxTap('player')" ondblclick="clearSingleBox('player')" oncontextmenu="clearSingleBox('player');return false;">
+          <div class="mb-hdr"><span style="color:#2563eb;">●闲</span><span class="bc-ev" id="e-player"></span></div>
+          <div class="mb-amt" id="b-player"></div>
+          <div class="bc-rec-btn" id="r-player" onclick="fillSingleRec(event,'player')"></div>
+        </div>
+
+        <!-- 中：两行清晰保护提示 + 保护框 -->
+        <div class="ins-col-wrap">
+          <div class="lamp-bar" id="ins-lamp" onclick="selectBetBox('ins')">
+            <div class="lamp-r1"><span id="il-act"></span><span id="il-ev"></span></div>
+            <div class="lamp-r2"><span id="il-odds"></span><span id="il-type"></span></div>
+          </div>
+          <div class="main-box ins-flat" id="box-ins" onclick="onBetBoxTap('ins')" ondblclick="clearSingleBox('ins')" oncontextmenu="clearSingleBox('ins');return false;">
+            <div class="mb-hdr" style="font-size:10.5px;"><span>🛡️保护</span><span id="ins-box-stage" style="font-size:8.5px;color:#2563eb;"></span></div>
+            <div class="mb-amt" id="b-ins"></div>
+            <div class="mb-lock-sub" id="ins-stage-detail" style="visibility:hidden;"></div>
+            <div class="bc-rec-btn" id="r-ins" onclick="fillSingleRec(event,'ins')"></div>
+          </div>
+        </div>
+
+        <!-- 右：庄 -->
+        <div class="main-box" id="box-banker" onclick="onBetBoxTap('banker')" ondblclick="clearSingleBox('banker')" oncontextmenu="clearSingleBox('banker');return false;">
+          <div class="mb-hdr"><span style="color:#dc2626;">●庄</span><span class="bc-ev" id="e-banker"></span></div>
+          <div class="mb-amt" id="b-banker"></div>
+          <div class="bc-rec-btn" id="r-banker" onclick="fillSingleRec(event,'banker')"></div>
+        </div>
+      </div>
+
+      <!-- 中间：单横排居中筹码 + 全清 -->
+      <div class="chip-strip">
+        <div class="m-chip chip-5" onclick="addChipToSelected(5)">5</div>
+        <div class="m-chip chip-10" onclick="addChipToSelected(10)">10</div>
+        <div class="m-chip chip-50" onclick="addChipToSelected(50)">50</div>
+        <div class="m-chip chip-100" onclick="addChipToSelected(100)">100</div>
+        <div class="m-chip chip-500" onclick="addChipToSelected(500)">500</div>
+        <div class="m-chip chip-1000" onclick="addChipToSelected(1000)">1K</div>
+        <button class="btn-clear-all" onclick="clearCurrentBets()">🗑️全清</button>
+      </div>
+
+      <!-- 下方：8项旁注 (第一排：龙七、熊八、小老虎、大老虎 | 第二排：庄对、闲对、幸运六、和局) -->
+      <div class="side-matrix">
+        <div class="bet-card" id="box-dragon7" onclick="onBetBoxTap('dragon7')" ondblclick="clearSingleBox('dragon7')" oncontextmenu="clearSingleBox('dragon7');return false;">
+          <div class="bc-top"><span>龙七</span><span class="bc-ev" id="e-dragon7"></span></div>
+          <div class="bc-amt" id="b-dragon7"></div>
+          <div class="bc-rec-btn" id="r-dragon7" onclick="fillSingleRec(event,'dragon7')"></div>
+        </div>
+        <div class="bet-card" id="box-panda8" onclick="onBetBoxTap('panda8')" ondblclick="clearSingleBox('panda8')" oncontextmenu="clearSingleBox('panda8');return false;">
+          <div class="bc-top"><span>熊八</span><span class="bc-ev" id="e-panda8"></span></div>
+          <div class="bc-amt" id="b-panda8"></div>
+          <div class="bc-rec-btn" id="r-panda8" onclick="fillSingleRec(event,'panda8')"></div>
+        </div>
+        <div class="bet-card" id="box-stiger" onclick="onBetBoxTap('stiger')" ondblclick="clearSingleBox('stiger')" oncontextmenu="clearSingleBox('stiger');return false;">
+          <div class="bc-top"><span>小老虎</span><span class="bc-ev" id="e-stiger"></span></div>
+          <div class="bc-amt" id="b-stiger"></div>
+          <div class="bc-rec-btn" id="r-stiger" onclick="fillSingleRec(event,'stiger')"></div>
+        </div>
+        <div class="bet-card" id="box-btiger" onclick="onBetBoxTap('btiger')" ondblclick="clearSingleBox('btiger')" oncontextmenu="clearSingleBox('btiger');return false;">
+          <div class="bc-top"><span>大老虎</span><span class="bc-ev" id="e-btiger"></span></div>
+          <div class="bc-amt" id="b-btiger"></div>
+          <div class="bc-rec-btn" id="r-btiger" onclick="fillSingleRec(event,'btiger')"></div>
+        </div>
+
+        <div class="bet-card" id="box-bpair" onclick="onBetBoxTap('bpair')" ondblclick="clearSingleBox('bpair')" oncontextmenu="clearSingleBox('bpair');return false;">
+          <div class="bc-top"><span style="color:#dc2626;">庄对</span><span class="bc-ev" id="e-bpair"></span></div>
+          <div class="bc-amt" id="b-bpair"></div>
+          <div class="bc-rec-btn" id="r-bpair" onclick="fillSingleRec(event,'bpair')"></div>
+        </div>
+        <div class="bet-card" id="box-ppair" onclick="onBetBoxTap('ppair')" ondblclick="clearSingleBox('ppair')" oncontextmenu="clearSingleBox('ppair');return false;">
+          <div class="bc-top"><span style="color:#2563eb;">闲对</span><span class="bc-ev" id="e-ppair"></span></div>
+          <div class="bc-amt" id="b-ppair"></div>
+          <div class="bc-rec-btn" id="r-ppair" onclick="fillSingleRec(event,'ppair')"></div>
+        </div>
+        <div class="bet-card" id="box-super6" onclick="onBetBoxTap('super6')" ondblclick="clearSingleBox('super6')" oncontextmenu="clearSingleBox('super6');return false;">
+          <div class="bc-top"><span>幸运六</span><span class="bc-ev" id="e-super6"></span></div>
+          <div class="bc-amt" id="b-super6"></div>
+          <div class="bc-rec-btn" id="r-super6" onclick="fillSingleRec(event,'super6')"></div>
+        </div>
+        <div class="bet-card" id="box-tie" onclick="onBetBoxTap('tie')" ondblclick="clearSingleBox('tie')" oncontextmenu="clearSingleBox('tie');return false;">
+          <div class="bc-top"><span style="color:#16a34a;">和局</span><span class="bc-ev" id="e-tie"></span></div>
+          <div class="bc-amt" id="b-tie"></div>
+          <div class="bc-rec-btn" id="r-tie" onclick="fillSingleRec(event,'tie')"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-<div id="settle-box" class="box lock">
-  <div class="row" style="font-size:11px;color:#94a3b8;margin-bottom:4px">
-    <span>🏁 选择本局结果（有旁注/对子先点亮）：</span>
-    <span style="color:#f59e0b;cursor:pointer" onclick="unlockBet()">🔓解锁重改</span>
-  </div>
-  <div class="g3 res-main-row" style="margin-top:0">
-    <div id="res-B" class="btn b-rd" onclick="askMainRes('B')">🔴 庄 赢</div>
-    <div id="res-T" class="btn b-gn" onclick="askMainRes('T')">和 局</div>
-    <div id="res-P" class="btn b-bl" onclick="askMainRes('P')">🔵 闲 赢</div>
-  </div>
-  <div class="side-res-box">
-    <div class="g3">
-      <div id="tg-L" class="btn" onclick="togSpec('L')">龙七</div>
-      <div id="tg-XH" class="btn" onclick="togSpec('XH')">小老虎</div>
-      <div id="tg-DH" class="btn" onclick="togSpec('DH')">大老虎</div>
+
+<!-- ==================== 弹窗 1：大数据深度复盘中心 (EV区间统计 + 11项分类统计 + 保险时机/牌型结构剖析) ==================== -->
+<div class="modal-mask" id="replay-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span id="replay-modal-title">📊 大数据深度复盘中心</span>
+      <span style="cursor:pointer;padding:2px 6px;" onclick="closeReplayModal()">✕</span>
     </div>
-    <div class="g3">
-      <div id="tg-ZD" class="btn" onclick="togP('ZD')">庄对</div>
-      <div id="tg-XD" class="btn" onclick="togP('XD')">闲对</div>
-      <div id="tg-X" class="btn" onclick="togSpec('X')">熊八</div>
+    <div class="modal-body" id="replay-modal-body"></div>
+    <div class="modal-foot">
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <button class="tb-mini-btn blue" style="padding:0 7px;" onclick="shareReportNative()">📤 手机分享/存文件</button>
+        <button class="tb-mini-btn purple" style="padding:0 7px;" onclick="copyTextBattleReport()">📋 复制战报</button>
+        <button class="tb-mini-btn amber" style="padding:0 7px;" onclick="exportReadableHtmlReport()">📄 网页账单</button>
+        <button class="tb-mini-btn" style="padding:0 7px;" onclick="exportReplayCsv()">📊 CSV表</button>
+      </div>
+      <button class="tb-mini-btn" style="padding:0 8px;" onclick="closeReplayModal()">关闭</button>
     </div>
   </div>
 </div>
-<div class="box" id="lz-wrap" style="padding:4px 6px">
-  <div class="lz-hdr">
-    <span class="lz-hdr-left">路珠</span>
-    <div class="lz-hdr-center">
-      <span class="ico-wrap"><span id="dot-l" class="s-dot">·</span><span id="nb-ico">📊</span><span id="dot-r" class="s-dot">·</span></span>
-      <span id="lz-stat">走势记录 (庄:0 闲:0 和:0)</span>
+
+<!-- ==================== 弹窗 2：📅 历史日期账本库 ==================== -->
+<div class="modal-mask" id="history-days-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span>📅 历史日期账本库 (本地永久保存·防丢失)</span>
+      <span style="cursor:pointer;padding:2px 6px;" onclick="closeHistoryDaysModal()">✕</span>
     </div>
-    <span class="lz-hdr-right"></span>
-  </div>
-  <div class="lz-grid" id="lz-box"></div>
-</div>
-<div class="box" id="rec-box">
-  <div id="rec-hdr" class="row" style="font-size:11px">
-    <span id="pg-txt" style="font-weight:800;color:#64748b">第 1 页</span>
-    <span style="font-weight:800;color:#64748b">明细记录</span>
-  </div>
-  <div class="r-list" id="r-list"></div>
-</div>
-<div id="m-res" class="modal">
-  <div class="box" style="width:100%;max-width:320px;text-align:center;padding:12px">
-    <div style="font-size:12px;color:#94a3b8">确认记录本局结果：</div>
-    <div id="res-title" style="font-size:18px;font-weight:900;color:#fbbf24;margin:8px 0"></div>
-    <div id="res-prof" style="font-size:12px;color:#cbd5e1;margin-bottom:12px"></div>
-    <div class="g2">
-      <div class="btn" style="padding:10px" onclick="tog('m-res')">❌ 返回重选</div>
-      <div class="btn b-gn" style="padding:10px;font-size:13px" onclick="okSettle()">✅ 确认记录</div>
+    <div class="modal-body" id="history-days-body"></div>
+    <div class="modal-foot">
+      <div style="display:flex;gap:6px;">
+        <button class="tb-mini-btn blue" style="padding:0 8px;" onclick="manualSnapshotTodayToHistory()">💾 立即备份今日</button>
+        <label class="tb-mini-btn amber" style="cursor:pointer;padding:0 8px;">
+          📂 导入恢复 <input type="file" accept=".json,.html" style="display:none;" onchange="importRecordsBackup(event)">
+        </label>
+      </div>
+      <button class="tb-mini-btn" style="padding:0 8px;" onclick="closeHistoryDaysModal()">关闭</button>
     </div>
   </div>
 </div>
-<div id="m-ins" class="modal">
-  <div class="box" style="width:100%;max-width:340px;padding:12px">
-    <div style="font-weight:800;margin-bottom:6px;color:#fbbf24;font-size:14px">🛡️ 保险计算 · 选择赔率</div>
-    <div id="ins-bet-info" style="background:#0f172a;border:1px solid #334155;border-radius:5px;padding:6px 8px;font-size:12px;font-weight:800;color:#38bdf8;margin-bottom:8px;text-align:center"></div>
-    <div class="g3" id="odds-box"></div>
-    <div style="font-size:11px;color:#94a3b8;margin-top:10px">推荐保额（10为单位，可微调）：</div>
-    <div class="row" style="margin-top:6px;gap:6px">
-      <div class="btn" style="padding:9px 10px" onclick="adjIns(-100)">-100</div>
-      <div class="btn" style="padding:9px 10px" onclick="adjIns(-10)">-10</div>
-      <input type="number" id="ins-in" class="inp" style="flex:1;margin:0;padding:8px" value="0">
-      <div class="btn" style="padding:9px 10px" onclick="adjIns(10)">+10</div>
-      <div class="btn" style="padding:9px 10px" onclick="adjIns(100)">+100</div>
+
+<!-- ==================== 弹窗 3：25项保护增益明细 ==================== -->
+<div class="modal-mask" id="gain-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span>📊 庄闲三段式 EV 拆分 & 25项保护增益明细</span>
+      <span style="cursor:pointer;padding:2px 6px;" onclick="closeGainModal()">✕</span>
     </div>
-    <div class="g3" style="margin-top:16px;gap:8px">
-      <div class="btn" style="padding:11px 4px;font-size:13px" onclick="tog('m-ins')">取消</div>
-      <div class="btn b-rd" style="padding:11px 4px;font-size:13px" onclick="cancelIns()">🚫 清除</div>
-      <div class="btn b-or" style="padding:11px 4px;font-size:13px" onclick="saveIns()">✅ 确认保险</div>
+    <div class="modal-body" id="gain-modal-body" style="font-family:'SF Mono',Consolas,monospace;"></div>
+    <div class="modal-foot" style="justify-content:flex-end;">
+      <button class="tb-mini-btn blue" style="padding:0 10px;" onclick="closeGainModal()">关闭</button>
     </div>
   </div>
 </div>
-<div id="m-hist" class="modal">
-  <div class="box" style="width:100%;max-width:350px;max-height:85vh;overflow-y:auto;padding:10px">
-    <div class="row" style="margin-bottom:6px">
-      <span style="font-weight:900;font-size:14px;color:#fbbf24">📊 今日各靴统计</span>
-      <div class="btn" style="padding:3px 8px" onclick="tog('m-hist')">关闭</div>
+
+<!-- ==================== 弹窗 4：参数与25项保护倍率设置 ==================== -->
+<div class="modal-mask" id="settings-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span>⚙️ 参数、对子赔率与 25 项保护倍率设置</span>
+      <span style="cursor:pointer;padding:2px 6px;" onclick="closeSettingsModal()">✕</span>
     </div>
-    <div id="hist-list"></div>
+    <div class="modal-body">
+      <div>
+        <div class="odds-group-title">💰 积分基数、对子赔率与取整单位</div>
+        <div class="odds-grid">
+          <div class="odds-item"><span>初始积分</span><input type="number" id="cfg-start-br" value="20000"></div>
+          <div class="odds-item"><span>今日加码</span><input type="number" id="cfg-add-br" value="0"></div>
+          <div class="odds-item"><span>凯利基数</span><input type="number" id="cfg-kelly-br" value="20000"></div>
+          <div class="odds-item"><span>凯利系数</span><input type="number" step="0.1" id="cfg-kelly-mult" value="0.5"></div>
+          <div class="odds-item"><span>庄闲返点%</span><input type="number" step="0.1" id="cfg-rebate" value="1.3"></div>
+          <div class="odds-item"><span>对子赔率</span><input type="number" step="0.5" id="cfg-pair-odds" value="11"></div>
+          <div class="odds-item"><span>主项单位</span><input type="number" id="cfg-bet-unit" value="10"></div>
+          <div class="odds-item"><span>旁项单位</span><input type="number" id="cfg-side-unit" value="10"></div>
+          <div class="odds-item"><span>保护单位</span><select id="cfg-ins-unit"><option value="1">1</option><option value="5">5</option><option value="10">10</option><option value="50">50</option></select></div>
+        </div>
+      </div>
+      <div id="odds-form-body" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="tb-mini-btn" style="padding:0 8px;" onclick="resetDefaultInsOdds()">恢复默认倍率</button>
+      <div style="display:flex;gap:6px;">
+        <button class="tb-mini-btn" style="padding:0 8px;" onclick="closeSettingsModal()">取消</button>
+        <button class="tb-mini-btn blue" style="padding:0 10px;" onclick="saveSettingsModal()">保存设置</button>
+      </div>
+    </div>
   </div>
 </div>
-<div id="m-set" class="modal">
-  <div class="box" style="width:100%;max-width:345px;padding:12px">
-    <div style="font-weight:800;margin-bottom:6px;color:#fbbf24;font-size:13px">💰 今日开始设置（本金与加码）</div>
-    <div class="g3" style="margin-top:2px;text-align:center;font-size:11px;color:#94a3b8">
-      <span>今日开始本金</span><span>加码</span><span>总本金</span>
+
+<!-- ==================== 弹窗 5：历史手修改弹窗 ==================== -->
+<div class="modal-mask" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span id="edit-modal-title">✏️ 修改本靴历史记录</span>
+      <span style="cursor:pointer;padding:2px 6px;" onclick="closeEditModal()">✕</span>
     </div>
-    <div class="g3" style="margin-top:2px">
-      <input type="number" id="s-dybase" class="inp" oninput="calcDyTot()">
-      <input type="number" id="s-dyadd" class="inp" oninput="calcDyTot()">
-      <input type="number" id="s-dytot" class="inp" readonly style="color:#34d399;background:#161f30">
+    <div class="modal-body" id="edit-modal-body"></div>
+    <div class="modal-foot">
+      <button class="tb-mini-btn red" style="padding:0 8px;" onclick="deleteEditingHand()">🗑️ 删除该手</button>
+      <div style="display:flex;gap:6px;">
+        <button class="tb-mini-btn" style="padding:0 8px;" onclick="closeEditModal()">取消</button>
+        <button class="tb-mini-btn blue" style="padding:0 10px;" onclick="saveEditingHand()">保存并重演全靴</button>
+      </div>
     </div>
-    <div class="btn b-or" style="width:100%;margin-top:6px;padding:8px;font-size:13px" onclick="confirmCap()">✅ 确认今日开始本金 / 加码</div>
-    <hr style="border:0;border-top:1px dashed #334155;margin:10px 0">
-    <div style="font-weight:800;margin-bottom:4px;font-size:12px;color:#cbd5e1">⚙️ 台账进度与余额微调</div>
-    <div class="g3" style="margin-top:2px;text-align:center;font-size:11px;color:#94a3b8">
-      <span>当前总分</span><span>当前靴数</span><span>当前局数</span>
-    </div>
-    <div class="g3" style="margin-top:2px">
-      <input type="number" id="s-bal" class="inp">
-      <input type="number" id="s-shoe" class="inp">
-      <input type="number" id="s-rd" class="inp">
-    </div>
-    <div class="g2" style="margin-top:6px">
-      <div class="btn" style="padding:8px" onclick="tog('m-set')">取消关闭</div>
-      <div class="btn b-gn" style="padding:8px" onclick="saveSet()">✅ 保存微调</div>
-    </div>
-    <hr style="border:0;border-top:1px dashed #334155;margin:10px 0">
-    <div class="btn b-bl" style="width:100%;margin-bottom:6px;padding:9px" onclick="endShoe()">🏁 本靴结束 · 归档并开启新靴</div>
-    <div class="btn b-rd" style="width:100%;padding:9px" onclick="newDay()">🌅 新的一天 · 重置今日全部台账</div>
   </div>
 </div>
+
+<div id="drag-ghost"></div>
+
 <script>
-var _k1='8447084394:',_k2='AAFlpqcDiMxE_KW0Cih',_k3='Nquz__95NOYr_aII';
-var _cA='-54804'+'79287',_cB='-53263'+'93067';
-var KEYS=['B','P','L','X','XH','DH','ZD','XD','T'];
-var NAMES={B:'庄',P:'闲',T:'和',ZD:'庄对',XD:'闲对',L:'龙七',X:'熊八',XH:'小虎',DH:'大虎'};
-var R_NAMES={B:'🔴 庄赢',P:'🔵 闲赢',T:'🟢 和局',B_L:'🔴 庄赢·龙七',P_X:'🔵 闲赢·熊八',B_XH:'🔴 庄赢·小老虎',B_DH:'🔴 庄赢·大老虎'};
-var INS_ODDS=[1,1.5,2,3,4,7,8,9,10],curTgt='',pendRes='',clk=0,cTm=null,curPg=1,stSuit='';
-var S=JSON.parse(localStorage.getItem('VIP888_S7')||'{"sw":0,"bal":10000,"shoe":1,"rd":1,"shSt":10000,"dySt":10000,"dyBase":10000,"dyAdd":0,"hist":[],"rHist":[],"lz":[],"ph":"BET","fly":0,"bets":{},"pZD":0,"pXD":0,"pSpec":"","insOn":0,"insOd":3,"insAmt":0}');
-if(typeof S.dyBase==='undefined')S.dyBase=S.dySt||10000;
-if(typeof S.dyAdd==='undefined')S.dyAdd=0;
-if(typeof S.pSpec==='undefined')S.pSpec='';
-
-function initSeedHist(){
-  if(S.rHist&&S.rHist.length>=25)return;
-  var demo=[
-    {sh:1,rd:18,lbl:'🔴 庄赢',bStr:'庄500(+475)',p:475,bal:10850},
-    {sh:1,rd:17,lbl:'🔵 闲赢',bStr:'闲300(+300)',p:300,bal:10375},
-    {sh:1,rd:16,lbl:'🟢 和局',bStr:'本局飞牌',p:0,bal:10075},
-    {sh:1,rd:15,lbl:'🔴 庄赢',bStr:'闲200(-200)',p:-200,bal:10075},
-    {sh:1,rd:14,lbl:'🔵 闲赢',bStr:'闲500(+500)',p:500,bal:10275},
-    {sh:1,rd:13,lbl:'🔴 庄赢',bStr:'庄300(+285)',p:285,bal:9775},
-    {sh:1,rd:12,lbl:'🔵 闲赢',bStr:'庄300(-300)',p:-300,bal:9490},
-    {sh:1,rd:11,lbl:'🔴 庄赢',bStr:'庄200(+190)',p:190,bal:9790},
-    {sh:1,rd:10,lbl:'🟢 和局',bStr:'庄200(0)',p:0,bal:9600},
-    {sh:1,rd:9,lbl:'🔵 闲赢',bStr:'闲300(+300)',p:300,bal:9600},
-    {sh:1,rd:8,lbl:'🔴 庄赢',bStr:'闲400(-400)',p:-400,bal:9300},
-    {sh:1,rd:7,lbl:'🔵 闲赢',bStr:'闲200(+200)',p:200,bal:9700},
-    {sh:1,rd:6,lbl:'🔴 庄赢',bStr:'庄200(+190)',p:190,bal:9500},
-    {sh:1,rd:5,lbl:'🔴 庄赢',bStr:'本局飞牌',p:0,bal:9310},
-    {sh:1,rd:4,lbl:'🔵 闲赢',bStr:'庄300(-300)',p:-300,bal:9310},
-    {sh:1,rd:3,lbl:'🔴 庄赢',bStr:'庄200(+190)',p:190,bal:9610},
-    {sh:1,rd:2,lbl:'🔵 闲赢',bStr:'闲200(+200)',p:200,bal:9420},
-    {sh:1,rd:1,lbl:'🔴 庄赢',bStr:'闲300(-300)',p:-300,bal:9220}
-  ];
-  if(!S.rHist)S.rHist=[];
-  while(S.rHist.length<28){
-    for(var i=0;i<demo.length&&S.rHist.length<28;i++)S.rHist.push(demo[i]);
-  }
-}
-initSeedHist();
-
-function save(){localStorage.setItem('VIP888_S7',JSON.stringify(S));ui();}
-function tog(id){var e=document.getElementById(id);e.style.display=e.style.display==='flex'?'none':'flex';}
-function vib(p){if(navigator.vibrate)navigator.vibrate(p);}
-async function tg(t,ch){
-  var id=ch?(S.sw?_cA:_cB):(S.sw?_cB:_cA);
-  try{await fetch('https://api.telegram.org/bot'+_k1+_k2+_k3+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:id,text:t})});}catch(e){}
-}
-function tapSec(){
-  clk++;clearTimeout(cTm);
-  if(clk>=6){clk=0;S.sw=S.sw?0:1;save();vib(30);document.getElementById('st-bar').innerText='🔄 通道已切换 ('+(S.sw?'B':'A')+')';setTimeout(ui,800);}
-  else cTm=setTimeout(function(){clk=0;},450);
-}
-function getBetSummaryParts(){
-  var arr=[];
-  ['B','P','T','L','X','XH','DH','ZD','XD'].forEach(function(k){
-    var v=S.bets[k]||0;if(v>0)arr.push(NAMES[k]+'+'+v);
-  });
-  return arr;
-}
-function ui(){
-  document.getElementById('rd-txt').innerText='📍 第 '+S.shoe+' 靴 · 第 '+S.rd+' 局';
-  document.getElementById('bal-txt').innerText=Number(S.bal).toLocaleString();
-  var shPl=Math.round((S.bal-S.shSt)*100)/100,plStr=(shPl>=0?'+'+shPl:shPl),plCol=shPl>=0?'#34d399':'#f87171';
-  var tpl=document.getElementById('top-pl');
-  tpl.innerText='本靴: '+plStr;tpl.style.color=plCol;
-  var tot=0;
-  KEYS.forEach(function(k){
-    var v=S.bets[k]||0;tot+=v;document.getElementById('v-'+k).innerText=v>0?v:'';
-    var sz=(k==='B'||k==='P')?' c-lg':((k==='ZD'||k==='XD'||k==='T')?' c-sm':'');
-    document.getElementById('c-'+k).className='card'+sz+(v>0?(k==='B'?' on-b':(k==='P'?' on-p':' on-s')):'')+(curTgt===k&&S.ph!=='LOCK'?' sel-tgt':'');
-  });
-  document.getElementById('tot-txt').innerText=tot;
-  var isLock=(S.ph==='LOCK'),hasBP=((S.bets.B||0)>0||(S.bets.P||0)>0),sb=document.getElementById('st-bar'),bParts=getBetSummaryParts();
-  if(isLock){
-    sb.style.background='#064e3b';sb.style.borderColor='#10b981';sb.style.color='#34d399';
-    sb.innerText='✅ 第 '+S.rd+' 局'+(S.fly?'【已飞牌】':'【'+bParts.join(' ')+'】')+'：请选【本局结果】';
-  }else if(bParts.length>0||curTgt){
-    sb.style.background='#451a03';sb.style.borderColor='#f59e0b';sb.style.color='#fbbf24';
-    var sArr=bParts.slice();if(curTgt&&!(S.bets[curTgt]>0))sArr.push(NAMES[curTgt]);
-    sb.innerText='🎯 第 '+S.rd+' 局：'+sArr.join('  ');
-  }else{
-    sb.style.background='#1e293b';sb.style.borderColor='#475569';sb.style.color='#cbd5e1';
-    sb.innerText='⚪ 第 '+S.rd+' 局等待下注：请先点击下方【下注区域】';
-  }
-  document.getElementById('bet-area').className='bet-layout'+(isLock?' lock':'');
-  document.getElementById('btn-clr').className='btn'+(isLock?' lock':'');
-  document.getElementById('btn-okbet').className='btn b-bl'+(isLock?' lock':'');
-  var flyBtn=document.getElementById('btn-fly');
-  flyBtn.className='btn'+((isLock||tot>0)?' lock':'');
-  flyBtn.innerText=(tot>0&&!isLock)?'飞牌🔒':'本局飞牌';
-  var canIns=(isLock&&!S.fly&&hasBP),insBtn=document.getElementById('btn-ins');
-  insBtn.className='btn b-or'+(canIns?'':' lock');
-  insBtn.innerText=canIns?'🛡️ 买保险':'🛡️ 买保险🔒';
-  document.getElementById('settle-box').className='box'+(isLock?'':' lock');
-  var stg=document.getElementById('sub-tag');
-  if(S.fly)stg.innerText='【本局飞牌】';
-  else if(S.insOn&&S.insAmt>0)stg.innerText='🛡️保险:'+S.insAmt+'(1:'+S.insOd+')';
-  else stg.innerText='';
-  ['L','XH','DH','X'].forEach(function(k){
-    document.getElementById('tg-'+k).className='btn'+(S.pSpec===k?(k==='X'?' b-bl':' b-rd'):'')+(S.pSpec&&S.pSpec!==k?' lock':'');
-  });
-  document.getElementById('tg-ZD').className='btn'+(S.pZD?' b-or':'');
-  document.getElementById('tg-XD').className='btn'+(S.pXD?' b-or':'');
-  document.getElementById('res-B').className='btn b-rd'+(S.pSpec==='X'?' lock':'');
-  document.getElementById('res-T').className='btn b-gn'+(S.pSpec!==''?' lock':'');
-  document.getElementById('res-P').className='btn b-bl'+((S.pSpec==='L'||S.pSpec==='XH'||S.pSpec==='DH')?' lock':'');
-  var lzH='',bCnt=0,pCnt=0,tCnt=0,viewLz=S.lz.slice(Math.max(0,S.lz.length-84));
-  S.lz.forEach(function(x){if(x.c==='B')bCnt++;else if(x.c==='P')pCnt++;else tCnt++;});
-  document.getElementById('lz-stat').innerText='走势记录 (庄:'+bCnt+' 闲:'+pCnt+' 和:'+tCnt+')';
-  for(var i=0;i<84;i++){
-    var item=viewLz[i],inner='';
-    if(item){
-      var txt=item.c==='B'?'庄':(item.c==='P'?'闲':'和');
-      inner='<div class="bead bd-'+item.c+'">'+txt+(item.zd?'<span class="p-zd"></span>':'')+(item.xd?'<span class="p-xd"></span>':'')+'</div>';
-    }
-    lzH+='<div class="lz-c">'+inner+'</div>';
-  }
-  document.getElementById('lz-box').innerHTML=lzH;
-  document.getElementById('dot-l').className='s-dot'+(stSuit==='🔴'?' on':'');
-  document.getElementById('dot-r').className='s-dot'+(stSuit==='🔵'?' on':'');
-  document.getElementById('pg-txt').innerText='第 '+curPg+' 页';
-  var rH='';
-  S.rHist.forEach(function(r){
-    var c=r.p>=0?'#34d399':'#f87171',shNum=r.sh||S.shoe;
-    rH+='<div class="r-item"><span>第'+shNum+'靴·第'+r.rd+'局 | '+r.lbl+' ('+r.bStr+')</span><b style="color:'+c+'">'+(r.p>=0?'+'+r.p:r.p)+' (余:'+r.bal+')</b></div>';
-  });
-  document.getElementById('r-list').innerHTML=rH;
-}
-function selTgt(k){if(S.ph==='LOCK')return;curTgt=k;vib(12);ui();}
-function addChip(v){if(S.ph==='LOCK')return;if(!curTgt){var sb=document.getElementById('st-bar');sb.style.background='#7f1d1d';sb.innerText='⚠️ 请先点击左侧下注项，再点筹码！';vib([20,30,20]);return;}S.bets[curTgt]=(S.bets[curTgt]||0)+v;vib(15);save();}
-function clrBets(){if(S.ph==='LOCK')return;S.bets={};S.fly=0;curTgt='';vib(20);save();}
-function confirmBet(){var tot=0;KEYS.forEach(function(k){tot+=(S.bets[k]||0);});if(tot<=0)return alert('请先选择下注区域并添加筹码！');S.fly=0;S.ph='LOCK';curTgt='';vib(30);save();}
-function confirmFly(){var tot=0;KEYS.forEach(function(k){tot+=(S.bets[k]||0);});if(tot>0||S.ph==='LOCK')return;S.bets={};S.fly=1;S.ph='LOCK';S.insOn=0;S.insAmt=0;curTgt='';vib(30);save();}
-function unlockBet(){S.ph='BET';S.fly=0;S.insOn=0;S.insAmt=0;S.pSpec='';S.pZD=0;S.pXD=0;vib(20);save();}
-function openIns(){var bParts=getBetSummaryParts();document.getElementById('ins-bet-info').innerText='本局下注：'+(bParts.length?bParts.join('  '):'无');var h='';INS_ODDS.forEach(function(o){h+='<div class="btn '+(S.insOd===o?'b-or':'')+'" onclick="pickOd('+o+')">1:'+o+'</div>';});document.getElementById('odds-box').innerHTML=h;pickOd(S.insOd||3);tog('m-ins');}
-function pickOd(o){S.insOd=o;document.querySelectorAll('#odds-box .btn').forEach(function(b){b.className='btn '+(b.innerText==='1:'+o?'b-or':'');});var m=Math.max(S.bets.B||0,S.bets.P||0),r=m>0?Math.floor(m/o):0;document.getElementById('ins-in').value=Math.floor(r/10)*10;}
-function adjIns(d){var e=document.getElementById('ins-in');e.value=Math.max(0,parseInt(e.value||0,10)+d);}
-function cancelIns(){S.insOn=0;S.insAmt=0;tog('m-ins');save();}
-function saveIns(){var amt=parseInt(document.getElementById('ins-in').value||0,10);if(amt<=0)return cancelIns();S.insOn=1;S.insAmt=amt;tog('m-ins');vib(25);save();}
-function togP(k){if(k==='ZD')S.pZD=!S.pZD;else S.pXD=!S.pXD;vib(15);save();}
-function togSpec(k){if(S.pSpec===k)S.pSpec='';else if(!S.pSpec)S.pSpec=k;vib(15);save();}
-function askMainRes(mainKey){var res=mainKey;if(mainKey==='B'&&(S.pSpec==='L'||S.pSpec==='XH'||S.pSpec==='DH'))res='B_'+S.pSpec;else if(mainKey==='P'&&S.pSpec==='X')res='P_X';pendRes=res;vib(20);var c=calcRound(res);document.getElementById('res-title').innerText=c.label;document.getElementById('res-prof').innerText='本局盈亏：'+(c.p>=0?'+'+c.p:c.p)+' ｜ 结余：'+Math.round((S.bal+c.p)*100)/100;tog('m-res');}
-function calcRound(res){
-  var b=S.bets,p=0,dt=[],bw=res.indexOf('B')===0,pw=res.indexOf('P')===0,tie=res==='T';
-  if(b.B>0){var w=bw?Math.round(b.B*95)/100:(tie?0:-b.B);p+=w;dt.push('庄'+b.B+'('+(w>=0?'+'+w:w)+')');}
-  if(b.P>0){var w=pw?b.P:(tie?0:-b.P);p+=w;dt.push('闲'+b.P+'('+(w>=0?'+'+w:w)+')');}
-  if(b.T>0){var w=tie?b.T*8:-b.T;p+=w;dt.push('和'+b.T+'('+(w>=0?'+'+w:w)+')');}
-  if(b.ZD>0){var w=S.pZD?b.ZD*11:-b.ZD;p+=w;dt.push('庄对'+b.ZD+'('+(w>=0?'+'+w:w)+')');}
-  if(b.XD>0){var w=S.pXD?b.XD*11:-b.XD;p+=w;dt.push('闲对'+b.XD+'('+(w>=0?'+'+w:w)+')');}
-  [['L',40,'B_L'],['X',25,'P_X'],['XH',22,'B_XH'],['DH',50,'B_DH']].forEach(function(x){var a=b[x[0]]||0;if(a>0){var w=res===x[2]?a*x[1]:-a;p+=w;dt.push(NAMES[x[0]]+a+'('+(w>=0?'+'+w:w)+')');}});
-  if(S.insOn&&S.insAmt>0){var iw=0;if(tie){dt.push('保险'+S.insAmt+'(和退0)');}else{var mB=(b.B||0)>=(b.P||0),mW=(mB&&bw)||(!mB&&pw);iw=mW?-S.insAmt:Math.round(S.insAmt*S.insOd*100)/100;dt.push('保险'+S.insAmt+'('+(iw>=0?'+'+iw:iw)+')');}p+=iw;}
-  p=Math.round(p*100)/100;var pt=[];if(S.pZD)pt.push('庄对');if(S.pXD)pt.push('闲对');
-  return {p:p,dt:dt,c:bw?'B':(pw?'P':'T'),label:R_NAMES[res]+(pt.length?'+【'+pt.join('/')+'】':'')};
-}
-function okSettle(){
-  tog('m-res');var c=calcRound(pendRes),oldBal=S.bal;S.bal=Math.round((S.bal+c.p)*100)/100;
-  var bStr=S.fly?'本局飞牌':(c.dt.join(' | ')||'无注');
-  S.lz.push({c:c.c,zd:S.pZD,xd:S.pXD});
-  S.rHist.unshift({sh:S.shoe,rd:S.rd,lbl:c.label,bStr:bStr,p:c.p,bal:S.bal,oldBal:oldBal,bets:JSON.parse(JSON.stringify(S.bets)),fly:S.fly,insOn:S.insOn,insOd:S.insOd,insAmt:S.insAmt,real:1});
-  if(S.rHist.length>60)S.rHist.pop();
-  tg('📊 【第 '+S.shoe+' 靴 · 第 '+S.rd+' 局结果】\n🎲 开牌: '+c.label+'\n📋 注码: '+bStr+'\n💵 盈亏: '+(c.p>=0?'+'+c.p:c.p)+'\n🏦 余额: '+S.bal,0);
-  S.rd++;S.ph='BET';S.fly=0;S.bets={};S.pZD=0;S.pXD=0;S.pSpec='';S.insOn=0;S.insAmt=0;curTgt='';vib(40);save();
-}
-function undoLast(){
-  if(!S.rHist.length||!S.rHist[0].real)return alert('本靴暂无可修改的上一局记录！');
-  if(!confirm('确定退回第 '+S.rHist[0].rd+' 局重新操作吗？'))return;
-  var last=S.rHist.shift();S.lz.pop();
-  S.bal=last.oldBal;S.rd=last.rd;S.bets=last.bets;S.fly=last.fly;S.insOn=last.insOn;S.insOd=last.insOd;S.insAmt=last.insAmt;
-  S.ph='BET';S.pSpec='';S.pZD=0;S.pXD=0;curTgt='';save();
-  var sb=document.getElementById('st-bar');sb.style.background='#7c2d12';sb.style.color='#fed7aa';
-  sb.innerText='✏️ 已退回第 '+S.rd+' 局（注码已恢复）：可直接改注码或点【确认注码】';
-  tg('✏️ 【修改上一局】第 '+S.shoe+' 靴 · 第 '+S.rd+' 局已退回重录，当前余额恢复至: '+S.bal,0);
-}
-function openSet(){document.getElementById('s-dybase').value=S.dyBase;document.getElementById('s-dyadd').value=S.dyAdd;document.getElementById('s-dytot').value=Math.round((S.dyBase+S.dyAdd)*100)/100;document.getElementById('s-shoe').value=S.shoe;document.getElementById('s-rd').value=S.rd;document.getElementById('s-bal').value=S.bal;tog('m-set');}
-function calcDyTot(){var b=parseFloat(document.getElementById('s-dybase').value)||0,a=parseFloat(document.getElementById('s-dyadd').value)||0;document.getElementById('s-dytot').value=Math.round((b+a)*100)/100;}
-function confirmCap(){
-  var b=parseFloat(document.getElementById('s-dybase').value)||0,a=parseFloat(document.getElementById('s-dyadd').value)||0,tot=Math.round((b+a)*100)/100,diff=Math.round((tot-(S.dySt||0))*100)/100;
-  S.dyBase=b;S.dyAdd=a;S.dySt=tot;
-  if(S.shoe===1&&S.rd===1&&(!S.lz||!S.lz.length)&&(!S.hist||!S.hist.length)){S.shSt=tot;S.bal=tot;}
-  else{S.shSt=Math.round((S.shSt+diff)*100)/100;S.bal=Math.round((S.bal+diff)*100)/100;}
-  document.getElementById('s-bal').value=S.bal;tog('m-set');vib(30);save();
-  tg('💰 【今日开始本金 / 加码确认】\n▶️ 今日开始本金: '+b+'\n➕ 累计加码: '+a+'\n🏦 今日总本金: '+tot+'\n💵 当前可用余额: '+S.bal,0);
-}
-function saveSet(){S.shoe=parseInt(document.getElementById('s-shoe').value,10)||1;S.rd=parseInt(document.getElementById('s-rd').value,10)||1;S.bal=parseFloat(document.getElementById('s-bal').value)||10000;tog('m-set');save();tg('⚙️ 【后台参数调整】\n📍 当前进度: 第 '+S.shoe+' 靴 · 第 '+S.rd+' 局\n🏦 调整后余额: '+S.bal,0);}
-function openHist(){
-  var hl=document.getElementById('hist-list'),h='';
-  if(!S.hist||!S.hist.length){hl.innerHTML='<div style="text-align:center;color:#64748b;padding:20px">今日暂无已归档的靴数</div>';}
-  else{S.hist.forEach(function(t,i){var w=Math.round((t.en-t.st)*100)/100,wc=w>=0?'#34d399':'#f87171';h+='<div style="background:#141923;padding:8px;border-radius:8px;margin-bottom:8px;border:1px solid #2e384d;font-size:12px"><div class="row" style="margin-bottom:6px"><b style="color:#38bdf8;font-size:14px">第 '+t.s+' 靴</b><b style="color:'+wc+';font-size:14px">累计: '+(w>=0?'+'+w:w)+'</b></div><div class="row">局数:<input id="hr-'+i+'" class="hinp" style="width:40px" value="'+t.r+'"> 始:<input id="hst-'+i+'" class="hinp" value="'+t.st+'"> 终:<input id="hen-'+i+'" class="hinp" value="'+t.en+'"> <div class="btn b-bl" style="padding:4px 8px" onclick="upHist('+i+')">💾更新</div></div></div>';});hl.innerHTML=h;}
-  tog('m-hist');
-}
-function upHist(i){var t=S.hist[i];t.r=parseInt(document.getElementById('hr-'+i).value,10)||0;t.st=parseFloat(document.getElementById('hst-'+i).value)||0;t.en=parseFloat(document.getElementById('hen-'+i).value)||0;var w=Math.round((t.en-t.st)*100)/100;save();tog('m-hist');openHist();tg('📊 【第 '+t.s+' 靴 · 统计更新】\n▶️ 局数：'+t.r+' 局\n▶️ 初始分：'+t.st+'\n⏹️ 结束分：'+t.en+'\n📈 本靴盈亏：'+(w>=0?'+'+w:w),0);}
-function endShoe(){if(!confirm('确认结束第 '+S.shoe+' 靴并开启新靴吗？'))return;var rp=S.rd>1?S.rd-1:0,w=Math.round((S.bal-S.shSt)*100)/100;S.hist.push({s:S.shoe,r:rp,st:S.shSt,en:S.bal});tg('🏁 【第 '+S.shoe+' 靴结束 · 统计】\n▶️ 局数：'+rp+' 局\n▶️ 初始分：'+S.shSt+'\n⏹️ 结束分：'+S.bal+'\n📈 本靴盈亏：'+(w>=0?'+'+w:w)+'\n✅ 已进入第 '+(S.shoe+1)+' 靴',0);S.shoe++;S.rd=1;S.shSt=S.bal;S.lz=[];S.ph='BET';S.bets={};S.fly=0;S.pSpec='';S.pZD=0;S.pXD=0;curTgt='';tog('m-set');save();}
-function newDay(){if(!confirm('确认开启新的一天并清空今日记录吗？'))return;var w=Math.round((S.bal-S.dySt)*100)/100;tg('🌅 【全天总结算】\n▶️ 今日总本金：'+S.dySt+' (初:'+S.dyBase+' 加:'+S.dyAdd+')\n⏹️ 结束余额：'+S.bal+'\n📈 总盈亏：'+(w>=0?'+'+w:w)+'\n✅ 已重置开启新的一天',0);S.shoe=1;S.rd=1;S.shSt=S.bal;S.dySt=S.bal;S.dyBase=S.bal;S.dyAdd=0;S.hist=[];S.lz=[];S.ph='BET';S.bets={};S.fly=0;S.pSpec='';S.pZD=0;S.pXD=0;curTgt='';tog('m-set');save();}
-
-/* 底牌全部集中在记录区：上下滑惯性联动滚页 + 双击顺滑滚页 */
-var stCards=['A','2','3','4','5','6','7','8','9','10','J','Q','K','头'];
-var rSx=0,baseY=0,didDrag=false,lastTap=0,isSync=false,lastSt=0,accSc=0;
-var recHdr=document.getElementById('rec-hdr'),rList=document.getElementById('r-list');
-var _origUi=ui;
-ui=function(){
-  isSync=true;var keep=rList?rList.scrollTop:0;_origUi();
-  if(rList){
-    rList.innerHTML+=rList.innerHTML;
-    var mx=rList.scrollHeight-rList.clientHeight;
-    if(keep<100||keep>mx-100)keep=Math.floor(rList.scrollHeight/3);
-    rList.scrollTop=keep;lastSt=keep;
-  }
-  setTimeout(function(){isSync=false;},25);
+const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+const COLOR_FILL_ORDER = ['0', '2', '1', '3', '4', '5', 'next_fly'];
+const BET_KEYS = ['banker', 'player', 'tie', 'dragon7', 'panda8', 'stiger', 'btiger', 'bpair', 'ppair', 'super6'];
+const BET_NAMES = {
+  banker:'庄', player:'闲', tie:'和局',
+  dragon7:'龙七', panda8:'熊八', stiger:'小老虎', btiger:'大老虎',
+  bpair:'庄对', ppair:'闲对', super6:'幸运六'
 };
-function stepRoll(){
-  isSync=true;curPg=curPg%20+1;
-  document.getElementById('pg-txt').innerText='第 '+curPg+' 页';
-  var s0=rList.scrollTop,t0=performance.now();
-  function anim(t){
-    var p=Math.min(1,(t-t0)/120);
-    rList.scrollTop=s0+28*p;lastSt=rList.scrollTop;
-    if(p<1)requestAnimationFrame(anim);else setTimeout(function(){isSync=false;},20);
-  }
-  requestAnimationFrame(anim);
+const KELLY_ODDS = {
+  banker:0.95, player:1, tie:8,
+  dragon7:40, panda8:25, stiger:22, btiger:50,
+  bpair:11, ppair:11, super6:15
+};
+
+let redPool = new Array(13).fill(16);
+let bluePool = new Array(13).fill(16);
+let redShoe = [64, 16, 16, 16, 16, 16, 16, 16, 16, 16];
+let blueShoe = [64, 16, 16, 16, 16, 16, 16, 16, 16, 16];
+
+let card_colors = [null, null, null, null, null, null];
+let next_fly_color = null;
+let fly_color = null, fly_rank = null, isFlyPriority = false;
+let used_cards = [null, null, null, null, null, null];
+
+let selectedBoxKey = 'player';
+let currentBets = { banker:0, player:0, tie:0, dragon7:0, panda8:0, stiger:0, btiger:0, bpair:0, ppair:0, super6:0 };
+let recommendedBets = { banker:0, player:0, tie:0, dragon7:0, panda8:0, stiger:0, btiger:0, bpair:0, ppair:0, super6:0 };
+let currentLiveEVs = { banker:null, player:null, tie:null, dragon7:null, panda8:null, stiger:null, btiger:null, bpair:null, ppair:null, super6:null };
+// 每个注项的筹码添加历史栈，实现点击已选框金额逐笔回退
+let betChipHistory = { banker:[], player:[], tie:[], dragon7:[], panda8:[], stiger:[], btiger:[], bpair:[], ppair:[], super6:[], ins:[] };
+
+let liveInsCond = null;
+let lockedInsOrders = [];
+
+let shoeNumber = 1;
+let handRecords = [];
+let archivedShoes = [];
+let historyDaysArchive = [];
+let calcTimer = null;
+let lastBreakdown = null;
+let editingHandIdx = -1;
+let resetDayConfirmStep = 0;
+let newShoeConfirmStep = 0;
+let newShoeConfirmTimer = null;
+let incompleteConfirmStep = 0;
+let incompleteTimer = null;
+let toastTimer = null;
+
+let appCfg = {
+  startBankroll: 20000,
+  addBankroll: 0,
+  kellyBankroll: 20000,
+  kellyMult: 0.5,
+  rebatePct: 1.3,
+  pairOdds: 11,
+  betUnit: 10,
+  sideUnit: 10,
+  insUnit: 5
+};
+const DEFAULT_INS_ODDS = {
+  ab_7: 2, ab_8: 7, ab_9: 9, cd_7: 2, cd_8: 7, cd_9: 9,
+  abcd_b4: 1.5, abcd_b5: 2, abcd_b6: 3, abcd_b7: 4, abcd_p5: 2, abcd_p6: 3, abcd_p7: 4,
+  abcde_4: 1.5, abcde_5: 2, abcde_6: 3, abcde_7: 4, abcde_8: 9, abcde_9: 10,
+  abcdf_4: 1.5, abcdf_5: 2, abcdf_6: 3, abcdf_7: 4, abcdf_8: 9, abcdf_9: 10
+};
+let insOdds = Object.assign({}, DEFAULT_INS_ODDS);
+
+function showToast(msg, type = 'warn') {
+  const el = document.getElementById('toast-banner');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'show' + (type === 'err' ? ' err' : (type === 'ok' ? ' ok' : ''));
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ''; }, 2300);
 }
-recHdr.addEventListener('touchend',function(e){
-  if(e.changedTouches.length>1)return;
-  var rect=recHdr.getBoundingClientRect(),relX=e.changedTouches[0].clientX-rect.left;
-  if(relX>=rect.width*0.40&&relX<=rect.width*0.80){
-    stSuit=(stSuit==='')?'🔴':(stSuit==='🔴'?'🔵':'');
-    document.getElementById('dot-l').className='s-dot'+(stSuit==='🔴'?' on':'');
-    document.getElementById('dot-r').className='s-dot'+(stSuit==='🔵'?' on':'');
+
+function resetIncompleteConfirmBtn() {
+  incompleteConfirmStep = 0;
+  if (incompleteTimer) { clearTimeout(incompleteTimer); incompleteTimer = null; }
+  const btn = document.getElementById('btn-confirm-hand');
+  const icon = document.getElementById('confirm-icon');
+  const txt = document.getElementById('confirm-txt');
+  if (btn) btn.className = 'btn-confirm-tall';
+  if (icon) icon.textContent = '✅';
+  if (txt) txt.textContent = '确 认';
+}
+
+function rankToPt(rIdx) {
+  if (rIdx === null || rIdx === undefined) return null;
+  return rIdx >= 9 ? 0 : rIdx + 1;
+}
+function rankLabel(rIdx) {
+  return (rIdx !== null && rIdx !== undefined && RANKS[rIdx]) ? RANKS[rIdx] : '';
+}
+function hasAnyUsedCard() { return used_cards.some(v => v !== null); }
+function isColorsAllFilled() { return card_colors.every(c => c === 'red' || c === 'blue'); }
+function roundToUnit(val, unit) { return unit > 0 ? Math.round(val / unit) * unit : Math.round(val); }
+function floorToUnit(val, unit) { return unit > 0 ? Math.floor((val + 1e-9) / unit) * unit : Math.floor(val + 1e-9); }
+
+function syncShoesFromPools() {
+  redShoe[0] = redPool[9] + redPool[10] + redPool[11] + redPool[12];
+  blueShoe[0] = bluePool[9] + bluePool[10] + bluePool[11] + bluePool[12];
+  for (let pt = 1; pt <= 9; pt++) {
+    redShoe[pt] = redPool[pt - 1];
+    blueShoe[pt] = bluePool[pt - 1];
   }
-},{passive:true});
-rList.addEventListener('scroll',function(){
-  if(isSync)return;
-  var st=rList.scrollTop,dy=st-lastSt;lastSt=st;accSc+=dy;
-  var step=Math.trunc(accSc/15);
-  if(step!==0){
-    accSc-=step*15;
-    curPg=((curPg-1+step)%20+20)%20+1;
-    document.getElementById('pg-txt').innerText='第 '+curPg+' 页';
+}
+
+// ============================================================================
+// 双引擎毫秒级防丢持久化 (LocalStorage + IndexedDB 双向互备，闪退/卡死重启100%自动恢复)
+// ============================================================================
+let idbInstance = null;
+function initIndexedDB() {
+  try {
+    const req = indexedDB.open('BacMobileV4FlagshipDB', 1);
+    req.onupgradeneeded = function(e) {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('stateStore')) db.createObjectStore('stateStore');
+    };
+    req.onsuccess = function(e) {
+      idbInstance = e.target.result;
+      // 双向校验：若闪退后 IndexedDB 拥有更新的快照（或 LocalStorage 被系统清理），自动从 IndexedDB 恢复
+      try {
+        const tx = idbInstance.transaction('stateStore', 'readonly');
+        const getReq = tx.objectStore('stateStore').get('latest');
+        getReq.onsuccess = function() {
+          const idbSnap = getReq.result;
+          if (!idbSnap) return;
+          let localSavedAt = 0;
+          try {
+            const raw = localStorage.getItem('bac_mob_v4_full');
+            if (raw) localSavedAt = JSON.parse(raw).savedAt || 0;
+          } catch (err) {}
+          if ((idbSnap.savedAt || 0) > localSavedAt) {
+            applySnapshotData(idbSnap);
+            renderBetInputs();
+            replayFullShoe();
+            renderColorZone();
+            renderUsedZone();
+            tryTriggerBrain1();
+            evaluateBrain2Insurance();
+          }
+        };
+      } catch (err) {}
+    };
+  } catch (err) {}
+}
+
+function buildFullSnapshot() {
+  return {
+    insOdds,
+    appCfg,
+    shoeNumber,
+    handRecords,
+    archivedShoes,
+    historyDaysArchive,
+    liveTable: {
+      card_colors,
+      next_fly_color,
+      fly_color,
+      fly_rank,
+      isFlyPriority,
+      used_cards,
+      currentBets,
+      lockedInsOrders
+    },
+    savedAt: Date.now()
+  };
+}
+
+function saveStateToLocal() {
+  const snap = buildFullSnapshot();
+  try {
+    localStorage.setItem('bac_mob_v4_full', JSON.stringify(snap));
+  } catch (e) {}
+  try {
+    if (idbInstance) {
+      const tx = idbInstance.transaction('stateStore', 'readwrite');
+      tx.objectStore('stateStore').put(snap, 'latest');
+    }
+  } catch (e) {}
+}
+
+function applySnapshotData(snap) {
+  if (!snap) return;
+  if (snap.insOdds) insOdds = Object.assign({}, DEFAULT_INS_ODDS, snap.insOdds);
+  if (snap.appCfg) appCfg = Object.assign(appCfg, snap.appCfg);
+  if (snap.shoeNumber) shoeNumber = snap.shoeNumber;
+  if (Array.isArray(snap.handRecords)) handRecords = snap.handRecords;
+  if (Array.isArray(snap.archivedShoes)) archivedShoes = snap.archivedShoes;
+  if (Array.isArray(snap.historyDaysArchive)) historyDaysArchive = snap.historyDaysArchive;
+  if (snap.liveTable) {
+    const lt = snap.liveTable;
+    if (Array.isArray(lt.card_colors)) card_colors = lt.card_colors.slice(0, 6);
+    next_fly_color = lt.next_fly_color || null;
+    fly_color = lt.fly_color || null;
+    fly_rank = (lt.fly_rank !== undefined) ? lt.fly_rank : null;
+    isFlyPriority = !!lt.isFlyPriority;
+    if (Array.isArray(lt.used_cards)) used_cards = lt.used_cards.slice(0, 6);
+    if (lt.currentBets) currentBets = Object.assign(currentBets, lt.currentBets);
+    if (Array.isArray(lt.lockedInsOrders)) lockedInsOrders = lt.lockedInsOrders;
   }
-  var mx=rList.scrollHeight-rList.clientHeight;
-  if(st<90||st>mx-90){
-    isSync=true;rList.scrollTop=Math.floor(rList.scrollHeight/2);lastSt=rList.scrollTop;
-    setTimeout(function(){isSync=false;},20);
+}
+
+function loadStateFromLocal() {
+  try {
+    const raw = localStorage.getItem('bac_mob_v4_full');
+    if (raw) applySnapshotData(JSON.parse(raw));
+    document.getElementById('top-rebate-inp').value = appCfg.rebatePct;
+    document.getElementById('chk-fly-priority').checked = isFlyPriority;
+  } catch (e) {}
+}
+
+// 监听 App 切后台、锁屏或意外关闭事件，强制执行同步落盘保护
+window.addEventListener('pagehide', saveStateToLocal);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') saveStateToLocal();
+});
+
+function getEffectiveColorSlot(uIdx, uCardsArr) {
+  if (uIdx < 4) return uIdx;
+  if (uIdx === 4) return 4;
+  if (uIdx === 5) {
+    const A = rankToPt(uCardsArr[0]), B = rankToPt(uCardsArr[1]);
+    if (A !== null && B !== null && ((A + B) % 10 === 6 || (A + B) % 10 === 7)) return 4;
+    return 5;
   }
-},{passive:true});
-rList.addEventListener('touchstart',function(e){
-  if(e.touches.length>1)return;
-  rSx=e.touches[0].clientX;baseY=e.touches[0].clientY;didDrag=false;
-},{passive:true});
-rList.addEventListener('touchmove',function(e){
-  if(e.touches.length>1)return;
-  if(Math.abs(e.touches[0].clientY-baseY)>15||Math.abs(e.touches[0].clientX-rSx)>15)didDrag=true;
-},{passive:true});
-rList.addEventListener('touchend',function(e){
-  if(e.changedTouches.length>1||didDrag)return;
-  var now=Date.now();
-  if(now-lastTap<350){
-    lastTap=0;
-    if(stSuit!==''){
-      if(curPg>=1&&curPg<=14){
-        tg(stSuit+stCards[curPg-1],1);vib([60,50,60]);stSuit='';
-        document.getElementById('dot-l').className='s-dot';
-        document.getElementById('dot-r').className='s-dot';
-        stepRoll();
+  return uIdx;
+}
+
+// 独立超几何庄对/闲对精确计算（不改动大脑1，直接基于13列A~K红蓝余数池）
+function calcExactPairProbAndEV(c1, c2) {
+  if (!c1 || !c2) return { prob: null, ev: null };
+  let rTot = 0, bTot = 0;
+  for (let i = 0; i < 13; i++) {
+    rTot += redPool[i];
+    bTot += bluePool[i];
+  }
+  let num = 0, den = 0;
+  if (c1 === 'red' && c2 === 'red') {
+    if (rTot < 2) return { prob: 0, ev: -1 };
+    for (let i = 0; i < 13; i++) num += redPool[i] * (redPool[i] - 1);
+    den = rTot * (rTot - 1);
+  } else if (c1 === 'blue' && c2 === 'blue') {
+    if (bTot < 2) return { prob: 0, ev: -1 };
+    for (let i = 0; i < 13; i++) num += bluePool[i] * (bluePool[i] - 1);
+    den = bTot * (bTot - 1);
+  } else {
+    if (rTot < 1 || bTot < 1) return { prob: 0, ev: -1 };
+    for (let i = 0; i < 13; i++) num += redPool[i] * bluePool[i];
+    den = rTot * bTot;
+  }
+  const prob = den > 0 ? (num / den) : 0;
+  const pOdds = appCfg.pairOdds || 11;
+  const ev = prob * (pOdds + 1) - 1;
+  return { prob, ev };
+}
+
+function updatePairBoxesLive() {
+  const pOdds = appCfg.pairOdds || 11;
+  KELLY_ODDS.bpair = pOdds;
+  KELLY_ODDS.ppair = pOdds;
+  if (hasAnyUsedCard()) return;
+
+  const pairs = [
+    { key: 'ppair', c1: card_colors[0], c2: card_colors[1] },
+    { key: 'bpair', c1: card_colors[2], c2: card_colors[3] }
+  ];
+  const unitToUse = appCfg.sideUnit || 10;
+
+  pairs.forEach(item => {
+    const eEl = document.getElementById('e-' + item.key);
+    const rEl = document.getElementById('r-' + item.key);
+    if (!item.c1 || !item.c2) {
+      recommendedBets[item.key] = 0;
+      currentLiveEVs[item.key] = null;
+      if (eEl) { eEl.textContent = ''; eEl.className = 'bc-ev'; }
+      if (rEl) { rEl.textContent = ''; rEl.className = 'bc-rec-btn'; }
+      return;
+    }
+    const res = calcExactPairProbAndEV(item.c1, item.c2);
+    const ev = res.ev;
+    currentLiveEVs[item.key] = ev;
+    if (eEl) {
+      eEl.textContent = (ev >= 0 ? '+' : '') + (ev * 100).toFixed(1) + '%';
+      eEl.className = 'bc-ev' + (ev > 0 ? ' pos' : ' neg');
+    }
+    if (ev > 0) {
+      const rawKelly = (appCfg.kellyBankroll * ev * appCfg.kellyMult) / pOdds;
+      const recAmt = Math.max(unitToUse, roundToUnit(rawKelly, unitToUse));
+      recommendedBets[item.key] = recAmt;
+      if (rEl) {
+        rEl.textContent = `荐:${recAmt}`;
+        rEl.className = 'bc-rec-btn hot';
       }
-    }else stepRoll();
-  }else lastTap=now;
-},{passive:true});
-ui();
+    } else {
+      recommendedBets[item.key] = 0;
+      if (rEl) {
+        rEl.textContent = '';
+        rEl.className = 'bc-rec-btn';
+      }
+    }
+  });
+}
+
+function evalSingleInsPL(bet, odds, betOn, outcome) {
+  if (!bet || bet <= 0 || !betOn || !odds) return 0;
+  if (betOn === 'banker') {
+    if (outcome === '庄') return bet * odds;
+    if (outcome === '闲') return -bet;
+    return 0;
+  } else if (betOn === 'player') {
+    if (outcome === '闲') return bet * odds;
+    if (outcome === '庄') return -bet;
+    return 0;
+  } else if (betOn === 'tie') {
+    return outcome === '和' ? bet * odds : -bet;
+  }
+  return 0;
+}
+
+function replayFullShoe() {
+  redPool.fill(16);
+  bluePool.fill(16);
+
+  let shoeMainPL = 0, shoeSidePL = 0, shoeInsPL = 0, shoeRebate = 0;
+  const rRate = (appCfg.rebatePct || 0) / 100;
+  const pOdds = appCfg.pairOdds || 11;
+
+  for (let idx = handRecords.length - 1; idx >= 0; idx--) {
+    const h = handRecords[idx];
+    if (h.flyRank !== null && h.flyRank !== undefined && h.flyColor) {
+      if (h.flyColor === 'red') redPool[h.flyRank] = Math.max(0, redPool[h.flyRank] - 1);
+      else if (h.flyColor === 'blue') bluePool[h.flyRank] = Math.max(0, bluePool[h.flyRank] - 1);
+    }
+    for (let u = 0; u < 6; u++) {
+      const rIdx = h.usedCards[u];
+      if (rIdx !== null && rIdx !== undefined) {
+        const cSlot = getEffectiveColorSlot(u, h.usedCards);
+        const col = h.cardColors[cSlot];
+        if (col === 'red') redPool[rIdx] = Math.max(0, redPool[rIdx] - 1);
+        else if (col === 'blue') bluePool[rIdx] = Math.max(0, bluePool[rIdx] - 1);
+      }
+    }
+
+    const A = rankToPt(h.usedCards[0]), B = rankToPt(h.usedCards[1]);
+    const C = rankToPt(h.usedCards[2]), D = rankToPt(h.usedCards[3]);
+    const E = rankToPt(h.usedCards[4]), F = rankToPt(h.usedCards[5]);
+    let outcome = h.manualRes || '庄';
+    let pPts = -1, bPts = -1, pCardsCount = 2, bCardsCount = 2;
+
+    if (A !== null && B !== null && C !== null && D !== null) {
+      pPts = (A + B + (E !== null ? E : 0)) % 10;
+      bPts = (C + D + (F !== null ? F : 0)) % 10;
+      if (E !== null) pCardsCount = 3;
+      if (F !== null) bCardsCount = 3;
+      if (!h.manualRes) outcome = bPts > pPts ? '庄' : (pPts > bPts ? '闲' : '和');
+    }
+    h.resolvedOutcome = outcome;
+    h.pPts = pPts; h.bPts = bPts;
+
+    const isDragon7 = (outcome === '庄' && bPts === 7 && bCardsCount === 3);
+    const isPanda8  = (outcome === '闲' && pPts === 8 && pCardsCount === 3);
+    const isSTiger  = (outcome === '庄' && bPts === 6 && bCardsCount === 2);
+    const isBTiger  = (outcome === '庄' && bPts === 6 && bCardsCount === 3);
+    const isSuper6  = (isSTiger || isBTiger);
+    const isPPair   = (h.usedCards[0] !== null && h.usedCards[0] !== undefined && h.usedCards[0] === h.usedCards[1]);
+    const isBPair   = (h.usedCards[2] !== null && h.usedCards[2] !== undefined && h.usedCards[2] === h.usedCards[3]);
+
+    h.actualHits = {
+      banker: outcome === '庄',
+      player: outcome === '闲',
+      tie: outcome === '和',
+      dragon7: isDragon7,
+      panda8: isPanda8,
+      stiger: isSTiger,
+      btiger: isBTiger,
+      bpair: isBPair,
+      ppair: isPPair,
+      super6: isSuper6
+    };
+
+    const itemPL = { banker:0, player:0, tie:0, dragon7:0, panda8:0, stiger:0, btiger:0, bpair:0, ppair:0, super6:0 };
+    let mPL = 0, sPL = 0, iPL = 0, reb = 0;
+    const bBet = (h.bets && h.bets.banker) || 0;
+    const pBet = (h.bets && h.bets.player) || 0;
+    const tBet = (h.bets && h.bets.tie) || 0;
+
+    if (outcome === '庄') {
+      itemPL.banker = bBet > 0 ? bBet * 0.95 : 0;
+      itemPL.player = pBet > 0 ? -pBet : 0;
+      itemPL.tie    = tBet > 0 ? -tBet : 0;
+      reb += pBet * rRate;
+    } else if (outcome === '闲') {
+      itemPL.banker = bBet > 0 ? -bBet : 0;
+      itemPL.player = pBet > 0 ? pBet : 0;
+      itemPL.tie    = tBet > 0 ? -tBet : 0;
+      reb += bBet * rRate;
+    } else {
+      itemPL.banker = 0;
+      itemPL.player = 0;
+      itemPL.tie    = tBet > 0 ? tBet * 8 : 0;
+    }
+    mPL = itemPL.banker + itemPL.player;
+    sPL += itemPL.tie;
+
+    if (h.bets) {
+      if (h.bets.dragon7 > 0) { itemPL.dragon7 = isDragon7 ? h.bets.dragon7 * 40 : -h.bets.dragon7; sPL += itemPL.dragon7; }
+      if (h.bets.panda8 > 0)  { itemPL.panda8  = isPanda8  ? h.bets.panda8 * 25  : -h.bets.panda8;  sPL += itemPL.panda8; }
+      if (h.bets.stiger > 0)  { itemPL.stiger  = isSTiger  ? h.bets.stiger * 22  : -h.bets.stiger;  sPL += itemPL.stiger; }
+      if (h.bets.btiger > 0)  { itemPL.btiger  = isBTiger  ? h.bets.btiger * 50  : -h.bets.btiger;  sPL += itemPL.btiger; }
+      if (h.bets.bpair > 0)   { itemPL.bpair   = isBPair   ? h.bets.bpair * pOdds : -h.bets.bpair;  sPL += itemPL.bpair; }
+      if (h.bets.ppair > 0)   { itemPL.ppair   = isPPair   ? h.bets.ppair * pOdds : -h.bets.ppair;  sPL += itemPL.ppair; }
+      if (h.bets.super6 > 0) {
+        if (isSTiger) itemPL.super6 = h.bets.super6 * 12;
+        else if (isBTiger) itemPL.super6 = h.bets.super6 * 20;
+        else itemPL.super6 = -h.bets.super6;
+        sPL += itemPL.super6;
+      }
+    }
+
+    if (Array.isArray(h.lockedOrders) && h.lockedOrders.length > 0) {
+      h.lockedOrders.forEach(ord => {
+        ord.pl = evalSingleInsPL(ord.bet, ord.odds, ord.betOn, outcome);
+        iPL += ord.pl;
+      });
+    }
+
+    h.itemPL = itemPL;
+    h.handMainPL = mPL;
+    h.handSidePL = sPL;
+    h.handInsPL = iPL;
+    h.handTablePL = mPL + sPL + iPL;
+    h.handRebate = reb;
+
+    shoeMainPL += mPL; shoeSidePL += sPL; shoeInsPL += iPL; shoeRebate += reb;
+  }
+
+  // 扣减当前桌面已放的飞牌与用牌
+  if (fly_rank !== null && fly_color) {
+    if (fly_color === 'red') redPool[fly_rank] = Math.max(0, redPool[fly_rank] - 1);
+    else if (fly_color === 'blue') bluePool[fly_rank] = Math.max(0, bluePool[fly_rank] - 1);
+  }
+  for (let u = 0; u < 6; u++) {
+    const rIdx = used_cards[u];
+    if (rIdx !== null) {
+      const cSlot = getEffectiveColorSlot(u, used_cards);
+      const col = card_colors[cSlot];
+      if (col === 'red') redPool[rIdx] = Math.max(0, redPool[rIdx] - 1);
+      else if (col === 'blue') bluePool[rIdx] = Math.max(0, bluePool[rIdx] - 1);
+    }
+  }
+
+  syncShoesFromPools();
+  updateDashboardUI(shoeMainPL, shoeInsPL, shoeSidePL, shoeRebate);
+  renderPoolZone();
+  renderRecordList();
+  updatePairBoxesLive();
+  saveStateToLocal();
+}
+
+function updateDashboardUI(shoeMainPL, shoeInsPL, shoeSidePL, shoeRebate) {
+  const shoeTableNet = shoeMainPL + shoeInsPL + shoeSidePL;
+  let pastDayNet = 0, pastDayReb = 0;
+  archivedShoes.forEach(s => {
+    pastDayNet += (s.netPL || 0);
+    pastDayReb += (s.rebate || 0);
+  });
+
+  const dayNet = pastDayNet + shoeTableNet;
+  const dayReb = pastDayReb + shoeRebate;
+  const totalBase = (appCfg.startBankroll || 20000) + (appCfg.addBankroll || 0);
+  const curBal = Math.round(totalBase + dayNet);
+
+  const fmtSign = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
+  const colorOf = n => n > 0 ? '#4ade80' : (n < 0 ? '#f87171' : '#f8fafc');
+
+  document.getElementById('top-shoe-info').textContent = `第${shoeNumber}靴·第${handRecords.length + 1}手`;
+  document.getElementById('top-balance').textContent = curBal.toLocaleString();
+  const topShoeEl = document.getElementById('top-shoe-pl');
+  topShoeEl.textContent = `本靴:${fmtSign(shoeTableNet)}`;
+  topShoeEl.style.color = colorOf(shoeTableNet);
+
+  let remCards = 0;
+  for (let i = 0; i <= 9; i++) remCards += redShoe[i] + blueShoe[i];
+  const penEl = document.getElementById('penetration-tag');
+  if (penEl) penEl.textContent = `余${remCards}`;
+
+  const setSt = (id, val) => {
+    const el = document.getElementById(id);
+    el.textContent = fmtSign(val);
+    el.style.color = colorOf(val);
+  };
+  setSt('st-shoe-main', shoeMainPL);
+  setSt('st-shoe-ins', shoeInsPL);
+  setSt('st-shoe-side', shoeSidePL);
+  setSt('st-shoe-net', shoeTableNet);
+  setSt('st-day-net', dayNet);
+
+  document.getElementById('st-shoe-reb').textContent = '+' + Math.round(shoeRebate).toLocaleString();
+  document.getElementById('st-day-reb').textContent = '+' + Math.round(dayReb).toLocaleString();
+}
+
+function onQuickRebateChange(val) {
+  appCfg.rebatePct = parseFloat(val) || 0;
+  replayFullShoe();
+  tryTriggerBrain1();
+}
+
+function clearBrain1Display(tipText) {
+  lastBreakdown = null;
+  document.getElementById('ev-3stage-banker').innerHTML = '--/--/--';
+  document.getElementById('ev-3stage-player').innerHTML = '--/--/--';
+  document.getElementById('prob-line-b').textContent = '庄:--%';
+  document.getElementById('prob-line-p').textContent = '闲:--%';
+  document.getElementById('prob-line-t').textContent = '和:--%';
+  document.getElementById('gain-line-b').textContent = '庄增:--%';
+  document.getElementById('gain-line-p').textContent = '闲增:--%';
+
+  BET_KEYS.forEach(k => {
+    recommendedBets[k] = 0;
+    currentLiveEVs[k] = null;
+    const eEl = document.getElementById('e-' + k);
+    if (eEl) { eEl.textContent = ''; eEl.className = 'bc-ev'; }
+    const rEl = document.getElementById('r-' + k);
+    if (rEl) {
+      rEl.textContent = '';
+      rEl.className = 'bc-rec-btn';
+    }
+  });
+  updatePairBoxesLive();
+  document.getElementById('status-tip').textContent = tipText || '';
+}
+
+function tryTriggerBrain1() {
+  updatePairBoxesLive();
+  if (hasAnyUsedCard()) return;
+  if (!isColorsAllFilled()) {
+    clearBrain1Display('');
+    return;
+  }
+  if (isFlyPriority && !fly_color) {
+    clearBrain1Display('待填飞色');
+    return;
+  }
+  document.getElementById('status-tip').textContent = '精算中...';
+  if (calcTimer) clearTimeout(calcTimer);
+  calcTimer = setTimeout(runBrain1Calculation, 14);
+}
+
+// ============================================================================
+// 大脑1：100% 锁定桌面版 4.0 博士6重循环核心 + 25项保护增益字典（一行未动）
+// ============================================================================
+function runBrain1Calculation() {
+  syncShoesFromPools();
+  const tStart = performance.now();
+  let bNum = 0, pNum = 0, tNum = 0, totalHands = 0;
+  let dragonWin = 0, dragonLose = 0, pandaWin = 0, pandaLose = 0;
+  let tiger2Win = 0, tiger3Win = 0, tigerLose = 0;
+
+  let g_ab_7 = 0, g_ab_8 = 0, g_ab_9 = 0, g_cd_7 = 0, g_cd_8 = 0, g_cd_9 = 0;
+  let g_abcd_p5 = 0, g_abcd_p6 = 0, g_abcd_p7 = 0;
+  let g_abcd_b4 = 0, g_abcd_b5 = 0, g_abcd_b6 = 0, g_abcd_b7 = 0;
+  let g_abcde = [0,0,0,0,0,0,0,0,0,0], g_abcdf = [0,0,0,0,0,0,0,0,0,0];
+
+  const cd_bWin = new Float64Array(100), cd_pWin = new Float64Array(100), cd_tot = new Float64Array(100);
+  const f_bWin = new Float64Array(10), f_pWin = new Float64Array(10), f_tot = new Float64Array(10);
+
+  for (let a = 0; a <= 9; a++) {
+    for (let b = 0; b <= 9; b++) {
+      let ab_bWin = 0, ab_pWin = 0, ab_tot = 0;
+      const player1 = (a + b) % 10;
+
+      for (let c = 0; c <= 9; c++) {
+        for (let d = 0; d <= 9; d++) {
+          let abcd_bWin = 0, abcd_pWin = 0, abcd_tot = 0;
+          const banker1 = (c + d) % 10;
+          const needAbcdf = (player1 < 6 && banker1 < 3);
+          if (needAbcdf) {
+            for (let k = 0; k < 10; k++) { f_bWin[k] = 0; f_pWin[k] = 0; f_tot[k] = 0; }
+          }
+
+          for (let e = 0; e <= 9; e++) {
+            let abcde_bWin = 0, abcde_pWin = 0, abcde_tot = 0;
+            let e_b3 = 0, e_player = 0;
+
+            for (let f = 0; f <= 9; f++) {
+              let banker = 0, player = 0, b3 = 0, p3 = 0;
+              if (banker1 >= 8 || player1 >= 8) {
+                banker = banker1; player = player1;
+              } else if (player1 >= 6 && banker1 >= 6) {
+                banker = banker1; player = player1;
+              } else if (player1 >= 6 && banker1 <= 5) {
+                banker = (banker1 + e) % 10; b3 = 1; player = player1;
+              } else {
+                player = (player1 + e) % 10; p3 = 1;
+                if (banker1 <= 2 || (banker1 === 3 && e !== 8) || (banker1 === 4 && e >= 2 && e <= 7) || (banker1 === 5 && e >= 4 && e <= 7) || (banker1 === 6 && e >= 6 && e <= 7)) {
+                  banker = (banker1 + f) % 10; b3 = 1;
+                } else {
+                  banker = banker1;
+                }
+              }
+              e_b3 = b3; e_player = player;
+
+              let temp = 1.0;
+              if (card_colors[0] === 'red') { temp *= redShoe[a]; redShoe[a]--; } else { temp *= blueShoe[a]; blueShoe[a]--; }
+              if (card_colors[1] === 'red') { temp *= redShoe[b]; redShoe[b]--; } else { temp *= blueShoe[b]; blueShoe[b]--; }
+              if (card_colors[2] === 'red') { temp *= redShoe[c]; redShoe[c]--; } else { temp *= blueShoe[c]; blueShoe[c]--; }
+              if (card_colors[3] === 'red') { temp *= redShoe[d]; redShoe[d]--; } else { temp *= blueShoe[d]; blueShoe[d]--; }
+              if (card_colors[4] === 'red') { temp *= redShoe[e]; redShoe[e]--; } else { temp *= blueShoe[e]; blueShoe[e]--; }
+              if (card_colors[5] === 'red') { temp *= redShoe[f]; } else { temp *= blueShoe[f]; }
+
+              if (card_colors[0] === 'red') redShoe[a]++; else blueShoe[a]++;
+              if (card_colors[1] === 'red') redShoe[b]++; else blueShoe[b]++;
+              if (card_colors[2] === 'red') redShoe[c]++; else blueShoe[c]++;
+              if (card_colors[3] === 'red') redShoe[d]++; else blueShoe[d]++;
+              if (card_colors[4] === 'red') redShoe[e]++; else blueShoe[e]++;
+
+              if (temp < 0) temp = 0;
+              totalHands += temp; abcde_tot += temp;
+              if (needAbcdf) f_tot[f] += temp;
+
+              if (banker > player) {
+                bNum += temp; abcde_bWin += temp;
+                if (needAbcdf) f_bWin[f] += temp;
+              } else if (player > banker) {
+                pNum += temp; abcde_pWin += temp;
+                if (needAbcdf) f_pWin[f] += temp;
+              } else {
+                tNum += temp;
+              }
+
+              if (banker > player && banker === 7 && b3 === 1) dragonWin += temp; else dragonLose += temp;
+              if (player > banker && player === 8 && p3 === 1) pandaWin += temp; else pandaLose += temp;
+              if (banker > player && banker === 6 && b3 === 0) tiger2Win += temp;
+              else if (banker > player && banker === 6 && b3 === 1) tiger3Win += temp;
+              else tigerLose += temp;
+            }
+
+            abcd_bWin += abcde_bWin; abcd_pWin += abcde_pWin; abcd_tot += abcde_tot;
+            if (e_b3 === 1 && player1 < 6 && e_player > banker1) {
+              if (e_player >= 4 && e_player <= 8 && banker1 < Math.min(e_player, 7)) {
+                const od = insOdds['abcde_' + e_player];
+                const v = (abcde_bWin * od - abcde_pWin) / od;
+                if (v > 0) g_abcde[e_player] += v;
+              } else if (e_player === 9 && banker1 < 7) {
+                const tW = abcde_tot - abcde_bWin - abcde_pWin;
+                const v = (tW * insOdds.abcde_9 - abcde_bWin - abcde_pWin) / insOdds.abcde_9;
+                if (v > 0) g_abcde[9] += v;
+              }
+            }
+          }
+
+          ab_bWin += abcd_bWin; ab_pWin += abcd_pWin; ab_tot += abcd_tot;
+          const cdIdx = c * 10 + d;
+          cd_bWin[cdIdx] += abcd_bWin; cd_pWin[cdIdx] += abcd_pWin; cd_tot[cdIdx] += abcd_tot;
+
+          if (player1 === 5 && banker1 === 4) { const v = (abcd_bWin * insOdds.abcd_p5 - abcd_pWin) / insOdds.abcd_p5; if (v > 0) g_abcd_p5 += v; }
+          else if (player1 === 6 && banker1 < 6) { const v = (abcd_bWin * insOdds.abcd_p6 - abcd_pWin) / insOdds.abcd_p6; if (v > 0) g_abcd_p6 += v; }
+          else if (player1 === 7 && banker1 < 6) { const v = (abcd_bWin * insOdds.abcd_p7 - abcd_pWin) / insOdds.abcd_p7; if (v > 0) g_abcd_p7 += v; }
+
+          if (banker1 === 4 && player1 < 4) { const v = (abcd_pWin * insOdds.abcd_b4 - abcd_bWin) / insOdds.abcd_b4; if (v > 0) g_abcd_b4 += v; }
+          else if (banker1 === 5 && player1 < 5) { const v = (abcd_pWin * insOdds.abcd_b5 - abcd_bWin) / insOdds.abcd_b5; if (v > 0) g_abcd_b5 += v; }
+          else if (banker1 === 6 && player1 < 6) { const v = (abcd_pWin * insOdds.abcd_b6 - abcd_bWin) / insOdds.abcd_b6; if (v > 0) g_abcd_b6 += v; }
+          else if (banker1 === 7 && player1 < 6) { const v = (abcd_pWin * insOdds.abcd_b7 - abcd_bWin) / insOdds.abcd_b7; if (v > 0) g_abcd_b7 += v; }
+
+          if (needAbcdf) {
+            for (let f = 0; f <= 9; f++) {
+              const bFinal = (banker1 + f) % 10;
+              if (bFinal >= 4 && bFinal <= 8 && bFinal > player1) {
+                const od = insOdds['abcdf_' + bFinal];
+                const v = (f_pWin[f] * od - f_bWin[f]) / od;
+                if (v > 0) g_abcdf[bFinal] += v;
+              } else if (bFinal === 9 && bFinal > player1) {
+                const tW = f_tot[f] - f_bWin[f] - f_pWin[f];
+                const v = (tW * insOdds.abcdf_9 - f_bWin[f] - f_pWin[f]) / insOdds.abcdf_9;
+                if (v > 0) g_abcdf[9] += v;
+              }
+            }
+          }
+        }
+      }
+
+      if (player1 === 7) { const v = (ab_bWin * insOdds.ab_7 - ab_pWin) / insOdds.ab_7; if (v > 0) g_ab_7 += v; }
+      else if (player1 === 8) { const v = (ab_bWin * insOdds.ab_8 - ab_pWin) / insOdds.ab_8; if (v > 0) g_ab_8 += v; }
+      else if (player1 === 9) { const tW = ab_tot - ab_bWin - ab_pWin; const v = (tW * insOdds.ab_9 - ab_bWin - ab_pWin) / insOdds.ab_9; if (v > 0) g_ab_9 += v; }
+    }
+  }
+
+  for (let c = 0; c <= 9; c++) {
+    for (let d = 0; d <= 9; d++) {
+      const banker1 = (c + d) % 10, idx = c * 10 + d;
+      if (banker1 === 7) { const v = (cd_pWin[idx] * insOdds.cd_7 - cd_bWin[idx]) / insOdds.cd_7; if (v > 0) g_cd_7 += v; }
+      else if (banker1 === 8) { const v = (cd_pWin[idx] * insOdds.cd_8 - cd_bWin[idx]) / insOdds.cd_8; if (v > 0) g_cd_8 += v; }
+      else if (banker1 === 9) { const tW = cd_tot[idx] - cd_bWin[idx] - cd_pWin[idx]; const v = (tW * insOdds.cd_9 - cd_bWin[idx] - cd_pWin[idx]) / insOdds.cd_9; if (v > 0) g_cd_9 += v; }
+    }
+  }
+
+  if (totalHands > 0) {
+    const rRate = (appCfg.rebatePct || 0) / 100;
+    const bBaseEV = (bNum * 0.95 - pNum) / totalHands;
+    const pBaseEV = (pNum - bNum) / totalHands;
+    const tBaseEV = (tNum * 8 - bNum - pNum) / totalHands;
+
+    const bRebateEV = (rRate * pNum) / totalHands;
+    const pRebateEV = (rRate * bNum) / totalHands;
+
+    const pInsGain = (g_ab_7 + g_ab_8 + g_ab_9 + g_abcd_p5 + g_abcd_p6 + g_abcd_p7 + g_abcde[4] + g_abcde[5] + g_abcde[6] + g_abcde[7] + g_abcde[8] + g_abcde[9]) / totalHands;
+    const bInsGain = (g_cd_7 + g_cd_8 + g_cd_9 + g_abcd_b4 + g_abcd_b5 + g_abcd_b6 + g_abcd_b7 + g_abcdf[4] + g_abcdf[5] + g_abcdf[6] + g_abcdf[7] + g_abcdf[8] + g_abcdf[9]) / totalHands;
+
+    const bMidEV = bBaseEV + bRebateEV;
+    const pMidEV = pBaseEV + pRebateEV;
+    const bTotalEV = bMidEV + bInsGain;
+    const pTotalEV = pMidEV + pInsGain;
+
+    const bProbPct = (bNum / totalHands * 100).toFixed(2);
+    const pProbPct = (pNum / totalHands * 100).toFixed(2);
+    const tProbPct = (tNum / totalHands * 100).toFixed(2);
+
+    const fmtSpan = v => `<span class="${v > 0 ? 'ev-pos' : 'ev-neg'}">${(v >= 0 ? '+' : '') + (v * 100).toFixed(2)}%</span>`;
+    document.getElementById('ev-3stage-banker').innerHTML = `${fmtSpan(bBaseEV)}/${fmtSpan(bMidEV)}/${fmtSpan(bTotalEV)}`;
+    document.getElementById('ev-3stage-player').innerHTML = `${fmtSpan(pBaseEV)}/${fmtSpan(pMidEV)}/${fmtSpan(pTotalEV)}`;
+
+    document.getElementById('prob-line-b').textContent = `庄:${bProbPct}%(${(bBaseEV >= 0 ? '+' : '') + (bBaseEV*100).toFixed(2)}%)`;
+    document.getElementById('prob-line-p').textContent = `闲:${pProbPct}%(${(pBaseEV >= 0 ? '+' : '') + (pBaseEV*100).toFixed(2)}%)`;
+    document.getElementById('prob-line-t').textContent = `和:${tProbPct}%(${(tBaseEV >= 0 ? '+' : '') + (tBaseEV*100).toFixed(2)}%)`;
+
+    document.getElementById('gain-line-b').textContent = `庄增:+${(bInsGain * 100).toFixed(3)}%`;
+    document.getElementById('gain-line-p').textContent = `闲增:+${(pInsGain * 100).toFixed(3)}%`;
+
+    const pPairRes = calcExactPairProbAndEV(card_colors[0], card_colors[1]);
+    const bPairRes = calcExactPairProbAndEV(card_colors[2], card_colors[3]);
+
+    const evMap = {
+      banker: bTotalEV,
+      player: pTotalEV,
+      tie: tBaseEV,
+      dragon7: (dragonWin * 40 - dragonLose) / totalHands,
+      panda8: (pandaWin * 25 - pandaLose) / totalHands,
+      stiger: (tiger2Win * 22 - (totalHands - tiger2Win)) / totalHands,
+      btiger: (tiger3Win * 50 - (totalHands - tiger3Win)) / totalHands,
+      bpair: bPairRes.ev !== null ? bPairRes.ev : -1,
+      ppair: pPairRes.ev !== null ? pPairRes.ev : -1,
+      super6: (tiger2Win * 12 + tiger3Win * 20 - tigerLose) / totalHands
+    };
+
+    BET_KEYS.forEach(k => {
+      const ev = evMap[k];
+      currentLiveEVs[k] = ev;
+      const eEl = document.getElementById('e-' + k);
+      const isMain = (k === 'banker' || k === 'player');
+      eEl.textContent = (ev >= 0 ? '+' : '') + (ev * 100).toFixed(isMain ? 2 : 1) + '%';
+      eEl.className = 'bc-ev' + (ev > 0 ? ' pos' : ' neg');
+
+      const rEl = document.getElementById('r-' + k);
+      const isSide = (k !== 'banker' && k !== 'player' && k !== 'tie');
+      const unitToUse = isSide ? (appCfg.sideUnit || 10) : (appCfg.betUnit || 10);
+
+      if (ev > 0) {
+        const rawKelly = (appCfg.kellyBankroll * ev * appCfg.kellyMult) / KELLY_ODDS[k];
+        const recAmt = Math.max(unitToUse, roundToUnit(rawKelly, unitToUse));
+        recommendedBets[k] = recAmt;
+        rEl.textContent = `荐:${recAmt}`;
+        rEl.className = 'bc-rec-btn hot';
+      } else {
+        recommendedBets[k] = 0;
+        rEl.textContent = '';
+        rEl.className = 'bc-rec-btn';
+      }
+    });
+
+    let remCards = 0;
+    for (let i = 0; i <= 9; i++) remCards += redShoe[i] + blueShoe[i];
+
+    lastBreakdown = {
+      bProbPct, pProbPct, tProbPct,
+      bBaseEV, bInsGain, bRebateEV, bTotalEV,
+      pBaseEV, pInsGain, pRebateEV, pTotalEV,
+      evMap: Object.assign({}, evMap),
+      recSnapshot: Object.assign({}, recommendedBets),
+      remCards,
+      penPct: ((416 - remCards) / 416 * 100).toFixed(1),
+      items: [
+        ['闲7点(ab)', g_ab_7 / totalHands], ['闲8点(ab)', g_ab_8 / totalHands], ['闲9点(ab)', g_ab_9 / totalHands],
+        ['庄7点(cd)', g_cd_7 / totalHands], ['庄8点(cd)', g_cd_8 / totalHands], ['庄9点(cd)', g_cd_9 / totalHands],
+        ['闲5点(abcd)', g_abcd_p5 / totalHands], ['闲6点(abcd)', g_abcd_p6 / totalHands], ['闲7点(abcd)', g_abcd_p7 / totalHands],
+        ['庄4点(abcd)', g_abcd_b4 / totalHands], ['庄5点(abcd)', g_abcd_b5 / totalHands], ['庄6点(abcd)', g_abcd_b6 / totalHands], ['庄7点(abcd)', g_abcd_b7 / totalHands],
+        ['闲三4点', g_abcde[4] / totalHands], ['闲三5点', g_abcde[5] / totalHands], ['闲三6点', g_abcde[6] / totalHands],
+        ['闲三7点', g_abcde[7] / totalHands], ['闲三8点', g_abcde[8] / totalHands], ['闲三9点', g_abcde[9] / totalHands],
+        ['庄三4点', g_abcdf[4] / totalHands], ['庄三5点', g_abcdf[5] / totalHands], ['庄三6点', g_abcdf[6] / totalHands],
+        ['庄三7点', g_abcdf[7] / totalHands], ['庄三8点', g_abcdf[8] / totalHands], ['庄三9点', g_abcdf[9] / totalHands]
+      ]
+    };
+
+    const costMs = Math.round(performance.now() - tStart);
+    document.getElementById('status-tip').textContent = `${costMs}ms`;
+  } else {
+    clearBrain1Display('余牌不足');
+  }
+}
+
+function doesBankerDrawWhenPlayerDrew(b1, eVal) {
+  if (b1 <= 2) return true;
+  if (b1 === 3) return eVal !== 8;
+  if (b1 === 4) return eVal >= 2 && eVal <= 7;
+  if (b1 === 5) return eVal >= 4 && eVal <= 7;
+  if (b1 === 6) return eVal >= 6 && eVal <= 7;
+  return false;
+}
+
+function getRemainingMainBetPayoutQuota(mainSide, excludeStageKey = null) {
+  const mainBetAmt = currentBets[mainSide] || 0;
+  if (mainBetAmt <= 0) return 0;
+  let usedPayout = 0;
+  lockedInsOrders.forEach(ord => {
+    if (ord.mainSide === mainSide && ord.stageKey !== excludeStageKey) {
+      usedPayout += (ord.bet || 0) * (ord.odds || 0);
+    }
+  });
+  return Math.max(0, mainBetAmt - usedPayout);
+}
+
+// 生成触发保险瞬间的牌型结构快照（供大数据复盘分析“在何时保的、什么牌型结构保的”）
+function buildCurrentCardStructureSnapshot() {
+  const fmtCard = u => {
+    const r = used_cards[u];
+    if (r === null || r === undefined) return null;
+    const c = card_colors[getEffectiveColorSlot(u, used_cards)];
+    return `${c === 'red' ? '红' : '蓝'}${rankLabel(r)}`;
+  };
+  const A = rankToPt(used_cards[0]), B = rankToPt(used_cards[1]);
+  const C = rankToPt(used_cards[2]), D = rankToPt(used_cards[3]);
+  const E = rankToPt(used_cards[4]), F = rankToPt(used_cards[5]);
+  const pArr = [fmtCard(0), fmtCard(1), fmtCard(4)].filter(Boolean);
+  const bArr = [fmtCard(2), fmtCard(3), fmtCard(5)].filter(Boolean);
+  const pPt = (A !== null && B !== null) ? (A + B + (E !== null ? E : 0)) % 10 : '-';
+  const bPt = (C !== null && D !== null) ? (C + D + (F !== null ? F : 0)) % 10 : '-';
+  return `闲[${pArr.join(' ')}=${pPt}点] vs 庄[${bArr.join(' ')}=${bPt}点]`;
+}
+
+// ============================================================================
+// 大脑2：100% 锁定桌面版 4.0 实时保护检测 + 两行清晰显示 (第1行:买不买+EV | 第2行:几赔几+牌型)
+// ============================================================================
+function evaluateBrain2Insurance() {
+  syncShoesFromPools();
+  const A = rankToPt(used_cards[0]), B = rankToPt(used_cards[1]);
+  const C = rankToPt(used_cards[2]), D = rankToPt(used_cards[3]);
+  const E = rankToPt(used_cards[4]), F = rankToPt(used_cards[5]);
+  const hasAB = (A !== null && B !== null), hasCD = (C !== null && D !== null);
+
+  let cond = null;
+
+  if (hasAB && C === null && D === null && E === null && F === null) {
+    const p1 = (A + B) % 10;
+    if (p1 === 7) cond = { stageKey: 'ab_7', phaseName: 'AB(闲前2张)', typeName: '闲前7', title: `闲前7(1:${insOdds.ab_7})`, odds: insOdds.ab_7, betOn: 'banker', mainSide: 'player' };
+    else if (p1 === 8) cond = { stageKey: 'ab_8', phaseName: 'AB(闲前2张)', typeName: '闲前8', title: `闲前8(1:${insOdds.ab_8})`, odds: insOdds.ab_8, betOn: 'banker', mainSide: 'player' };
+    else if (p1 === 9) cond = { stageKey: 'ab_9', phaseName: 'AB(闲前2张)', typeName: '闲前9和', title: `闲前9和(1:${insOdds.ab_9})`, odds: insOdds.ab_9, betOn: 'tie', mainSide: 'player' };
+  } else if (hasCD && A === null && B === null && E === null && F === null) {
+    const b1 = (C + D) % 10;
+    if (b1 === 7) cond = { stageKey: 'cd_7', phaseName: 'CD(庄前2张)', typeName: '庄前7', title: `庄前7(1:${insOdds.cd_7})`, odds: insOdds.cd_7, betOn: 'player', mainSide: 'banker' };
+    else if (b1 === 8) cond = { stageKey: 'cd_8', phaseName: 'CD(庄前2张)', typeName: '庄前8', title: `庄前8(1:${insOdds.cd_8})`, odds: insOdds.cd_8, betOn: 'player', mainSide: 'banker' };
+    else if (b1 === 9) cond = { stageKey: 'cd_9', phaseName: 'CD(庄前2张)', typeName: '庄前9和', title: `庄前9和(1:${insOdds.cd_9})`, odds: insOdds.cd_9, betOn: 'tie', mainSide: 'banker' };
+  } else if (hasAB && hasCD && E === null && F === null) {
+    const p1 = (A + B) % 10, b1 = (C + D) % 10;
+    if (p1 < 8 && b1 < 8) {
+      if (b1 === 4 && p1 < 4) cond = { stageKey: 'abcd_b4', phaseName: 'ABCD(前4张)', typeName: `庄4闲${p1}`, title: `庄4(1:${insOdds.abcd_b4})`, odds: insOdds.abcd_b4, betOn: 'player', mainSide: 'banker' };
+      else if (b1 === 5 && p1 < 5) cond = { stageKey: 'abcd_b5', phaseName: 'ABCD(前4张)', typeName: `庄5闲${p1}`, title: `庄5(1:${insOdds.abcd_b5})`, odds: insOdds.abcd_b5, betOn: 'player', mainSide: 'banker' };
+      else if (b1 === 6 && p1 < 6) cond = { stageKey: 'abcd_b6', phaseName: 'ABCD(前4张)', typeName: `庄6闲${p1}`, title: `庄6(1:${insOdds.abcd_b6})`, odds: insOdds.abcd_b6, betOn: 'player', mainSide: 'banker' };
+      else if (b1 === 7 && p1 < 6) cond = { stageKey: 'abcd_b7', phaseName: 'ABCD(前4张)', typeName: `庄7闲${p1}`, title: `庄7(1:${insOdds.abcd_b7})`, odds: insOdds.abcd_b7, betOn: 'player', mainSide: 'banker' };
+      else if (p1 === 5 && b1 === 4) cond = { stageKey: 'abcd_p5', phaseName: 'ABCD(前4张)', typeName: `闲5庄4`, title: `闲5(1:${insOdds.abcd_p5})`, odds: insOdds.abcd_p5, betOn: 'banker', mainSide: 'player' };
+      else if (p1 === 6 && b1 < 6) cond = { stageKey: 'abcd_p6', phaseName: 'ABCD(前4张)', typeName: `闲6庄${b1}`, title: `闲6(1:${insOdds.abcd_p6})`, odds: insOdds.abcd_p6, betOn: 'banker', mainSide: 'player' };
+      else if (p1 === 7 && b1 < 6) cond = { stageKey: 'abcd_p7', phaseName: 'ABCD(前4张)', typeName: `闲7庄${b1}`, title: `闲7(1:${insOdds.abcd_p7})`, odds: insOdds.abcd_p7, betOn: 'banker', mainSide: 'player' };
+    }
+  } else if (hasAB && hasCD && E !== null && F === null) {
+    const p1 = (A + B) % 10, b1 = (C + D) % 10;
+    if (p1 <= 5 && b1 <= 6 && doesBankerDrawWhenPlayerDrew(b1, E)) {
+      const pF = (p1 + E) % 10;
+      if (pF > b1 && pF >= 4 && pF <= 8 && b1 < Math.min(pF, 7)) {
+        cond = { stageKey: 'abcde_' + pF, phaseName: 'ABCDE(闲三张)', typeName: `闲三${pF}庄${b1}`, title: `闲三${pF}(1:${insOdds['abcde_' + pF]})`, odds: insOdds['abcde_' + pF], betOn: 'banker', mainSide: 'player' };
+      } else if (pF === 9 && b1 < 7) {
+        cond = { stageKey: 'abcde_9', phaseName: 'ABCDE(闲三张)', typeName: `闲三9和`, title: `闲三9和(1:${insOdds.abcde_9})`, odds: insOdds.abcde_9, betOn: 'tie', mainSide: 'player' };
+      }
+    }
+  } else if (hasAB && hasCD && E === null && F !== null) {
+    const p1 = (A + B) % 10, b1 = (C + D) % 10;
+    if (p1 <= 5 && b1 < 3) {
+      const bF = (b1 + F) % 10;
+      if (bF > p1 && bF >= 4 && bF <= 8) {
+        cond = { stageKey: 'abcdf_' + bF, phaseName: 'ABCDF(庄三张)', typeName: `庄三${bF}闲${p1}`, title: `庄三${bF}(1:${insOdds['abcdf_' + bF]})`, odds: insOdds['abcdf_' + bF], betOn: 'player', mainSide: 'banker' };
+      } else if (bF === 9 && bF > p1) {
+        cond = { stageKey: 'abcdf_9', phaseName: 'ABCDF(庄三张)', typeName: `庄三9和`, title: `庄三9和(1:${insOdds.abcdf_9})`, odds: insOdds.abcdf_9, betOn: 'tie', mainSide: 'banker' };
+      }
+    }
+  }
+
+  if (!cond) {
+    liveInsCond = null;
+    renderInsuranceUI('none', '', '', '', '');
+    return;
+  }
+  if (!isColorsAllFilled()) {
+    liveInsCond = null;
+    renderInsuranceUI('none', '待底色', '', `1赔${cond.odds}`, cond.typeName);
+    return;
+  }
+
+  let bWin = 0, pWin = 0, tWin = 0, subTotal = 0;
+  const aL = A !== null ? [A] : [0,1,2,3,4,5,6,7,8,9], bL = B !== null ? [B] : [0,1,2,3,4,5,6,7,8,9];
+  const cL = C !== null ? [C] : [0,1,2,3,4,5,6,7,8,9], dL = D !== null ? [D] : [0,1,2,3,4,5,6,7,8,9];
+  const eL = E !== null ? [E] : [0,1,2,3,4,5,6,7,8,9], fL = F !== null ? [F] : [0,1,2,3,4,5,6,7,8,9];
+
+  for (let a of aL) for (let b of bL) for (let c of cL) for (let d of dL) for (let e of eL) for (let f of fL) {
+    let p1 = (a + b) % 10, b1 = (c + d) % 10, banker = 0, player = 0;
+    if (b1 >= 8 || p1 >= 8 || (p1 >= 6 && b1 >= 6)) { banker = b1; player = p1; }
+    else if (p1 >= 6 && b1 <= 5) { banker = (b1 + e) % 10; player = p1; }
+    else {
+      player = (p1 + e) % 10;
+      if (b1 <= 2 || (b1 === 3 && e !== 8) || (b1 === 4 && e >= 2 && e <= 7) || (b1 === 5 && e >= 4 && e <= 7) || (b1 === 6 && e >= 6 && e <= 7)) banker = (b1 + f) % 10;
+      else banker = b1;
+    }
+
+    let temp = 1.0;
+    if (A === null) { if (card_colors[0] === 'red') { temp *= redShoe[a]; redShoe[a]--; } else { temp *= blueShoe[a]; blueShoe[a]--; } }
+    if (B === null) { if (card_colors[1] === 'red') { temp *= redShoe[b]; redShoe[b]--; } else { temp *= blueShoe[b]; blueShoe[b]--; } }
+    if (C === null) { if (card_colors[2] === 'red') { temp *= redShoe[c]; redShoe[c]--; } else { temp *= blueShoe[c]; blueShoe[c]--; } }
+    if (D === null) { if (card_colors[3] === 'red') { temp *= redShoe[d]; redShoe[d]--; } else { temp *= blueShoe[d]; blueShoe[d]--; } }
+    if (E === null) { if (card_colors[4] === 'red') { temp *= redShoe[e]; redShoe[e]--; } else { temp *= blueShoe[e]; blueShoe[e]--; } }
+    if (F === null) { if (card_colors[5] === 'red') { temp *= redShoe[f]; } else { temp *= blueShoe[f]; } }
+
+    if (A === null) { if (card_colors[0] === 'red') redShoe[a]++; else blueShoe[a]++; }
+    if (B === null) { if (card_colors[1] === 'red') redShoe[b]++; else blueShoe[b]++; }
+    if (C === null) { if (card_colors[2] === 'red') redShoe[c]++; else blueShoe[c]++; }
+    if (D === null) { if (card_colors[3] === 'red') redShoe[d]++; else blueShoe[d]++; }
+    if (E === null) { if (card_colors[4] === 'red') redShoe[e]++; else blueShoe[e]++; }
+
+    if (temp > 0) {
+      subTotal += temp;
+      if (banker > player) bWin += temp; else if (player > banker) pWin += temp; else tWin += temp;
+    }
+  }
+
+  if (subTotal <= 0) {
+    liveInsCond = null;
+    renderInsuranceUI('none', '', '', '', '');
+    return;
+  }
+
+  const ev = cond.betOn === 'banker' ? (bWin * cond.odds - pWin) / subTotal : (cond.betOn === 'player' ? (pWin * cond.odds - bWin) / subTotal : (tWin * cond.odds - bWin - pWin) / subTotal);
+  const evPct = (ev >= 0 ? '+' : '') + (ev * 100).toFixed(1) + '%';
+
+  const mainSideName = cond.mainSide === 'banker' ? '庄' : '闲';
+  const mainBetAmt = currentBets[cond.mainSide] || 0;
+  const remPayoutQuota = getRemainingMainBetPayoutQuota(cond.mainSide, cond.stageKey);
+  const maxAllowedBet = Math.floor((remPayoutQuota + 1e-9) / cond.odds);
+
+  let recAmt = 0;
+  if (ev > 0 && maxAllowedBet > 0) {
+    recAmt = floorToUnit(maxAllowedBet, appCfg.insUnit || 5);
+    if (recAmt === 0 && maxAllowedBet > 0) recAmt = maxAllowedBet;
+  }
+
+  liveInsCond = {
+    stageKey: cond.stageKey,
+    phaseName: cond.phaseName,
+    typeName: cond.typeName,
+    title: cond.title,
+    odds: cond.odds,
+    betOn: cond.betOn,
+    mainSide: cond.mainSide,
+    ev,
+    maxAllowedBet,
+    recAmt,
+    cardStruct: buildCurrentCardStructureSnapshot()
+  };
+
+  if (mainBetAmt <= 0) {
+    renderInsuranceUI('forbid', `🔒未投${mainSideName}`, evPct, `1赔${cond.odds}`, cond.typeName);
+  } else if (ev > 0) {
+    renderInsuranceUI('buy', '🟢买', evPct, `1赔${cond.odds}`, cond.typeName);
+  } else {
+    renderInsuranceUI('nobuy', '🔴不买', evPct, `1赔${cond.odds}`, cond.typeName);
+  }
+}
+
+// 严格按两行渲染保险提示：第1行(买不买 + EV) | 第2行(几赔几 + 牌型)
+function renderInsuranceUI(state, actTxt, evTxt, oddsTxt, typeTxt) {
+  const lamp = document.getElementById('ins-lamp');
+  lamp.className = 'lamp-bar' + (state === 'buy' ? ' buy' : (state === 'nobuy' ? ' nobuy' : (state === 'forbid' ? ' forbid' : '')));
+  document.getElementById('il-act').textContent = actTxt || '';
+  document.getElementById('il-ev').textContent = evTxt || '';
+  document.getElementById('il-odds').textContent = oddsTxt || '';
+  document.getElementById('il-type').textContent = typeTxt || '';
+
+  const totalInsBet = lockedInsOrders.reduce((s, o) => s + (o.bet || 0), 0);
+  document.getElementById('b-ins').textContent = totalInsBet > 0 ? totalInsBet.toLocaleString() : '';
+
+  const detailEl = document.getElementById('ins-stage-detail');
+  if (lockedInsOrders.length > 0) {
+    detailEl.textContent = '🔒' + lockedInsOrders.map(o => `${o.typeName||o.title}×${o.bet}`).join('|');
+    detailEl.style.visibility = 'visible';
+  } else {
+    detailEl.textContent = '';
+    detailEl.style.visibility = 'hidden';
+  }
+
+  document.getElementById('ins-box-stage').textContent = (liveInsCond && liveInsCond.maxAllowedBet > 0) ? `限${liveInsCond.maxAllowedBet}` : '';
+
+  const rInsEl = document.getElementById('r-ins');
+  if (liveInsCond) {
+    const mainBetAmt = currentBets[liveInsCond.mainSide] || 0;
+    if (mainBetAmt > 0 && liveInsCond.ev > 0 && liveInsCond.recAmt > 0) {
+      rInsEl.textContent = `荐:${liveInsCond.recAmt}`;
+      rInsEl.className = 'bc-rec-btn hot';
+    } else {
+      rInsEl.textContent = '';
+      rInsEl.className = 'bc-rec-btn';
+    }
+  } else {
+    rInsEl.textContent = '';
+    rInsEl.className = 'bc-rec-btn';
+  }
+  updateBetBoxHighlights();
+}
+
+function purchaseOrAdjustInsurance(deltaOrExactAmt, isSetExact = false) {
+  if (!liveInsCond) {
+    showToast('⚠️ 当前未触发可买保护节点！', 'err');
+    return;
+  }
+  const mainSideName = liveInsCond.mainSide === 'banker' ? '庄' : '闲';
+  const oppSideName = liveInsCond.mainSide === 'banker' ? '闲' : '庄';
+  const mainBetAmt = currentBets[liveInsCond.mainSide] || 0;
+
+  if (mainBetAmt <= 0) {
+    showToast(`🚫 禁买：当前为【${mainSideName}保护】，投${oppSideName}不可买${mainSideName}保险！`, 'err');
+    return;
+  }
+
+  const remPayoutQuota = getRemainingMainBetPayoutQuota(liveInsCond.mainSide, liveInsCond.stageKey);
+  const maxAllowedBet = Math.floor((remPayoutQuota + 1e-9) / liveInsCond.odds);
+
+  let existingOrd = lockedInsOrders.find(o => o.stageKey === liveInsCond.stageKey);
+  const curBet = existingOrd ? existingOrd.bet : 0;
+
+  if (maxAllowedBet <= 0 && (!isSetExact && deltaOrExactAmt > 0)) {
+    showToast(`🚫 保本额度已满(${mainBetAmt})，不可超买！`, 'err');
+    return;
+  }
+
+  let newBet = isSetExact ? deltaOrExactAmt : Math.max(0, curBet + deltaOrExactAmt);
+  if (newBet > maxAllowedBet) {
+    newBet = maxAllowedBet;
+    showToast(`⚠️ 已截断至保本上限 ${maxAllowedBet}`, 'warn');
+  }
+
+  const addedDelta = newBet - curBet;
+  if (addedDelta > 0) {
+    betChipHistory.ins.push({ stageKey: liveInsCond.stageKey, delta: addedDelta });
+  }
+
+  if (existingOrd) {
+    if (newBet <= 0) lockedInsOrders = lockedInsOrders.filter(o => o.stageKey !== liveInsCond.stageKey);
+    else existingOrd.bet = newBet;
+  } else if (newBet > 0) {
+    lockedInsOrders.push({
+      stageKey: liveInsCond.stageKey,
+      phaseName: liveInsCond.phaseName,
+      typeName: liveInsCond.typeName,
+      title: liveInsCond.title,
+      odds: liveInsCond.odds,
+      betOn: liveInsCond.betOn,
+      mainSide: liveInsCond.mainSide,
+      ev: liveInsCond.ev,
+      cardStruct: liveInsCond.cardStruct,
+      bet: newBet
+    });
+    showToast(`🔒 已锁【${liveInsCond.title}】× ${newBet}`, 'ok');
+  }
+
+  renderBetInputs();
+  evaluateBrain2Insurance();
+  saveStateToLocal();
+}
+
+function toggleFlyPriority(checked) {
+  isFlyPriority = checked;
+  tryTriggerBrain1();
+  saveStateToLocal();
+}
+
+function getThirdCardLockStatus() {
+  const A = rankToPt(used_cards[0]), B = rankToPt(used_cards[1]);
+  const C = rankToPt(used_cards[2]), D = rankToPt(used_cards[3]);
+  const E = rankToPt(used_cards[4]);
+  let p3Locked = false, b3Locked = false;
+  if (A !== null && B !== null && C !== null && D !== null) {
+    const p1 = (A + B) % 10, b1 = (C + D) % 10;
+    if (p1 >= 8 || b1 >= 8) { p3Locked = true; b3Locked = true; }
+    else if (p1 >= 6) { p3Locked = true; if (b1 >= 6) b3Locked = true; }
+    else { if (b1 >= 7) b3Locked = true; else if (E !== null && !doesBankerDrawWhenPlayerDrew(b1, E)) b3Locked = true; }
+  }
+  return { p3Locked, b3Locked };
+}
+
+function isCurrentHandComplete() {
+  const A = rankToPt(used_cards[0]), B = rankToPt(used_cards[1]);
+  const C = rankToPt(used_cards[2]), D = rankToPt(used_cards[3]);
+  const E = rankToPt(used_cards[4]), F = rankToPt(used_cards[5]);
+  if (A === null || B === null || C === null || D === null) return false;
+  const lock = getThirdCardLockStatus();
+  const pDone = lock.p3Locked || E !== null;
+  const bDone = lock.b3Locked || F !== null;
+  return pDone && bDone;
+}
+
+function setSlotColor(slotKey, newColor) {
+  resetIncompleteConfirmBtn();
+  if (slotKey === 'fly') {
+    fly_color = newColor;
+    if (newColor === null) fly_rank = null;
+  } else if (slotKey === 'next_fly') {
+    next_fly_color = newColor;
+  } else {
+    const idx = parseInt(slotKey, 10);
+    card_colors[idx] = newColor;
+    if (newColor === null) {
+      for (let u = 0; u < 6; u++) {
+        if (used_cards[u] !== null && getEffectiveColorSlot(u, used_cards) === idx) {
+          used_cards[u] = null;
+        }
+      }
+    }
+  }
+  replayFullShoe();
+  renderColorZone();
+  renderUsedZone();
+  tryTriggerBrain1();
+  evaluateBrain2Insurance();
+}
+
+function fillNextColorByDoubleTap(color) {
+  if (isFlyPriority && fly_color === null) { setSlotColor('fly', color); return; }
+  for (let key of COLOR_FILL_ORDER) {
+    if (key === 'next_fly') {
+      if (next_fly_color === null) { setSlotColor('next_fly', color); return; }
+    } else {
+      const idx = parseInt(key, 10);
+      if (card_colors[idx] === null) { setSlotColor(key, color); return; }
+    }
+  }
+}
+
+function checkPoolCardAvailable(color, rIdx) {
+  const cnt = color === 'red' ? redPool[rIdx] : bluePool[rIdx];
+  if (cnt <= 0) {
+    showToast(`🚫 ${color === 'red' ? '红' : '蓝'}牌 [${rankLabel(rIdx)}] 余数为 0！`, 'err');
+    return false;
+  }
+  return true;
+}
+
+function placeCardIntoFly(rIdx) {
+  resetIncompleteConfirmBtn();
+  if (!fly_color) { showToast('⚠️ 请先填飞牌底色！', 'warn'); return; }
+  if (fly_rank !== null) {
+    if (fly_color === 'red') redPool[fly_rank]++; else bluePool[fly_rank]++;
+  }
+  if (!checkPoolCardAvailable(fly_color, rIdx)) {
+    if (fly_rank !== null) {
+      if (fly_color === 'red') redPool[fly_rank]--; else bluePool[fly_rank]--;
+    }
+    return;
+  }
+  fly_rank = rIdx;
+  replayFullShoe();
+  renderColorZone();
+  tryTriggerBrain1();
+}
+
+function removeFlyCard() {
+  resetIncompleteConfirmBtn();
+  fly_rank = null; fly_color = null;
+  replayFullShoe();
+  renderColorZone();
+  tryTriggerBrain1();
+}
+
+function placeCardIntoUsedSlot(uIdx, rIdx) {
+  resetIncompleteConfirmBtn();
+  const lock = getThirdCardLockStatus();
+  if ((uIdx === 4 && lock.p3Locked) || (uIdx === 5 && lock.b3Locked)) {
+    showToast('🔒 当前位置按规则无需补牌！', 'warn');
+    return;
+  }
+  const cSlot = getEffectiveColorSlot(uIdx, used_cards);
+  const reqColor = card_colors[cSlot];
+  if (!reqColor) { showToast('⚠️ 请先填对应槽位底色！', 'warn'); return; }
+
+  const prevRank = used_cards[uIdx];
+  if (prevRank !== null) {
+    if (reqColor === 'red') redPool[prevRank]++; else bluePool[prevRank]++;
+  }
+  if (!checkPoolCardAvailable(reqColor, rIdx)) {
+    if (prevRank !== null) {
+      if (reqColor === 'red') redPool[prevRank]--; else bluePool[prevRank]--;
+    }
+    return;
+  }
+
+  used_cards[uIdx] = rIdx;
+  const newLock = getThirdCardLockStatus();
+  if (newLock.p3Locked) used_cards[4] = null;
+  if (newLock.b3Locked) used_cards[5] = null;
+  replayFullShoe();
+  renderColorZone();
+  renderUsedZone();
+  evaluateBrain2Insurance();
+}
+
+function removeUsedCard(uIdx) {
+  resetIncompleteConfirmBtn();
+  if (used_cards[uIdx] === null) return;
+  used_cards[uIdx] = null;
+  replayFullShoe();
+  renderColorZone();
+  renderUsedZone();
+  if (!hasAnyUsedCard()) tryTriggerBrain1();
+  evaluateBrain2Insurance();
+}
+
+function fillNextCardByDoubleTap(rIdx) {
+  if (isFlyPriority && fly_rank === null) { placeCardIntoFly(rIdx); return; }
+  for (let i = 0; i < 4; i++) { if (used_cards[i] === null) { placeCardIntoUsedSlot(i, rIdx); return; } }
+  const lock = getThirdCardLockStatus();
+  if (!lock.p3Locked && used_cards[4] === null) { placeCardIntoUsedSlot(4, rIdx); return; }
+  if (!lock.b3Locked && used_cards[5] === null) { placeCardIntoUsedSlot(5, rIdx); return; }
+  showToast('ℹ️ 本局牌已发完，请点右上角【✅确认】', 'warn');
+}
+
+function renderColorZone() {
+  const flyEl = document.getElementById('slot-fly');
+  flyEl.className = 'c-slot fly-slot' + (fly_color ? ' ' + fly_color : '');
+  document.getElementById('fly-content').textContent = fly_rank !== null ? rankLabel(fly_rank) : (fly_color ? '' : '飞');
+
+  const nextFlyEl = document.getElementById('slot-next-fly');
+  nextFlyEl.className = 'c-slot next-fly-vert' + (next_fly_color ? ' ' + next_fly_color : '');
+  document.getElementById('next-fly-content').textContent = next_fly_color ? '' : '预';
+
+  const usedColorSlots = new Set();
+  for (let u = 0; u < 6; u++) {
+    if (used_cards[u] !== null) usedColorSlots.add(getEffectiveColorSlot(u, used_cards));
+  }
+
+  for (let i = 0; i < 6; i++) {
+    const c = card_colors[i];
+    const el = document.getElementById('slot-' + i);
+    const markEl = document.getElementById('cmark-' + i);
+    el.className = 'c-slot' + (c ? ' ' + c : '');
+    markEl.innerHTML = usedColorSlots.has(i) ? '<div class="check-mark">✔</div>' : '';
+  }
+}
+
+let poolDomInitialized = false;
+function initPoolZoneDOM() {
+  if (poolDomInitialized) return;
+  const rRow = document.getElementById('red-pool-row'), bRow = document.getElementById('blue-pool-row');
+  rRow.innerHTML = ''; bRow.innerHTML = '';
+  for (let rIdx = 0; rIdx < 13; rIdx++) {
+    const lbl = RANKS[rIdx];
+    const rCard = document.createElement('div');
+    rCard.id = 'pool-r-' + rIdx;
+    rCard.className = 'p-card red-pool';
+    rCard.innerHTML = `<span class="c-rank">${lbl}</span><span class="c-num" id="pool-r-num-${rIdx}">16</span>`;
+    bindPoolCardEvents(rCard, rIdx, 'red');
+    rRow.appendChild(rCard);
+
+    const bCard = document.createElement('div');
+    bCard.id = 'pool-b-' + rIdx;
+    bCard.className = 'p-card blue-pool';
+    bCard.innerHTML = `<span class="c-rank">${lbl}</span><span class="c-num" id="pool-b-num-${rIdx}">16</span>`;
+    bindPoolCardEvents(bCard, rIdx, 'blue');
+    bRow.appendChild(bCard);
+  }
+  poolDomInitialized = true;
+}
+
+function renderPoolZone() {
+  initPoolZoneDOM();
+  for (let rIdx = 0; rIdx < 13; rIdx++) {
+    const rCnt = redPool[rIdx];
+    const rCard = document.getElementById('pool-r-' + rIdx);
+    const rNum = document.getElementById('pool-r-num-' + rIdx);
+    if (rCard) rCard.className = 'p-card red-pool' + (rCnt === 0 ? ' zero-gray' : '');
+    if (rNum) rNum.textContent = rCnt;
+
+    const bCnt = bluePool[rIdx];
+    const bCard = document.getElementById('pool-b-' + rIdx);
+    const bNum = document.getElementById('pool-b-num-' + rIdx);
+    if (bCard) bCard.className = 'p-card blue-pool' + (bCnt === 0 ? ' zero-gray' : '');
+    if (bNum) bNum.textContent = bCnt;
+  }
+}
+
+// 渲染用牌区 + 极简结果判定区（未出结果前不显示多余提示语，完局仅显示“庄赢 7:6”及命中的特殊牌型）
+function renderUsedZone() {
+  const lock = getThirdCardLockStatus();
+  for (let u = 0; u < 6; u++) {
+    const el = document.getElementById('uslot-' + u);
+    const rIdx = used_cards[u];
+    const isLocked = (u === 4 && lock.p3Locked) || (u === 5 && lock.b3Locked);
+    if (isLocked && rIdx === null) {
+      el.className = 'u-slot locked-gray'; el.textContent = '🔒';
+    } else if (rIdx !== null) {
+      const c = card_colors[getEffectiveColorSlot(u, used_cards)];
+      el.className = 'u-slot ' + (c === 'red' ? 'red-card' : 'blue-card');
+      el.textContent = rankLabel(rIdx);
+    } else {
+      el.className = 'u-slot'; el.textContent = '';
+    }
+  }
+  const A = rankToPt(used_cards[0]), B = rankToPt(used_cards[1]), E = rankToPt(used_cards[4]);
+  const C = rankToPt(used_cards[2]), D = rankToPt(used_cards[3]), F = rankToPt(used_cards[5]);
+
+  const hasAB = (A !== null && B !== null);
+  const hasCD = (C !== null && D !== null);
+  const pPts = hasAB ? (A + B + (E !== null ? E : 0)) % 10 : null;
+  const bPts = hasCD ? (C + D + (F !== null ? F : 0)) % 10 : null;
+
+  document.getElementById('p-hand-title').textContent = hasAB ? `闲家 (${pPts}点)` : '闲家';
+  document.getElementById('b-hand-title').textContent = hasCD ? `庄家 (${bPts}点)` : '庄家';
+
+  const vBox = document.getElementById('center-verdict-box');
+  const vTitle = document.getElementById('cv-title-txt');
+  const vSub = document.getElementById('cv-sub-txt');
+
+  const pairTags = [];
+  if (used_cards[2] !== null && used_cards[2] === used_cards[3]) pairTags.push('庄对');
+  if (used_cards[0] !== null && used_cards[0] === used_cards[1]) pairTags.push('闲对');
+
+  if (!hasAB || !hasCD) {
+    vBox.className = 'verdict-panel';
+    vTitle.textContent = '';
+    vSub.textContent = pairTags.join('·');
+    return;
+  }
+
+  const pDone = lock.p3Locked || E !== null;
+  const bDone = lock.b3Locked || F !== null;
+  if (!pDone || !bDone) {
+    vBox.className = 'verdict-panel';
+    vTitle.textContent = `闲${pPts} : 庄${bPts}`;
+    vSub.textContent = pairTags.join('·');
+    return;
+  }
+
+  const pCardsCnt = E !== null ? 3 : 2;
+  const bCardsCnt = F !== null ? 3 : 2;
+  const tags = [...pairTags];
+
+  if (bPts > pPts) {
+    if (bPts === 7 && bCardsCnt === 3) tags.push('龙七');
+    if (bPts === 6 && bCardsCnt === 2) tags.push('小虎/幸6');
+    if (bPts === 6 && bCardsCnt === 3) tags.push('大虎/幸6');
+    vBox.className = 'verdict-panel win-banker';
+    vTitle.textContent = `庄赢 ${bPts}:${pPts}`;
+    vSub.textContent = tags.join('·');
+  } else if (pPts > bPts) {
+    if (pPts === 8 && pCardsCnt === 3) tags.push('熊八');
+    vBox.className = 'verdict-panel win-player';
+    vTitle.textContent = `闲赢 ${pPts}:${bPts}`;
+    vSub.textContent = tags.join('·');
+  } else {
+    vBox.className = 'verdict-panel win-tie';
+    vTitle.textContent = `和局 ${bPts}:${pPts}`;
+    vSub.textContent = tags.join('·');
+  }
+}
+
+// ============================================================================
+// 筹码添加、点击已选框金额回退上一枚筹码、一键填入推荐
+// ============================================================================
+function selectBetBox(key) {
+  selectedBoxKey = key;
+  updateBetBoxHighlights();
+}
+
+// 点击下注框：若未选中则选中该框；若已选中且有金额，再次点击直接回退上一枚筹码！
+function onBetBoxTap(key) {
+  if (selectedBoxKey !== key) {
+    selectBetBox(key);
+    return;
+  }
+  // 已处于选中状态，执行回退上一笔筹码
+  if (key === 'ins') {
+    const hist = betChipHistory.ins;
+    if (hist && hist.length > 0) {
+      const last = hist.pop();
+      const ord = lockedInsOrders.find(o => o.stageKey === last.stageKey);
+      if (ord) {
+        ord.bet = Math.max(0, ord.bet - last.delta);
+        if (ord.bet <= 0) lockedInsOrders = lockedInsOrders.filter(o => o.stageKey !== last.stageKey);
+      }
+      renderBetInputs();
+      evaluateBrain2Insurance();
+      saveStateToLocal();
+    } else if (lockedInsOrders.length > 0) {
+      lockedInsOrders.pop();
+      renderBetInputs();
+      evaluateBrain2Insurance();
+      saveStateToLocal();
+    }
+    return;
+  }
+
+  const curVal = currentBets[key] || 0;
+  if (curVal > 0) {
+    const hist = betChipHistory[key] || [];
+    const stepBack = hist.length > 0 ? hist.pop() : curVal;
+    currentBets[key] = Math.max(0, curVal - stepBack);
+    if (currentBets[key] === 0 && (key === 'banker' || key === 'player')) {
+      lockedInsOrders = lockedInsOrders.filter(o => o.mainSide !== key);
+    }
+    renderBetInputs();
+    evaluateBrain2Insurance();
+    saveStateToLocal();
+  }
+}
+
+function updateBetBoxHighlights() {
+  const allKeys = [...BET_KEYS, 'ins'];
+  const totalInsBet = lockedInsOrders.reduce((s, o) => s + (o.bet || 0), 0);
+  allKeys.forEach(k => {
+    const boxEl = document.getElementById('box-' + k);
+    if (!boxEl) return;
+    const isSel = (selectedBoxKey === k);
+    const val = (k === 'ins') ? totalInsBet : (currentBets[k] || 0);
+    const baseCls = k === 'ins' ? 'main-box ins-flat' : ((k === 'banker' || k === 'player') ? 'main-box' : 'bet-card');
+    boxEl.className = baseCls + (isSel ? ' selected-box' : '') + (val > 0 ? ' has-bet' : '');
+  });
+}
+
+function addChipToSelected(chipVal) {
+  if (selectedBoxKey === 'ins') {
+    purchaseOrAdjustInsurance(chipVal, false);
+    return;
+  }
+  if (selectedBoxKey) {
+    currentBets[selectedBoxKey] = (currentBets[selectedBoxKey] || 0) + chipVal;
+    if (!betChipHistory[selectedBoxKey]) betChipHistory[selectedBoxKey] = [];
+    betChipHistory[selectedBoxKey].push(chipVal);
+  }
+  renderBetInputs();
+  evaluateBrain2Insurance();
+  saveStateToLocal();
+}
+
+function fillSingleRec(ev, key) {
+  if (ev) ev.stopPropagation();
+  selectBetBox(key);
+  if (key === 'ins') {
+    if (!liveInsCond) return;
+    if (liveInsCond.recAmt > 0 && liveInsCond.ev > 0) {
+      purchaseOrAdjustInsurance(liveInsCond.recAmt, true);
+    }
+    return;
+  }
+  if (recommendedBets[key] > 0) {
+    const rec = recommendedBets[key];
+    currentBets[key] = rec;
+    betChipHistory[key] = [rec];
+  }
+  renderBetInputs();
+  evaluateBrain2Insurance();
+  saveStateToLocal();
+}
+
+function clearSingleBox(key) {
+  selectBetBox(key);
+  if (key === 'ins') {
+    lockedInsOrders = [];
+    betChipHistory.ins = [];
+  } else {
+    currentBets[key] = 0;
+    betChipHistory[key] = [];
+    if (key === 'banker' || key === 'player') {
+      lockedInsOrders = lockedInsOrders.filter(o => o.mainSide !== key);
+    }
+  }
+  renderBetInputs();
+  evaluateBrain2Insurance();
+  saveStateToLocal();
+}
+
+// 金额为 0 时一律不显示数字，保持界面干净利落
+function renderBetInputs() {
+  const totalInsBet = lockedInsOrders.reduce((s, o) => s + (o.bet || 0), 0);
+  document.getElementById('b-ins').textContent = totalInsBet > 0 ? totalInsBet.toLocaleString() : '';
+  BET_KEYS.forEach(k => {
+    const v = currentBets[k] || 0;
+    const el = document.getElementById('b-' + k);
+    if (el) el.textContent = v > 0 ? v.toLocaleString() : '';
+  });
+  updateBetBoxHighlights();
+}
+
+function clearCurrentBets() {
+  BET_KEYS.forEach(k => {
+    currentBets[k] = 0;
+    betChipHistory[k] = [];
+  });
+  lockedInsOrders = [];
+  betChipHistory.ins = [];
+  renderBetInputs();
+  evaluateBrain2Insurance();
+  saveStateToLocal();
+}
+
+// ============================================================================
+// 确认本手归档：无牌严禁按；有牌但牌局未结束需二次确认防误触；完整记录当时投注EV与保险牌型结构
+// ============================================================================
+function confirmHandRecord() {
+  const dealtCount = used_cards.filter(v => v !== null).length;
+  if (dealtCount === 0) {
+    showToast('🚫 请先发入扑克牌后再点击确认！', 'err');
+    return;
+  }
+
+  const complete = isCurrentHandComplete();
+  if (!complete && incompleteConfirmStep === 0) {
+    incompleteConfirmStep = 1;
+    const btn = document.getElementById('btn-confirm-hand');
+    const icon = document.getElementById('confirm-icon');
+    const txt = document.getElementById('confirm-txt');
+    if (btn) btn.className = 'btn-confirm-tall warn-step';
+    if (icon) icon.textContent = '⚠️未完';
+    if (txt) txt.textContent = '再点录';
+    showToast('⚠️ 牌局尚未发完，再点一次【确认】强制录入！', 'warn');
+    if (incompleteTimer) clearTimeout(incompleteTimer);
+    incompleteTimer = setTimeout(() => { resetIncompleteConfirmBtn(); }, 3500);
+    return;
+  }
+  resetIncompleteConfirmBtn();
+
+  let carriedFlyColor = null;
+  let carryReason = '';
+
+  if (dealtCount === 4 && card_colors[4]) {
+    carriedFlyColor = card_colors[4];
+    carryReason = '4张→补1顺延飞';
+  } else if (dealtCount === 5 && card_colors[5]) {
+    carriedFlyColor = card_colors[5];
+    carryReason = '5张→补2顺延飞';
+  } else if (dealtCount === 6 && next_fly_color) {
+    carriedFlyColor = next_fly_color;
+    carryReason = '6张→预备顺延飞';
+  }
+
+  // 记录本手每个注项下注时的精确 EV 快照（供大数据按 EV 分段复盘）
+  const betEVsSnap = {};
+  BET_KEYS.forEach(k => {
+    if (currentLiveEVs[k] !== null && currentLiveEVs[k] !== undefined) {
+      betEVsSnap[k] = currentLiveEVs[k];
+    } else if (lastBreakdown && lastBreakdown.evMap && lastBreakdown.evMap[k] !== undefined) {
+      betEVsSnap[k] = lastBreakdown.evMap[k];
+    } else {
+      betEVsSnap[k] = null;
+    }
+  });
+
+  const snap = {
+    shoe: shoeNumber,
+    time: new Date().toLocaleTimeString('zh-CN', { hour12: false }),
+    flyColor: fly_color,
+    flyRank: fly_rank,
+    cardColors: card_colors.slice(),
+    usedCards: used_cards.slice(),
+    bets: Object.assign({}, currentBets),
+    betEVs: betEVsSnap,
+    lockedOrders: lockedInsOrders.map(o => Object.assign({}, o)),
+    preCalc: lastBreakdown ? {
+      bProbPct: lastBreakdown.bProbPct,
+      pProbPct: lastBreakdown.pProbPct,
+      tProbPct: lastBreakdown.tProbPct,
+      bBaseEV: lastBreakdown.bBaseEV,
+      bTotalEV: lastBreakdown.bTotalEV,
+      pBaseEV: lastBreakdown.pBaseEV,
+      pTotalEV: lastBreakdown.pTotalEV,
+      bInsGain: lastBreakdown.bInsGain,
+      pInsGain: lastBreakdown.pInsGain,
+      remCards: lastBreakdown.remCards,
+      penPct: lastBreakdown.penPct
+    } : null,
+    manualRes: null
+  };
+  handRecords.unshift(snap);
+
+  card_colors = [null, null, null, null, null, null];
+  next_fly_color = null;
+  used_cards = [null, null, null, null, null, null];
+  fly_color = carriedFlyColor;
+  fly_rank = null;
+  lockedInsOrders = [];
+  liveInsCond = null;
+
+  clearCurrentBets();
+  replayFullShoe();
+  renderColorZone();
+  renderUsedZone();
+  clearBrain1Display(carryReason);
+  evaluateBrain2Insurance();
+
+  showToast(`✅ 第 ${handRecords.length} 手已归档！`, 'ok');
+}
+
+// 渲染第2层左侧本靴记录（紧凑多行显示）
+function renderRecordList() {
+  const container = document.getElementById('record-list');
+  document.getElementById('rec-count-tag').textContent = `(${handRecords.length}手)`;
+  if (handRecords.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  const totalHandsCount = handRecords.length;
+  container.innerHTML = handRecords.map((r, idx) => {
+    const handNo = totalHandsCount - idx;
+    const pl = Math.round(r.handTablePL || 0);
+    const plStr = (pl > 0 ? '+' : '') + pl.toLocaleString();
+    const plCol = pl > 0 ? '#15803d' : (pl < 0 ? '#dc2626' : '#64748b');
+
+    let flyHtml = '-';
+    if (r.flyRank !== null && r.flyRank !== undefined && r.flyColor) {
+      flyHtml = `<i class="${r.flyColor === 'red' ? 'dot-r' : 'dot-b'}"></i>${rankLabel(r.flyRank)}`;
+    } else if (r.flyColor) {
+      flyHtml = `<i class="${r.flyColor === 'red' ? 'dot-r' : 'dot-b'}"></i>`;
+    }
+    const chips = [];
+    for (let u = 0; u < 6; u++) {
+      if (r.usedCards[u] !== null && r.usedCards[u] !== undefined) {
+        const col = r.cardColors[getEffectiveColorSlot(u, r.usedCards)];
+        chips.push(`<i class="${col === 'red' ? 'dot-r' : 'dot-b'}"></i>${rankLabel(r.usedCards[u])}`);
+      }
+    }
+
+    const statusBadges = [];
+    BET_KEYS.forEach(sk => {
+      const betAmt = (r.bets && r.bets[sk]) || 0;
+      if (betAmt > 0) {
+        const spl = Math.round((r.itemPL && r.itemPL[sk]) || 0);
+        const evVal = (r.betEVs && r.betEVs[sk] !== null && r.betEVs[sk] !== undefined) ? `${(r.betEVs[sk]*100).toFixed(1)}%` : '';
+        statusBadges.push(`<span class="hit-tag ${spl > 0 ? 'win' : (spl < 0 ? 'lose' : '')}">${BET_NAMES[sk]}${evVal ? '('+evVal+')' : ''}:${spl > 0 ? '+' + spl : spl}</span>`);
+      }
+    });
+    if (Array.isArray(r.lockedOrders) && r.lockedOrders.length > 0) {
+      const insPL = Math.round(r.handInsPL || 0);
+      statusBadges.push(`<span class="hit-tag ${insPL >= 0 ? 'win' : 'lose'}">保:${insPL >= 0 ? '+' + insPL : insPL}</span>`);
+    }
+
+    return `<div class="rec-item">
+      <div class="rec-top">
+        <span>#${handNo} ${r.resolvedOutcome}${r.bPts >= 0 ? `(${r.bPts}:${r.pPts})` : ''} <b style="color:${plCol};">${plStr}</b></span>
+        <span style="display:flex;align-items:center;gap:2px;">${statusBadges.slice(0, 2).join('')}<span class="mini-link" onclick="openEditModal(${idx})">改</span></span>
+      </div>
+      <div class="rec-cards"><span>飞:${flyHtml}</span> <span>${chips.join(' ')}</span> ${statusBadges.slice(2).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================================
+// 大数据深度复盘引擎：1.EV区间分段统计 + 2.11项分类统计(无漏打) + 3.保险时机与牌型结构剖析
+// ============================================================================
+function buildAllTodayShoesList(customDayObj = null) {
+  if (customDayObj) return customDayObj.shoes || [];
+  const allShoes = [];
+  archivedShoes.forEach(s => {
+    allShoes.push({
+      shoe: s.shoe,
+      status: `已归档(${s.time || ''})`,
+      netPL: s.netPL || 0,
+      rebate: s.rebate || 0,
+      hands: Array.isArray(s.hands) ? s.hands : []
+    });
+  });
+  let curNet = 0, curReb = 0;
+  handRecords.forEach(h => { curNet += (h.handTablePL || 0); curReb += (h.handRebate || 0); });
+  allShoes.push({
+    shoe: shoeNumber,
+    status: '当前靴',
+    netPL: curNet,
+    rebate: curReb,
+    hands: handRecords
+  });
+  return allShoes;
+}
+
+function analyzeBigDataReplay(shoesList) {
+  // 1. EV 区间分段统计
+  const evBrackets = [
+    { key: 'neg',  label: '< 0% (负EV出手)', min: -999, max: 0, count: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, weightedEVSum: 0 },
+    { key: 'b1',   label: '0% ~ +0.5% (微利)', min: 0, max: 0.005, count: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, weightedEVSum: 0 },
+    { key: 'b2',   label: '+0.5% ~ +2.0% (稳健)', min: 0.005, max: 0.02, count: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, weightedEVSum: 0 },
+    { key: 'b3',   label: '+2.0% ~ +8.0% (强优)', min: 0.02, max: 0.08, count: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, weightedEVSum: 0 },
+    { key: 'b4',   label: '> +8.0% (极高EV)', min: 0.08, max: 999, count: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, weightedEVSum: 0 }
+  ];
+
+  // 2. 11项分类统计 (去掉漏打，增加平均投注EV%与ROI%)
+  const all11 = [
+    { key: 'banker', label: '● 庄 (主注)' },
+    { key: 'player', label: '● 闲 (主注)' },
+    { key: 'ins',    label: '🛡️ 保护 (保险)' },
+    { key: 'dragon7',label: '🔥 龙七 (1:40)' },
+    { key: 'panda8', label: '🐼 熊八 (1:25)' },
+    { key: 'stiger', label: '🐯 小老虎 (1:22)' },
+    { key: 'btiger', label: '🐅 大老虎 (1:50)' },
+    { key: 'bpair',  label: `👯 庄对 (1:${appCfg.pairOdds||11})` },
+    { key: 'ppair',  label: `👯 闲对 (1:${appCfg.pairOdds||11})` },
+    { key: 'super6', label: '🍀 幸运六' },
+    { key: 'tie',    label: '🟢 和局 (1:8)' }
+  ];
+  const itemStats = {};
+  all11.forEach(it => {
+    itemStats[it.key] = { label: it.label, opened: 0, bets: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, evWeightedSum: 0, evCountedTurn: 0 };
+  });
+
+  // 3. 保险专项档案列表 & 阶段汇总
+  const insPhaseMap = {
+    'AB(闲前2张)': { count: 0, wins: 0, losses: 0, turnover: 0, netPL: 0 },
+    'CD(庄前2张)': { count: 0, wins: 0, losses: 0, turnover: 0, netPL: 0 },
+    'ABCD(前4张)': { count: 0, wins: 0, losses: 0, turnover: 0, netPL: 0 },
+    'ABCDE(闲三张)': { count: 0, wins: 0, losses: 0, turnover: 0, netPL: 0 },
+    'ABCDF(庄三张)': { count: 0, wins: 0, losses: 0, turnover: 0, netPL: 0 }
+  };
+  const insLogs = [];
+
+  let totalHands = 0, bettedHands = 0, totalTurnover = 0, mainNet = 0, insNet = 0, sideNet = 0, totalReb = 0;
+
+  const addBracketRecord = (evVal, betAmt, pl) => {
+    if (evVal === null || evVal === undefined || isNaN(evVal)) return;
+    for (let b of evBrackets) {
+      if (evVal >= b.min && evVal < b.max) {
+        b.count++;
+        b.turnover += betAmt;
+        b.netPL += pl;
+        b.weightedEVSum += evVal * betAmt;
+        if (pl > 0) b.wins++;
+        else if (pl < 0) b.losses++;
+        else b.pushes++;
+        break;
+      }
+    }
+  };
+
+  shoesList.forEach(s => {
+    if (!Array.isArray(s.hands)) return;
+    const sTotal = s.hands.length;
+    s.hands.forEach((h, idx) => {
+      totalHands++;
+      const handNo = sTotal - idx;
+      const ah = h.actualHits || {};
+      const ipl = h.itemPL || {};
+      let handHasBet = false;
+
+      mainNet += (h.handMainPL || 0);
+      insNet  += (h.handInsPL || 0);
+      sideNet += (h.handSidePL || 0);
+      totalReb += (h.handRebate || 0);
+
+      BET_KEYS.forEach(k => {
+        const st = itemStats[k];
+        if (ah[k]) st.opened++;
+        const betAmt = (h.bets && h.bets[k]) || 0;
+        if (betAmt > 0) {
+          handHasBet = true;
+          totalTurnover += betAmt;
+          st.bets++;
+          st.turnover += betAmt;
+          const pl = ipl[k] || 0;
+          st.netPL += pl;
+          if (pl > 0) st.wins++;
+          else if (pl < 0) st.losses++;
+          else st.pushes++;
+
+          let evAtBet = (h.betEVs && h.betEVs[k] !== undefined) ? h.betEVs[k] : null;
+          if (evAtBet === null && h.preCalc) {
+            if (k === 'banker') evAtBet = h.preCalc.bTotalEV;
+            else if (k === 'player') evAtBet = h.preCalc.pTotalEV;
+          }
+          if (evAtBet !== null && evAtBet !== undefined) {
+            st.evWeightedSum += evAtBet * betAmt;
+            st.evCountedTurn += betAmt;
+            addBracketRecord(evAtBet, betAmt, pl);
+          }
+        }
+      });
+
+      if (Array.isArray(h.lockedOrders) && h.lockedOrders.length > 0) {
+        handHasBet = true;
+        const insSt = itemStats.ins;
+        insSt.opened++;
+        h.lockedOrders.forEach(ord => {
+          const bAmt = ord.bet || 0;
+          const opl = ord.pl !== undefined ? ord.pl : evalSingleInsPL(bAmt, ord.odds, ord.betOn, h.resolvedOutcome);
+          totalTurnover += bAmt;
+          insSt.bets++;
+          insSt.turnover += bAmt;
+          insSt.netPL += opl;
+          if (opl > 0) insSt.wins++;
+          else if (opl < 0) insSt.losses++;
+          else insSt.pushes++;
+
+          if (ord.ev !== undefined && ord.ev !== null) {
+            insSt.evWeightedSum += ord.ev * bAmt;
+            insSt.evCountedTurn += bAmt;
+            addBracketRecord(ord.ev, bAmt, opl);
+          }
+
+          let pKey = ord.phaseName;
+          if (!pKey) {
+            if (ord.stageKey && ord.stageKey.startsWith('ab_')) pKey = 'AB(闲前2张)';
+            else if (ord.stageKey && ord.stageKey.startsWith('cd_')) pKey = 'CD(庄前2张)';
+            else if (ord.stageKey && ord.stageKey.startsWith('abcd_')) pKey = 'ABCD(前4张)';
+            else if (ord.stageKey && ord.stageKey.startsWith('abcde_')) pKey = 'ABCDE(闲三张)';
+            else pKey = 'ABCDF(庄三张)';
+          }
+          if (insPhaseMap[pKey]) {
+            insPhaseMap[pKey].count++;
+            insPhaseMap[pKey].turnover += bAmt;
+            insPhaseMap[pKey].netPL += opl;
+            if (opl > 0) insPhaseMap[pKey].wins++;
+            else if (opl < 0) insPhaseMap[pKey].losses++;
+          }
+
+          insLogs.push({
+            shoe: s.shoe,
+            handNo,
+            phase: pKey,
+            title: ord.title,
+            odds: ord.odds,
+            ev: ord.ev,
+            bet: bAmt,
+            pl: opl,
+            outcome: `${h.resolvedOutcome}(${h.bPts}:${h.pPts})`,
+            cardStruct: ord.cardStruct || '历史手归档'
+          });
+        });
+      }
+
+      if (handHasBet) bettedHands++;
+    });
+  });
+
+  return {
+    summary: { totalHands, bettedHands, totalTurnover, mainNet, insNet, sideNet, tableNet: mainNet + insNet + sideNet, totalReb },
+    evBrackets,
+    itemList: all11.map(it => itemStats[it.key]),
+    insPhaseMap,
+    insLogs
+  };
+}
+
+let currentReplayViewScope = 'today';
+
+function openReplayModal(scope = 'today') {
+  currentReplayViewScope = scope;
+  const body = document.getElementById('replay-modal-body');
+  const allTodayShoes = buildAllTodayShoesList();
+
+  let targetShoes = allTodayShoes;
+  let scopeTitle = `今日全靴大数据 (${allTodayShoes.length}靴)`;
+
+  if (scope === 'shoe') {
+    targetShoes = [allTodayShoes[allTodayShoes.length - 1]];
+    scopeTitle = `第 ${shoeNumber} 靴`;
+  } else if (typeof scope === 'number' && historyDaysArchive[scope]) {
+    const dayObj = historyDaysArchive[scope];
+    targetShoes = dayObj.shoes || [];
+    scopeTitle = `历史：${dayObj.dateStr}`;
+  }
+
+  document.getElementById('replay-modal-title').textContent = `📊 大数据深度复盘 · ${scopeTitle}`;
+
+  const bd = analyzeBigDataReplay(targetShoes);
+  const sm = bd.summary;
+  const fmt = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
+  const colSpan = n => `<b style="color:${n > 0 ? '#15803d' : (n < 0 ? '#dc2626' : '#475569')}">${fmt(n)}</b>`;
+  const roiPct = sm.totalTurnover > 0 ? ((sm.tableNet / sm.totalTurnover) * 100).toFixed(2) + '%' : '0.00%';
+
+  // 表1：按投注时 EV 区间分段统计
+  const evRows = bd.evBrackets.map(b => {
+    const avgEV = b.turnover > 0 ? ((b.weightedEVSum / b.turnover) * 100).toFixed(2) + '%' : '--';
+    const realROI = b.turnover > 0 ? ((b.netPL / b.turnover) * 100).toFixed(1) + '%' : '--';
+    return `<tr>
+      <td>${b.label}</td>
+      <td>${b.count}笔</td>
+      <td>${b.count > 0 ? `<span style="color:#15803d;font-weight:800;">${b.wins}赢</span>/<span style="color:#dc2626;">${b.losses}输</span>` : '-'}</td>
+      <td>${avgEV}</td>
+      <td>${b.turnover > 0 ? b.turnover.toLocaleString() : '-'}</td>
+      <td>${colSpan(b.netPL)}</td>
+      <td style="font-weight:800;">${realROI}</td>
+    </tr>`;
+  }).join('');
+
+  // 表2：11项分类统计（无漏打，含平均出手EV与实际ROI）
+  const itemRows = bd.itemList.map(st => {
+    const avgEV = st.evCountedTurn > 0 ? ((st.evWeightedSum / st.evCountedTurn) * 100).toFixed(2) + '%' : '--';
+    const roi = st.turnover > 0 ? ((st.netPL / st.turnover) * 100).toFixed(1) + '%' : '--';
+    return `<tr>
+      <td>${st.label}</td>
+      <td>${st.opened}次</td>
+      <td>${st.bets}次</td>
+      <td>${st.bets > 0 ? `<span style="color:#15803d;font-weight:800;">${st.wins}赢</span>/<span style="color:#dc2626;">${st.losses}输</span>` : '-'}</td>
+      <td>${avgEV}</td>
+      <td>${st.turnover > 0 ? st.turnover.toLocaleString() : '-'}</td>
+      <td>${colSpan(st.netPL)}</td>
+      <td>${roi}</td>
+    </tr>`;
+  }).join('');
+
+  // 表3：保险（保护）阶段与牌型结构深度剖析
+  const insPhaseRows = Object.entries(bd.insPhaseMap).map(([pName, pObj]) => `<tr>
+    <td>${pName}</td>
+    <td>${pObj.count}次</td>
+    <td>${pObj.count > 0 ? `${pObj.wins}中/${pObj.losses}输` : '-'}</td>
+    <td>${pObj.turnover > 0 ? pObj.turnover.toLocaleString() : '-'}</td>
+    <td>${colSpan(pObj.netPL)}</td>
+  </tr>`).join('');
+
+  const insLogHtml = bd.insLogs.length > 0 ? bd.insLogs.map(lg => `
+    <div style="background:#fff;border:1px solid #e2ddd3;border-radius:5px;padding:4px 6px;font-size:10px;line-height:1.35;">
+      <div style="display:flex;justify-content:space-between;font-weight:800;">
+        <span>第${lg.shoe}靴#${lg.handNo} | <b>${lg.phase}</b> · ${lg.title} ${lg.ev !== undefined && lg.ev !== null ? `(EV:+${(lg.ev*100).toFixed(1)}%)` : ''}</span>
+        <span>投:${lg.bet} ➔ ${colSpan(lg.pl)}</span>
+      </div>
+      <div style="color:#475569;">🃏 保时牌型结构: <b>${lg.cardStruct}</b> | 终局:${lg.outcome}</div>
+    </div>
+  `).join('') : '<div style="color:#94a3b8;text-align:center;padding:6px;">尚无保护出手记录</div>';
+
+  body.innerHTML = `
+    <div style="display:flex;gap:5px;margin-bottom:2px;">
+      <button class="tb-mini-btn ${scope==='today'?'blue':''}" style="padding:0 8px;" onclick="openReplayModal('today')">今日全靴(${allTodayShoes.length}靴)</button>
+      <button class="tb-mini-btn ${scope==='shoe'?'blue':''}" style="padding:0 8px;" onclick="openReplayModal('shoe')">当前第${shoeNumber}靴</button>
+      <button class="tb-mini-btn amber" style="padding:0 8px;" onclick="closeReplayModal();openHistoryDaysModal();">📅历史账本库(${historyDaysArchive.length}天)</button>
+    </div>
+
+    <div style="background:#1e293b;color:#fff;padding:7px 9px;border-radius:7px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px;text-align:center;">
+      <div><div style="color:#94a3b8;">总手/出手</div><b>${sm.totalHands} / ${sm.bettedHands}手</b></div>
+      <div><div style="color:#94a3b8;">总投注流水</div><b>${sm.totalTurnover.toLocaleString()}</b></div>
+      <div><div style="color:#94a3b8;">台面净值(ROI)</div><b style="color:${sm.tableNet>=0?'#4ade80':'#f87171'}">${fmt(sm.tableNet)} (${roiPct})</b></div>
+      <div><div style="color:#94a3b8;">含返综合总计</div><b style="color:#fbbf24">${fmt(sm.tableNet+sm.totalReb)}</b></div>
+    </div>
+
+    <div class="odds-group-title" style="margin-top:3px;">📈 表一：按【投注时 EV 区间】分段大数据统计 (检验正EV转化率)</div>
+    <table class="rp-table">
+      <thead><tr><th>投注时EV区间</th><th>笔数</th><th>赢/输</th><th>平均EV</th><th>投注总额</th><th>实际盈亏</th><th>实际ROI</th></tr></thead>
+      <tbody>${evRows}</tbody>
+    </table>
+
+    <div class="odds-group-title" style="margin-top:4px;">📌 表二：11 项注项分类实战统计 (含平均出手EV与收益率)</div>
+    <table class="rp-table">
+      <thead><tr><th>注项</th><th>牌开</th><th>出手</th><th>赢/输</th><th>均值EV</th><th>总投注</th><th>净盈亏</th><th>ROI</th></tr></thead>
+      <tbody>${itemRows}</tbody>
+    </table>
+
+    <div class="odds-group-title" style="margin-top:4px;">🛡️ 表三：保险(保护)时机阶段汇总 & 逐笔牌型结构档案</div>
+    <table class="rp-table">
+      <thead><tr><th>投保阶段(何时保)</th><th>出手</th><th>中/输</th><th>保费流水</th><th>保护净利</th></tr></thead>
+      <tbody>${insPhaseRows}</tbody>
+    </table>
+    <div style="display:flex;flex-direction:column;gap:3px;margin-top:3px;">${insLogHtml}</div>
+  `;
+
+  document.getElementById('replay-modal').style.display = 'flex';
+}
+function closeReplayModal() { document.getElementById('replay-modal').style.display = 'none'; }
+
+// ============================================================================
+// 📅 历史日期永久账本库
+// ============================================================================
+function archiveCurrentDayIntoHistory(tagLabel = '自动归档') {
+  const allShoes = buildAllTodayShoesList();
+  const hasAny = allShoes.some(s => s.hands && s.hands.length > 0);
+  if (!hasAny) return false;
+
+  let totalNet = 0, totalReb = 0, totalHands = 0;
+  allShoes.forEach(s => {
+    totalNet += (s.netPL || 0);
+    totalReb += (s.rebate || 0);
+    if (s.hands) totalHands += s.hands.length;
+  });
+
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  historyDaysArchive.unshift({
+    dateStr: `${dateStr} (${tagLabel})`,
+    shoesCount: allShoes.length,
+    handsCount: totalHands,
+    netPL: totalNet,
+    rebate: totalReb,
+    shoes: JSON.parse(JSON.stringify(allShoes))
+  });
+  if (historyDaysArchive.length > 120) historyDaysArchive.pop();
+  saveStateToLocal();
+  return true;
+}
+
+function manualSnapshotTodayToHistory() {
+  if (archiveCurrentDayIntoHistory('手动备份')) {
+    openHistoryDaysModal();
+    showToast('💾 今日账单已永久存入历史日期账本库！', 'ok');
+  } else {
+    showToast('⚠️ 今日尚无记录可归档', 'warn');
+  }
+}
+
+function openHistoryDaysModal() {
+  const body = document.getElementById('history-days-body');
+  const fmt = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
+  if (historyDaysArchive.length === 0) {
+    body.innerHTML = `<div style="text-align:center;color:#64748b;padding:20px;">
+      历史账本库暂无归档。<br><small>每次点击【🌅重置】清空今日时，系统会自动把当天全部靴与逐手大数据永久归档到此处。</small>
+    </div>`;
+  } else {
+    body.innerHTML = historyDaysArchive.map((d, idx) => `
+      <div style="background:#fff;border:1px solid #dcd7cd;border-radius:8px;padding:7px 9px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:900;font-size:11.5px;color:#1e293b;">📅 ${d.dateStr}</div>
+          <div style="font-size:10px;color:#64748b;margin-top:2px;">共 ${d.shoesCount} 靴 · ${d.handsCount} 手 | 净值: <b style="color:${d.netPL>=0?'#15803d':'#dc2626'}">${fmt(d.netPL)}</b> | 返: +${Math.round(d.rebate)}</div>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <button class="tb-mini-btn purple" style="padding:0 7px;" onclick="closeHistoryDaysModal();openReplayModal(${idx});">🔍复盘</button>
+          <button class="tb-mini-btn red" style="padding:0 6px;" onclick="deleteHistoryDayItem(${idx})">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('history-days-modal').style.display = 'flex';
+}
+function closeHistoryDaysModal() { document.getElementById('history-days-modal').style.display = 'none'; }
+
+function deleteHistoryDayItem(idx) {
+  historyDaysArchive.splice(idx, 1);
+  saveStateToLocal();
+  openHistoryDaysModal();
+}
+
+// ============================================================================
+// 手机分享 / 战报复制 / 网页账单 / CSV 导出
+// ============================================================================
+function generatePlainTextReport() {
+  const allShoes = buildAllTodayShoesList();
+  const bd = analyzeBigDataReplay(allShoes);
+  const sm = bd.summary;
+  const fmt = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
+
+  const lines = [];
+  lines.push(`📊【手机精算终端 4.0 · 大数据深度复盘战报】`);
+  lines.push(`时间: ${new Date().toLocaleString('zh-CN', { hour12: false })}`);
+  lines.push(`总手数: ${sm.totalHands}手(出手${sm.bettedHands}手) | 总流水: ${sm.totalTurnover}`);
+  lines.push(`台面净值: ${fmt(sm.tableNet)} | 返点: +${Math.round(sm.totalReb)} | 综合: ${fmt(sm.tableNet + sm.totalReb)}`);
+  lines.push(`────────────────────────`);
+  lines.push(`【一、按投注EV区间统计】`);
+  bd.evBrackets.forEach(b => {
+    if (b.count > 0) lines.push(`${b.label}: ${b.count}笔(${b.wins}赢/${b.losses}输) | 投${b.turnover} | 净利 ${fmt(b.netPL)}`);
+  });
+  lines.push(`────────────────────────`);
+  lines.push(`【二、11项分类统计】`);
+  bd.itemList.forEach(st => {
+    if (st.opened > 0 || st.bets > 0) {
+      lines.push(`${st.label}: 牌开${st.opened}次 | 出手${st.bets}次(${st.wins}赢/${st.losses}输) | 投${st.turnover} | 净利: ${fmt(st.netPL)}`);
+    }
+  });
+  if (bd.insLogs.length > 0) {
+    lines.push(`────────────────────────`);
+    lines.push(`【三、保护(保险)时机与牌型结构明细】`);
+    bd.insLogs.forEach(lg => {
+      lines.push(`第${lg.shoe}靴#${lg.handNo} [${lg.phase}·${lg.title}] 投${lg.bet} => ${fmt(lg.pl)} | ${lg.cardStruct}`);
+    });
+  }
+  return lines.join('\n');
+}
+
+function copyTextBattleReport() {
+  const txt = generatePlainTextReport();
+  const ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('📋 大数据文字战报已复制！可直接粘贴到微信或备忘录', 'ok');
+  } catch (e) {
+    showToast('⚠️ 复制失败，请使用分享功能', 'err');
+  }
+  document.body.removeChild(ta);
+}
+
+function buildStandaloneReportHtmlString() {
+  const snap = buildFullSnapshot();
+  const allShoes = buildAllTodayShoesList();
+  const bd = analyzeBigDataReplay(allShoes);
+  const sm = bd.summary;
+  const fmt = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
+
+  const t1Rows = bd.itemList.map(st => `<tr>
+    <td><b>${st.label}</b></td><td>${st.opened}次</td><td>${st.bets}次</td>
+    <td>${st.wins}赢 / ${st.losses}输</td><td>${st.turnover.toLocaleString()}</td>
+    <td style="font-weight:900;color:${st.netPL>0?'#16a34a':(st.netPL<0?'#dc2626':'#475569')}">${fmt(st.netPL)}</td>
+  </tr>`).join('');
+
+  return `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>大数据复盘账单_${new Date().toISOString().slice(0,10)}</title>
+  <style>body{font-family:-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;padding:12px;max-width:860px;margin:0 auto;}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;font-size:12px;margin-bottom:16px;}
+  th{background:#1e293b;color:#fff;padding:7px 4px;}td{padding:6px 4px;border-bottom:1px solid #e2e8f0;text-align:center;}
+  </style></head><body>
+  <h2>📊 手机精算终端 4.0 · 大数据深度复盘账单</h2>
+  <p>总手数: <b>${sm.totalHands}手</b> | 总流水: <b>${sm.totalTurnover.toLocaleString()}</b> | 台面总净值: <b>${fmt(sm.tableNet)}</b> | 累计返点: <b>+${Math.round(sm.totalReb)}</b></p>
+  <h3>一、11项分类实战统计表</h3>
+  <table><thead><tr><th>注项</th><th>牌面开出</th><th>我出手</th><th>赢/输</th><th>总投注</th><th>单项净盈亏</th></tr></thead><tbody>${t1Rows}</tbody></table>
+  <h3>二、大数据完整战报与保险结构档案</h3>
+  <pre style="background:#fff;padding:12px;border-radius:8px;font-size:12px;white-space:pre-wrap;line-height:1.5;">${generatePlainTextReport()}</pre>
+  <script id="bac-backup-json" type="application/json">${JSON.stringify(snap)}<\/script>
+  </body></html>`;
+}
+
+async function shareReportNative() {
+  const htmlStr = buildStandaloneReportHtmlString();
+  const fileName = `大数据复盘账单_${new Date().toISOString().slice(0,10)}.html`;
+  try {
+    if (navigator.share) {
+      const file = new File([htmlStr], fileName, { type: 'text/html' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ title: '大数据复盘账单', text: 'EV区间统计与保险结构对账单', files: [file] });
+        showToast('📤 已调起系统分享！', 'ok');
+        return;
+      }
+      await navigator.share({ title: '大数据复盘战报', text: generatePlainTextReport() });
+      showToast('📤 已调起系统文字分享！', 'ok');
+      return;
+    }
+  } catch (err) {}
+  exportReadableHtmlReport();
+}
+
+function exportReadableHtmlReport() {
+  const htmlStr = buildStandaloneReportHtmlString();
+  const blob = new Blob([htmlStr], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `大数据复盘账单_${new Date().toISOString().slice(0,10)}.html`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showToast('📄 已导出直看网页账单(.html)！', 'ok');
+}
+
+function exportReplayCsv() {
+  const allShoes = buildAllTodayShoesList();
+  const headers = ['靴号','状态','手数','时间','赛果','庄点','闲点','庄投注','庄当时EV%','庄盈亏','闲投注','闲当时EV%','闲盈亏','和投注','和盈亏','龙七投注','龙七盈亏','熊八投注','熊八盈亏','小虎投注','小虎盈亏','大虎投注','大虎盈亏','庄对投注','庄对盈亏','闲对投注','闲对盈亏','幸运六投注','幸运六盈亏','锁定保护阶段与牌型结构','保护盈亏','本手总净值','返点'];
+  const rows = [headers.join(',')];
+  let cnt = 0;
+
+  allShoes.forEach(s => {
+    if (!s.hands) return;
+    const total = s.hands.length;
+    for (let i = total - 1; i >= 0; i--) {
+      const r = s.hands[i];
+      const ipl = r.itemPL || {};
+      const b = r.bets || {};
+      const bev = r.betEVs || {};
+      const insStr = (Array.isArray(r.lockedOrders) && r.lockedOrders.length > 0)
+        ? r.lockedOrders.map(o => `[${o.phaseName||''}${o.title}x${o.bet}|${o.cardStruct||''}]`).join(';') : '';
+      rows.push([
+        s.shoe, `"${s.status}"`, total - i, `"${r.time || ''}"`, `"${r.resolvedOutcome || ''}"`, r.bPts, r.pPts,
+        b.banker||0, bev.banker!==undefined && bev.banker!==null ? (bev.banker*100).toFixed(2) : '', ipl.banker||0,
+        b.player||0, bev.player!==undefined && bev.player!==null ? (bev.player*100).toFixed(2) : '', ipl.player||0,
+        b.tie||0, ipl.tie||0,
+        b.dragon7||0, ipl.dragon7||0, b.panda8||0, ipl.panda8||0, b.stiger||0, ipl.stiger||0, b.btiger||0, ipl.btiger||0,
+        b.bpair||0, ipl.bpair||0, b.ppair||0, ipl.ppair||0, b.super6||0, ipl.super6||0,
+        `"${insStr}"`, Math.round(r.handInsPL||0), Math.round(r.handTablePL||0), (r.handRebate||0).toFixed(2)
+      ].join(','));
+      cnt++;
+    }
+  });
+
+  if (cnt === 0) { showToast('⚠️ 尚无已确认记录可导出', 'warn'); return; }
+  const blob = new Blob(['\uFEFF' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `大数据对账表_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showToast(`📊 已导出 CSV 表格 (${cnt}手)！`, 'ok');
+}
+
+function importRecordsBackup(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const txt = e.target.result;
+      let parsed = txt.trim().startsWith('{') ? JSON.parse(txt) : null;
+      if (!parsed) {
+        const m = txt.match(/<script id="bac-backup-json"[^>]*>([\s\S]*?)<\/script>/);
+        if (m && m[1]) parsed = JSON.parse(m[1]);
+      }
+      if (!parsed) throw new Error('Invalid');
+      applySnapshotData(parsed);
+      renderBetInputs();
+      replayFullShoe();
+      renderColorZone();
+      renderUsedZone();
+      tryTriggerBrain1();
+      evaluateBrain2Insurance();
+      closeHistoryDaysModal();
+      showToast('📂 备份恢复成功！', 'ok');
+    } catch (err) {
+      showToast('❌ 文件格式无法识别', 'err');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================================
+// 历史手修改、新靴归档、重置今日
+// ============================================================================
+function openEditModal(idx) {
+  editingHandIdx = idx;
+  const h = handRecords[idx];
+  const handNo = handRecords.length - idx;
+  document.getElementById('edit-modal-title').textContent = `✏️ 修改第 ${handNo} 手记录`;
+  const slotNames = ['闲1','闲2','庄1','庄2','闲补1','庄补1'];
+
+  const colorSelect = (val, id) => `<select id="${id}">
+    <option value="" ${!val ? 'selected' : ''}>无</option>
+    <option value="red" ${val === 'red' ? 'selected' : ''}>红R</option>
+    <option value="blue" ${val === 'blue' ? 'selected' : ''}>蓝B</option>
+  </select>`;
+
+  const rankSelect = (val, id) => `<select id="${id}">
+    <option value="" ${val === null || val === undefined ? 'selected' : ''}>空</option>
+    ${RANKS.map((lbl, rIdx) => `<option value="${rIdx}" ${val === rIdx ? 'selected' : ''}>${lbl}</option>`).join('')}
+  </select>`;
+
+  const lockedOrdersEditHtml = (Array.isArray(h.lockedOrders) && h.lockedOrders.length > 0)
+    ? h.lockedOrders.map((o, oIdx) => `
+      <div class="odds-item">
+        <span>🔒${o.title}</span>
+        <input type="number" id="ed-lock-bet-${oIdx}" value="${o.bet || 0}">
+      </div>`).join('')
+    : '<div style="color:#64748b;font-size:10.5px;">无锁定保护</div>';
+
+  document.getElementById('edit-modal-body').innerHTML = `
+    <div>
+      <div class="odds-group-title">🎴 胜负覆盖与飞牌修正</div>
+      <div class="odds-grid">
+        <div class="odds-item"><span>结果</span><select id="ed-res">
+          <option value="" ${!h.manualRes ? 'selected' : ''}>自动</option>
+          <option value="庄" ${h.manualRes === '庄' ? 'selected' : ''}>庄赢</option>
+          <option value="闲" ${h.manualRes === '闲' ? 'selected' : ''}>闲赢</option>
+          <option value="和" ${h.manualRes === '和' ? 'selected' : ''}>和局</option>
+        </select></div>
+        <div class="odds-item"><span>飞色</span>${colorSelect(h.flyColor, 'ed-fly-c')}</div>
+        <div class="odds-item"><span>飞牌</span>${rankSelect(h.flyRank, 'ed-fly-r')}</div>
+      </div>
+    </div>
+    <div>
+      <div class="odds-group-title">🃏 6格底色与A~K用牌修正</div>
+      <div class="odds-grid">
+        ${[0,1,2,3,4,5].map(u => `<div class="odds-item">
+          <span>${slotNames[u]}</span>
+          <span>${colorSelect(h.cardColors[u], 'ed-c-' + u)}${rankSelect(h.usedCards[u], 'ed-u-' + u)}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="odds-group-title">💵 10项注码积分修正</div>
+      <div class="odds-grid">
+        ${BET_KEYS.map(k => `<div class="odds-item"><span>${BET_NAMES[k]}</span><input type="number" id="ed-bet-${k}" value="${h.bets[k] || 0}"></div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="odds-group-title">🔒 已锁保护积分修正</div>
+      <div class="odds-grid">${lockedOrdersEditHtml}</div>
+    </div>
+  `;
+  document.getElementById('edit-modal').style.display = 'flex';
+}
+function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
+
+function saveEditingHand() {
+  if (editingHandIdx < 0) return;
+  const h = handRecords[editingHandIdx];
+  h.manualRes = document.getElementById('ed-res').value || null;
+  h.flyColor = document.getElementById('ed-fly-c').value || null;
+  const fR = document.getElementById('ed-fly-r').value;
+  h.flyRank = fR === '' ? null : parseInt(fR, 10);
+
+  for (let u = 0; u < 6; u++) {
+    h.cardColors[u] = document.getElementById('ed-c-' + u).value || null;
+    const uV = document.getElementById('ed-u-' + u).value;
+    h.usedCards[u] = uV === '' ? null : parseInt(uV, 10);
+  }
+  BET_KEYS.forEach(k => { h.bets[k] = parseInt(document.getElementById('ed-bet-' + k).value, 10) || 0; });
+
+  if (Array.isArray(h.lockedOrders)) {
+    h.lockedOrders.forEach((o, oIdx) => {
+      const inp = document.getElementById('ed-lock-bet-' + oIdx);
+      if (inp) o.bet = parseInt(inp.value, 10) || 0;
+    });
+    h.lockedOrders = h.lockedOrders.filter(o => o.bet > 0);
+  }
+
+  closeEditModal();
+  replayFullShoe();
+  tryTriggerBrain1();
+  evaluateBrain2Insurance();
+  showToast('✅ 已更新并重演全靴！', 'ok');
+}
+
+function deleteEditingHand() {
+  if (editingHandIdx < 0) return;
+  handRecords.splice(editingHandIdx, 1);
+  closeEditModal();
+  replayFullShoe();
+  tryTriggerBrain1();
+  evaluateBrain2Insurance();
+  showToast('🗑️ 已删除该手记录', 'warn');
+}
+
+function archiveAndStartNewShoe() {
+  const btn = document.getElementById('btn-new-shoe');
+  if (newShoeConfirmStep === 0) {
+    newShoeConfirmStep = 1;
+    if (btn) btn.textContent = '再点新靴';
+    showToast('⚠️ 再点一次【新靴】确认归档当前靴并开启新靴', 'warn');
+    if (newShoeConfirmTimer) clearTimeout(newShoeConfirmTimer);
+    newShoeConfirmTimer = setTimeout(() => {
+      newShoeConfirmStep = 0;
+      if (btn) btn.textContent = '新靴';
+    }, 3500);
+    return;
+  }
+  newShoeConfirmStep = 0;
+  if (newShoeConfirmTimer) { clearTimeout(newShoeConfirmTimer); newShoeConfirmTimer = null; }
+  if (btn) btn.textContent = '新靴';
+
+  if (handRecords.length > 0) {
+    let netPL = 0, rebate = 0;
+    handRecords.forEach(h => {
+      netPL += (h.handTablePL || 0);
+      rebate += (h.handRebate || 0);
+    });
+    archivedShoes.push({
+      shoe: shoeNumber,
+      handsCount: handRecords.length,
+      netPL,
+      rebate,
+      time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+      hands: JSON.parse(JSON.stringify(handRecords))
+    });
+    shoeNumber++;
+  }
+  resetCurrentShoeState();
+  showToast(`🏁 已开启第 ${shoeNumber} 靴！`, 'ok');
+}
+
+function resetAllTodayLedger() {
+  const btn = document.getElementById('btn-reset-day');
+  if (resetDayConfirmStep === 0) {
+    resetDayConfirmStep = 1;
+    btn.textContent = '再点重置';
+    showToast('⚠️ 再点一次【重置】将自动归档今日至账本库并开启新一天', 'warn');
+    setTimeout(() => {
+      resetDayConfirmStep = 0;
+      btn.textContent = '重置';
+    }, 3500);
+    return;
+  }
+  resetDayConfirmStep = 0;
+  btn.textContent = '重置';
+  archiveCurrentDayIntoHistory('重置自动归档');
+  archivedShoes = [];
+  shoeNumber = 1;
+  resetCurrentShoeState();
+  showToast('🌅 今日已重置（原记录已永久存入账本库）！', 'ok');
+}
+
+function resetCurrentShoeState() {
+  resetIncompleteConfirmBtn();
+  handRecords = [];
+  card_colors = [null, null, null, null, null, null];
+  next_fly_color = null;
+  used_cards = [null, null, null, null, null, null];
+  fly_color = null; fly_rank = null;
+  lockedInsOrders = [];
+  liveInsCond = null;
+  clearCurrentBets();
+  replayFullShoe();
+  renderColorZone();
+  renderUsedZone();
+  clearBrain1Display('');
+  evaluateBrain2Insurance();
+}
+
+function openGainModal() {
+  const body = document.getElementById('gain-modal-body');
+  if (!lastBreakdown) {
+    body.innerHTML = '<div style="text-align:center;color:#888;padding:18px;">请先填满6张底色完成精算后查看</div>';
+  } else {
+    const b = lastBreakdown;
+    const fPct = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(3) + '%';
+    body.innerHTML = `
+      <div style="background:#eef2ff;padding:7px 10px;border-radius:7px;line-height:1.5;font-size:11px;">
+        <div><b>【庄综合】${fPct(b.bTotalEV)}</b> = 基${fPct(b.bBaseEV)} + 返${fPct(b.bRebateEV)} + 增${fPct(b.bInsGain)}</div>
+        <div><b>【闲综合】${fPct(b.pTotalEV)}</b> = 基${fPct(b.pBaseEV)} + 返${fPct(b.pRebateEV)} + 增${fPct(b.pInsGain)}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px 10px;margin-top:4px;">
+        ${b.items.map(([name, val]) => `<div style="display:flex;justify-content:space-between;border-bottom:1px dashed #e5e0d5;padding:2px 0;">
+          <span>${name}</span><b style="color:${val > 0 ? '#15803d' : '#94a3b8'};">${val.toFixed(6)}</b>
+        </div>`).join('')}
+      </div>`;
+  }
+  document.getElementById('gain-modal').style.display = 'flex';
+}
+function closeGainModal() { document.getElementById('gain-modal').style.display = 'none'; }
+
+const ODDS_SECTIONS = [
+  { title: 'AB (闲前2张)', items: [['ab_7','闲7'],['ab_8','闲8'],['ab_9','闲9(和)']] },
+  { title: 'CD (庄前2张)', items: [['cd_7','庄7'],['cd_8','庄8'],['cd_9','庄9(和)']] },
+  { title: 'ABCD (庄保护)', items: [['abcd_b4','庄4'],['abcd_b5','庄5'],['abcd_b6','庄6'],['abcd_b7','庄7']] },
+  { title: 'ABCD (闲保护)', items: [['abcd_p5','闲5'],['abcd_p6','闲6'],['abcd_p7','闲7']] },
+  { title: 'ABCDE (闲三张)', items: [['abcde_4','4点'],['abcde_5','5点'],['abcde_6','6点'],['abcde_7','7点'],['abcde_8','8点'],['abcde_9','9点(和)']] },
+  { title: 'ABCDF (庄三张)', items: [['abcdf_4','4点'],['abcdf_5','5点'],['abcdf_6','6点'],['abcdf_7','7点'],['abcdf_8','8点'],['abcdf_9','9点(和)']] }
+];
+
+function openSettingsModal() {
+  document.getElementById('cfg-start-br').value = appCfg.startBankroll;
+  document.getElementById('cfg-add-br').value = appCfg.addBankroll || 0;
+  document.getElementById('cfg-kelly-br').value = appCfg.kellyBankroll;
+  document.getElementById('cfg-kelly-mult').value = appCfg.kellyMult;
+  document.getElementById('cfg-rebate').value = appCfg.rebatePct;
+  document.getElementById('cfg-pair-odds').value = appCfg.pairOdds || 11;
+  document.getElementById('cfg-bet-unit').value = appCfg.betUnit;
+  document.getElementById('cfg-side-unit').value = appCfg.sideUnit || 10;
+  document.getElementById('cfg-ins-unit').value = String(appCfg.insUnit);
+  document.getElementById('odds-form-body').innerHTML = ODDS_SECTIONS.map(sec => `
+    <div>
+      <div class="odds-group-title">${sec.title}</div>
+      <div class="odds-grid">${sec.items.map(([k, lbl]) => `<div class="odds-item"><span>${lbl}</span><input type="number" step="0.5" id="inp-${k}" value="${insOdds[k]}"></div>`).join('')}</div>
+    </div>`).join('');
+  document.getElementById('settings-modal').style.display = 'flex';
+}
+function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+
+function resetDefaultInsOdds() {
+  insOdds = Object.assign({}, DEFAULT_INS_ODDS);
+  openSettingsModal();
+}
+
+function saveSettingsModal() {
+  appCfg.startBankroll = parseFloat(document.getElementById('cfg-start-br').value) || 20000;
+  appCfg.addBankroll = parseFloat(document.getElementById('cfg-add-br').value) || 0;
+  appCfg.kellyBankroll = parseFloat(document.getElementById('cfg-kelly-br').value) || 20000;
+  appCfg.kellyMult = parseFloat(document.getElementById('cfg-kelly-mult').value) || 0.5;
+  appCfg.rebatePct = parseFloat(document.getElementById('cfg-rebate').value) || 0;
+  appCfg.pairOdds = parseFloat(document.getElementById('cfg-pair-odds').value) || 11;
+  appCfg.betUnit = parseInt(document.getElementById('cfg-bet-unit').value, 10) || 10;
+  appCfg.sideUnit = parseInt(document.getElementById('cfg-side-unit').value, 10) || 10;
+  appCfg.insUnit = parseInt(document.getElementById('cfg-ins-unit').value, 10) || 5;
+  document.getElementById('top-rebate-inp').value = appCfg.rebatePct;
+  ODDS_SECTIONS.forEach(sec => sec.items.forEach(([k]) => {
+    const v = parseFloat(document.getElementById('inp-' + k).value);
+    if (!isNaN(v) && v > 0) insOdds[k] = v;
+  }));
+  closeSettingsModal();
+  replayFullShoe();
+  tryTriggerBrain1();
+  evaluateBrain2Insurance();
+  showToast('⚙️ 设置已保存！', 'ok');
+}
+
+// ============================================================================
+// 零冷却极速连续双击与拖拽交互 (完美兼容手指触控 + 手机蓝牙鼠标左/右键操作)
+// ============================================================================
+let dragPayload = null, isDraggingMoved = false, startX = 0, startY = 0;
+const ghostEl = document.getElementById('drag-ghost');
+
+function bindFastDoubleTap(el, callback) {
+  let lastTouchTime = 0;
+  el.addEventListener('touchend', function(e) {
+    if (isDraggingMoved) return;
+    const now = performance.now();
+    if (now - lastTouchTime <= 350 && now - lastTouchTime > 0) {
+      if (e.cancelable) e.preventDefault();
+      lastTouchTime = 0;
+      callback();
+    } else {
+      lastTouchTime = now;
+    }
+  }, { passive: false });
+
+  let lastClickTime = 0, lastX = 0, lastY = 0;
+  el.addEventListener('mousedown', function(e) {
+    if (e.button !== 0) return;
+    const now = performance.now();
+    const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
+    if (now - lastClickTime <= 360 && dist < 20) {
+      e.preventDefault();
+      lastClickTime = 0;
+      callback();
+    } else {
+      lastClickTime = now;
+      lastX = e.clientX;
+      lastY = e.clientY;
+    }
+  });
+}
+
+function bindPoolCardEvents(cardEl, rIdx, poolColor) {
+  cardEl.addEventListener('click', () => {
+    const cnt = poolColor === 'red' ? redPool[rIdx] : bluePool[rIdx];
+    if (cnt === 0) {
+      showToast(`🚫 ${poolColor === 'red' ? '红' : '蓝'}牌 [${rankLabel(rIdx)}] 余数为 0！`, 'err');
+    }
+  });
+  bindFastDoubleTap(cardEl, () => fillNextCardByDoubleTap(rIdx));
+  cardEl.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; dragPayload = { kind: 'card', value: rIdx }; isDraggingMoved = false; }, { passive: true });
+  cardEl.addEventListener('mousedown', e => { if (e.button !== 0) return; startX = e.clientX; startY = e.clientY; dragPayload = { kind: 'card', value: rIdx }; isDraggingMoved = false; });
+}
+
+function initInteractions() {
+  bindFastDoubleTap(document.getElementById('slot-fly'), () => { if (fly_rank !== null) removeFlyCard(); else if (fly_color !== null) setSlotColor('fly', null); });
+  bindFastDoubleTap(document.getElementById('slot-next-fly'), () => { if (next_fly_color !== null) setSlotColor('next_fly', null); });
+  for (let i = 0; i < 6; i++) bindFastDoubleTap(document.getElementById('slot-' + i), () => { if (card_colors[i] !== null) setSlotColor(String(i), null); });
+  for (let u = 0; u < 6; u++) bindFastDoubleTap(document.getElementById('uslot-' + u), () => removeUsedCard(u));
+
+  ['src-red', 'src-blue'].forEach(id => {
+    const src = document.getElementById(id), color = src.getAttribute('data-color');
+    bindFastDoubleTap(src, () => fillNextColorByDoubleTap(color));
+    src.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; dragPayload = { kind: 'color', value: color }; isDraggingMoved = false; }, { passive: true });
+    src.addEventListener('mousedown', e => { if (e.button !== 0) return; startX = e.clientX; startY = e.clientY; dragPayload = { kind: 'color', value: color }; isDraggingMoved = false; });
+  });
+
+  const onMove = (x, y, ev) => {
+    if (!dragPayload) return;
+    if (Math.abs(x - startX) > 6 || Math.abs(y - startY) > 6) isDraggingMoved = true;
+    if (isDraggingMoved) {
+      if (ev && ev.cancelable) ev.preventDefault();
+      ghostEl.style.display = 'flex';
+      ghostEl.className = dragPayload.kind === 'color' ? dragPayload.value : 'card';
+      ghostEl.textContent = dragPayload.kind === 'color' ? (dragPayload.value === 'red' ? 'R' : 'B') : rankLabel(dragPayload.value);
+      ghostEl.style.left = x + 'px'; ghostEl.style.top = y + 'px';
+      document.querySelectorAll('.c-slot, .u-slot').forEach(s => s.classList.remove('drag-over'));
+      const t = findTargetSlotAt(x, y); if (t) t.classList.add('drag-over');
+    }
+  };
+  window.addEventListener('touchmove', e => onMove(e.touches[0].clientX, e.touches[0].clientY, e), { passive: false });
+  window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY, null));
+
+  const onEnd = (x, y) => {
+    if (dragPayload && isDraggingMoved) {
+      const target = findTargetSlotAt(x, y);
+      if (target) {
+        if (dragPayload.kind === 'color') setSlotColor(target.getAttribute('data-cslot'), dragPayload.value);
+        else if (target.id === 'slot-fly') placeCardIntoFly(dragPayload.value);
+        else if (target.hasAttribute('data-uslot')) placeCardIntoUsedSlot(parseInt(target.getAttribute('data-uslot'), 10), dragPayload.value);
+      }
+    }
+    dragPayload = null; ghostEl.style.display = 'none';
+    document.querySelectorAll('.c-slot, .u-slot').forEach(s => s.classList.remove('drag-over'));
+    setTimeout(() => { isDraggingMoved = false; }, 40);
+  };
+  window.addEventListener('touchend', e => onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY));
+  window.addEventListener('mouseup', e => onEnd(e.clientX, e.clientY));
+}
+
+function findTargetSlotAt(x, y) {
+  const els = document.querySelectorAll(dragPayload.kind === 'color' ? '.c-slot' : '.u-slot, #slot-fly');
+  for (let el of els) {
+    const r = el.getBoundingClientRect();
+    if (x >= r.left - 3 && x <= r.right + 3 && y >= r.top - 4 && y <= r.bottom + 4) return el;
+  }
+  return null;
+}
+
+initIndexedDB();
+loadStateFromLocal();
+renderBetInputs();
+renderColorZone();
+renderUsedZone();
+replayFullShoe();
+tryTriggerBrain1();
+evaluateBrain2Insurance();
+initInteractions();
 </script>
 </body>
 </html>
+
+
