@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>手机竖屏精算终端 4.0</title>
+<title>手机竖屏精算终端 5.0</title>
 <style>
   :root {
     --bg-main: #dedbd4;
@@ -610,7 +610,7 @@
           <span>飞牌</span>
         </label>
         <div class="reb-box">
-          <span>返</span>
+          <span id="top-reb-mode-lbl" onclick="toggleQuickRebateMode()" style="color:#38bdf8;cursor:pointer;" title="点击切换：按输口返 / 按赢额返">输返</span>
           <input type="number" step="0.1" class="reb-inp" id="top-rebate-inp" value="1.3" onchange="onQuickRebateChange(this.value)">
           <span>%</span>
         </div>
@@ -772,12 +772,12 @@
 
       <!-- 中间：单横排居中筹码 + 全清 -->
       <div class="chip-strip">
-        <div class="m-chip chip-5" onclick="addChipToSelected(5)">5</div>
-        <div class="m-chip chip-10" onclick="addChipToSelected(10)">10</div>
-        <div class="m-chip chip-50" onclick="addChipToSelected(50)">50</div>
-        <div class="m-chip chip-100" onclick="addChipToSelected(100)">100</div>
-        <div class="m-chip chip-500" onclick="addChipToSelected(500)">500</div>
-        <div class="m-chip chip-1000" onclick="addChipToSelected(1000)">1K</div>
+        <div class="m-chip chip-5" id="chip-btn-0" onclick="onChipSlotClick(0)">5</div>
+        <div class="m-chip chip-10" id="chip-btn-1" onclick="onChipSlotClick(1)">10</div>
+        <div class="m-chip chip-50" id="chip-btn-2" onclick="onChipSlotClick(2)">50</div>
+        <div class="m-chip chip-100" id="chip-btn-3" onclick="onChipSlotClick(3)">100</div>
+        <div class="m-chip chip-500" id="chip-btn-4" onclick="onChipSlotClick(4)">500</div>
+        <div class="m-chip chip-1000" id="chip-btn-5" onclick="onChipSlotClick(5)">1K</div>
         <button class="btn-clear-all" onclick="clearCurrentBets()">🗑️全清</button>
       </div>
 
@@ -887,22 +887,45 @@
 <div class="modal-mask" id="settings-modal">
   <div class="modal-box">
     <div class="modal-head">
-      <span>⚙️ 参数、对子赔率与 25 项保护倍率设置</span>
+      <span>⚙️ 5.0 多能体参数、积分档位与倍率设置</span>
       <span style="cursor:pointer;padding:2px 6px;" onclick="closeSettingsModal()">✕</span>
     </div>
     <div class="modal-body">
       <div>
-        <div class="odds-group-title">💰 积分基数、对子赔率与取整单位</div>
+        <div class="odds-group-title">💰 积分基数、返点模式与注码档位</div>
         <div class="odds-grid">
           <div class="odds-item"><span>初始积分</span><input type="number" id="cfg-start-br" value="20000"></div>
           <div class="odds-item"><span>今日加码</span><input type="number" id="cfg-add-br" value="0"></div>
           <div class="odds-item"><span>凯利基数</span><input type="number" id="cfg-kelly-br" value="20000"></div>
           <div class="odds-item"><span>凯利系数</span><input type="number" step="0.1" id="cfg-kelly-mult" value="0.5"></div>
           <div class="odds-item"><span>庄闲返点%</span><input type="number" step="0.1" id="cfg-rebate" value="1.3"></div>
-          <div class="odds-item"><span>对子赔率</span><input type="number" step="0.5" id="cfg-pair-odds" value="11"></div>
+          <div class="odds-item"><span>返点模式</span><select id="cfg-rebate-mode" style="width:68px;"><option value="loss">1.按输口</option><option value="win">2.按赢额</option></select></div>
           <div class="odds-item"><span>主项单位</span><input type="number" id="cfg-bet-unit" value="10"></div>
           <div class="odds-item"><span>旁项单位</span><input type="number" id="cfg-side-unit" value="10"></div>
-          <div class="odds-item"><span>保护单位</span><select id="cfg-ins-unit"><option value="1">1</option><option value="5">5</option><option value="10">10</option><option value="50">50</option></select></div>
+          <div class="odds-item"><span>保护单位</span><input type="number" id="cfg-ins-unit" value="5"></div>
+        </div>
+        <div class="odds-item" style="margin-top:4px;">
+          <span>🪙 注码档位 (四选一)</span>
+          <select id="cfg-chip-preset" style="width:210px;">
+            <option value="0">档1: 5 / 10 / 50 / 100 / 500 / 1K</option>
+            <option value="1">档2: 10 / 50 / 100 / 500 / 1K / 5K</option>
+            <option value="2">档3: 50 / 100 / 500 / 1K / 5K / 1W</option>
+            <option value="3">档4: 100 / 500 / 1K / 5K / 1W / 5W</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="odds-group-title">🎯 旁项与主项倍率自定义</div>
+        <div class="odds-grid">
+          <div class="odds-item"><span>庄赢倍率</span><input type="number" step="0.05" id="cfg-odd-banker" value="0.95"></div>
+          <div class="odds-item"><span>和局倍率</span><input type="number" step="0.5" id="cfg-odd-tie" value="8"></div>
+          <div class="odds-item"><span>对子倍率</span><input type="number" step="0.5" id="cfg-pair-odds" value="11"></div>
+          <div class="odds-item"><span>龙七倍率</span><input type="number" step="1" id="cfg-odd-dragon7" value="40"></div>
+          <div class="odds-item"><span>熊八倍率</span><input type="number" step="1" id="cfg-odd-panda8" value="25"></div>
+          <div class="odds-item"><span>小虎倍率</span><input type="number" step="1" id="cfg-odd-stiger" value="22"></div>
+          <div class="odds-item"><span>大虎倍率</span><input type="number" step="1" id="cfg-odd-btiger" value="50"></div>
+          <div class="odds-item"><span>幸6(2张)</span><input type="number" step="1" id="cfg-odd-s6-2" value="12"></div>
+          <div class="odds-item"><span>幸6(3张)</span><input type="number" step="1" id="cfg-odd-s6-3" value="20"></div>
         </div>
       </div>
       <div id="odds-form-body" style="display:flex;flex-direction:column;gap:6px;"></div>
@@ -986,24 +1009,74 @@ let incompleteConfirmStep = 0;
 let incompleteTimer = null;
 let toastTimer = null;
 
+const CHIP_PRESETS = [
+  [5, 10, 50, 100, 500, 1000],
+  [10, 50, 100, 500, 1000, 5000],
+  [50, 100, 500, 1000, 5000, 10000],
+  [100, 500, 1000, 5000, 10000, 50000]
+];
+
 let appCfg = {
   startBankroll: 20000,
   addBankroll: 0,
   kellyBankroll: 20000,
   kellyMult: 0.5,
   rebatePct: 1.3,
+  rebateMode: 'loss', // 'loss' = 1.按输口, 'win' = 2.按赢额(所得积分)
+  chipPresetIdx: 0,
+  bankerOdds: 0.95,
+  tieOdds: 8,
   pairOdds: 11,
+  dragon7Odds: 40,
+  panda8Odds: 25,
+  stigerOdds: 22,
+  btigerOdds: 50,
+  super6_2Odds: 12,
+  super6_3Odds: 20,
   betUnit: 10,
   sideUnit: 10,
   insUnit: 5
 };
 const DEFAULT_INS_ODDS = {
   ab_7: 2, ab_8: 7, ab_9: 9, cd_7: 2, cd_8: 7, cd_9: 9,
+  abcd_b3: 0, abcd_p3: 0, // 预留3点保护伏笔接口(默认0关闭，不影响任何现有正常数据)
   abcd_b4: 1.5, abcd_b5: 2, abcd_b6: 3, abcd_b7: 4, abcd_p5: 2, abcd_p6: 3, abcd_p7: 4,
-  abcde_4: 1.5, abcde_5: 2, abcde_6: 3, abcde_7: 4, abcde_8: 9, abcde_9: 10,
-  abcdf_4: 1.5, abcdf_5: 2, abcdf_6: 3, abcdf_7: 4, abcdf_8: 9, abcdf_9: 10
+  abcde_3: 0, abcde_4: 1.5, abcde_5: 2, abcde_6: 3, abcde_7: 4, abcde_8: 9, abcde_9: 10,
+  abcdf_3: 0, abcdf_4: 1.5, abcdf_5: 2, abcdf_6: 3, abcdf_7: 4, abcdf_8: 9, abcdf_9: 10
 };
 let insOdds = Object.assign({}, DEFAULT_INS_ODDS);
+
+function formatChipLabel(val) {
+  if (val >= 10000 && val % 10000 === 0) return (val / 10000) + 'W';
+  if (val >= 1000 && val % 1000 === 0) return (val / 1000) + 'K';
+  return String(val);
+}
+
+function renderChipStrip() {
+  const idx = appCfg.chipPresetIdx || 0;
+  const arr = CHIP_PRESETS[idx] || CHIP_PRESETS[0];
+  for (let i = 0; i < 6; i++) {
+    const el = document.getElementById('chip-btn-' + i);
+    if (el) el.textContent = formatChipLabel(arr[i]);
+  }
+}
+
+function onChipSlotClick(slotIdx) {
+  const idx = appCfg.chipPresetIdx || 0;
+  const arr = CHIP_PRESETS[idx] || CHIP_PRESETS[0];
+  addChipToSelected(arr[slotIdx] || 10);
+}
+
+function syncKellyOddsFromCfg() {
+  KELLY_ODDS.banker = appCfg.bankerOdds || 0.95;
+  KELLY_ODDS.tie = appCfg.tieOdds || 8;
+  KELLY_ODDS.bpair = appCfg.pairOdds || 11;
+  KELLY_ODDS.ppair = appCfg.pairOdds || 11;
+  KELLY_ODDS.dragon7 = appCfg.dragon7Odds || 40;
+  KELLY_ODDS.panda8 = appCfg.panda8Odds || 25;
+  KELLY_ODDS.stiger = appCfg.stigerOdds || 22;
+  KELLY_ODDS.btiger = appCfg.btigerOdds || 50;
+}
 
 function showToast(msg, type = 'warn') {
   const el = document.getElementById('toast-banner');
@@ -1148,7 +1221,25 @@ function loadStateFromLocal() {
     if (raw) applySnapshotData(JSON.parse(raw));
     document.getElementById('top-rebate-inp').value = appCfg.rebatePct;
     document.getElementById('chk-fly-priority').checked = isFlyPriority;
+    updateTopRebateModeLabel();
   } catch (e) {}
+}
+
+function updateTopRebateModeLabel() {
+  const el = document.getElementById('top-reb-mode-lbl');
+  if (el) {
+    const isWin = (appCfg.rebateMode === 'win');
+    el.textContent = isWin ? '赢返' : '输返';
+    el.style.color = isWin ? '#4ade80' : '#38bdf8';
+  }
+}
+
+function toggleQuickRebateMode() {
+  appCfg.rebateMode = (appCfg.rebateMode === 'win') ? 'loss' : 'win';
+  updateTopRebateModeLabel();
+  replayFullShoe();
+  tryTriggerBrain1();
+  showToast(appCfg.rebateMode === 'win' ? '🔄 已切换为：2.按赢口所得积分计返点' : '🔄 已切换为：1.按输口计返点', 'ok');
 }
 
 // 监听 App 切后台、锁屏或意外关闭事件，强制执行同步落盘保护
@@ -1262,10 +1353,20 @@ function evalSingleInsPL(bet, odds, betOn, outcome) {
 function replayFullShoe() {
   redPool.fill(16);
   bluePool.fill(16);
+  syncKellyOddsFromCfg();
 
   let shoeMainPL = 0, shoeSidePL = 0, shoeInsPL = 0, shoeRebate = 0;
   const rRate = (appCfg.rebatePct || 0) / 100;
+  const rMode = appCfg.rebateMode || 'loss';
+  const bOdds = appCfg.bankerOdds || 0.95;
+  const tOdds = appCfg.tieOdds || 8;
   const pOdds = appCfg.pairOdds || 11;
+  const d7Odds = appCfg.dragon7Odds || 40;
+  const p8Odds = appCfg.panda8Odds || 25;
+  const stOdds = appCfg.stigerOdds || 22;
+  const btOdds = appCfg.btigerOdds || 50;
+  const s6_2Odds = appCfg.super6_2Odds || 12;
+  const s6_3Odds = appCfg.super6_3Odds || 20;
 
   for (let idx = handRecords.length - 1; idx >= 0; idx--) {
     const h = handRecords[idx];
@@ -1327,33 +1428,35 @@ function replayFullShoe() {
     const tBet = (h.bets && h.bets.tie) || 0;
 
     if (outcome === '庄') {
-      itemPL.banker = bBet > 0 ? bBet * 0.95 : 0;
+      itemPL.banker = bBet > 0 ? bBet * bOdds : 0;
       itemPL.player = pBet > 0 ? -pBet : 0;
       itemPL.tie    = tBet > 0 ? -tBet : 0;
-      reb += pBet * rRate;
+      // 模式1(loss): 按输口闲注计返点 | 模式2(win): 按赢口庄实际所得积分(bBet * bOdds)计返点
+      reb += (rMode === 'win') ? (bBet * bOdds * rRate) : (pBet * rRate);
     } else if (outcome === '闲') {
       itemPL.banker = bBet > 0 ? -bBet : 0;
       itemPL.player = pBet > 0 ? pBet : 0;
       itemPL.tie    = tBet > 0 ? -tBet : 0;
-      reb += bBet * rRate;
+      // 模式1(loss): 按输口庄注计返点 | 模式2(win): 按赢口闲实际所得积分(pBet * 1.0)计返点
+      reb += (rMode === 'win') ? (pBet * 1.0 * rRate) : (bBet * rRate);
     } else {
       itemPL.banker = 0;
       itemPL.player = 0;
-      itemPL.tie    = tBet > 0 ? tBet * 8 : 0;
+      itemPL.tie    = tBet > 0 ? tBet * tOdds : 0;
     }
     mPL = itemPL.banker + itemPL.player;
     sPL += itemPL.tie;
 
     if (h.bets) {
-      if (h.bets.dragon7 > 0) { itemPL.dragon7 = isDragon7 ? h.bets.dragon7 * 40 : -h.bets.dragon7; sPL += itemPL.dragon7; }
-      if (h.bets.panda8 > 0)  { itemPL.panda8  = isPanda8  ? h.bets.panda8 * 25  : -h.bets.panda8;  sPL += itemPL.panda8; }
-      if (h.bets.stiger > 0)  { itemPL.stiger  = isSTiger  ? h.bets.stiger * 22  : -h.bets.stiger;  sPL += itemPL.stiger; }
-      if (h.bets.btiger > 0)  { itemPL.btiger  = isBTiger  ? h.bets.btiger * 50  : -h.bets.btiger;  sPL += itemPL.btiger; }
-      if (h.bets.bpair > 0)   { itemPL.bpair   = isBPair   ? h.bets.bpair * pOdds : -h.bets.bpair;  sPL += itemPL.bpair; }
-      if (h.bets.ppair > 0)   { itemPL.ppair   = isPPair   ? h.bets.ppair * pOdds : -h.bets.ppair;  sPL += itemPL.ppair; }
+      if (h.bets.dragon7 > 0) { itemPL.dragon7 = isDragon7 ? h.bets.dragon7 * d7Odds : -h.bets.dragon7; sPL += itemPL.dragon7; }
+      if (h.bets.panda8 > 0)  { itemPL.panda8  = isPanda8  ? h.bets.panda8 * p8Odds  : -h.bets.panda8;  sPL += itemPL.panda8; }
+      if (h.bets.stiger > 0)  { itemPL.stiger  = isSTiger  ? h.bets.stiger * stOdds  : -h.bets.stiger;  sPL += itemPL.stiger; }
+      if (h.bets.btiger > 0)  { itemPL.btiger  = isBTiger  ? h.bets.btiger * btOdds  : -h.bets.btiger;  sPL += itemPL.btiger; }
+      if (h.bets.bpair > 0)   { itemPL.bpair   = isBPair   ? h.bets.bpair * pOdds    : -h.bets.bpair;   sPL += itemPL.bpair; }
+      if (h.bets.ppair > 0)   { itemPL.ppair   = isPPair   ? h.bets.ppair * pOdds    : -h.bets.ppair;   sPL += itemPL.ppair; }
       if (h.bets.super6 > 0) {
-        if (isSTiger) itemPL.super6 = h.bets.super6 * 12;
-        else if (isBTiger) itemPL.super6 = h.bets.super6 * 20;
+        if (isSTiger) itemPL.super6 = h.bets.super6 * s6_2Odds;
+        else if (isBTiger) itemPL.super6 = h.bets.super6 * s6_3Odds;
         else itemPL.super6 = -h.bets.super6;
         sPL += itemPL.super6;
       }
@@ -1499,8 +1602,8 @@ function runBrain1Calculation() {
   let tiger2Win = 0, tiger3Win = 0, tigerLose = 0;
 
   let g_ab_7 = 0, g_ab_8 = 0, g_ab_9 = 0, g_cd_7 = 0, g_cd_8 = 0, g_cd_9 = 0;
-  let g_abcd_p5 = 0, g_abcd_p6 = 0, g_abcd_p7 = 0;
-  let g_abcd_b4 = 0, g_abcd_b5 = 0, g_abcd_b6 = 0, g_abcd_b7 = 0;
+  let g_abcd_p3 = 0, g_abcd_p5 = 0, g_abcd_p6 = 0, g_abcd_p7 = 0;
+  let g_abcd_b3 = 0, g_abcd_b4 = 0, g_abcd_b5 = 0, g_abcd_b6 = 0, g_abcd_b7 = 0;
   let g_abcde = [0,0,0,0,0,0,0,0,0,0], g_abcdf = [0,0,0,0,0,0,0,0,0,0];
 
   const cd_bWin = new Float64Array(100), cd_pWin = new Float64Array(100), cd_tot = new Float64Array(100);
@@ -1579,7 +1682,11 @@ function runBrain1Calculation() {
 
             abcd_bWin += abcde_bWin; abcd_pWin += abcde_pWin; abcd_tot += abcde_tot;
             if (e_b3 === 1 && player1 < 6 && e_player > banker1) {
-              if (e_player >= 4 && e_player <= 8 && banker1 < Math.min(e_player, 7)) {
+              if (e_player === 3 && banker1 < 3 && insOdds.abcde_3 > 0) {
+                const od = insOdds.abcde_3;
+                const v = (abcde_bWin * od - abcde_pWin) / od;
+                if (v > 0) g_abcde[3] += v;
+              } else if (e_player >= 4 && e_player <= 8 && banker1 < Math.min(e_player, 7)) {
                 const od = insOdds['abcde_' + e_player];
                 const v = (abcde_bWin * od - abcde_pWin) / od;
                 if (v > 0) g_abcde[e_player] += v;
@@ -1595,11 +1702,13 @@ function runBrain1Calculation() {
           const cdIdx = c * 10 + d;
           cd_bWin[cdIdx] += abcd_bWin; cd_pWin[cdIdx] += abcd_pWin; cd_tot[cdIdx] += abcd_tot;
 
-          if (player1 === 5 && banker1 === 4) { const v = (abcd_bWin * insOdds.abcd_p5 - abcd_pWin) / insOdds.abcd_p5; if (v > 0) g_abcd_p5 += v; }
+          if (player1 === 3 && banker1 < 3 && insOdds.abcd_p3 > 0) { const v = (abcd_bWin * insOdds.abcd_p3 - abcd_pWin) / insOdds.abcd_p3; if (v > 0) g_abcd_p3 += v; }
+          else if (player1 === 5 && banker1 === 4) { const v = (abcd_bWin * insOdds.abcd_p5 - abcd_pWin) / insOdds.abcd_p5; if (v > 0) g_abcd_p5 += v; }
           else if (player1 === 6 && banker1 < 6) { const v = (abcd_bWin * insOdds.abcd_p6 - abcd_pWin) / insOdds.abcd_p6; if (v > 0) g_abcd_p6 += v; }
           else if (player1 === 7 && banker1 < 6) { const v = (abcd_bWin * insOdds.abcd_p7 - abcd_pWin) / insOdds.abcd_p7; if (v > 0) g_abcd_p7 += v; }
 
-          if (banker1 === 4 && player1 < 4) { const v = (abcd_pWin * insOdds.abcd_b4 - abcd_bWin) / insOdds.abcd_b4; if (v > 0) g_abcd_b4 += v; }
+          if (banker1 === 3 && player1 < 3 && insOdds.abcd_b3 > 0) { const v = (abcd_pWin * insOdds.abcd_b3 - abcd_bWin) / insOdds.abcd_b3; if (v > 0) g_abcd_b3 += v; }
+          else if (banker1 === 4 && player1 < 4) { const v = (abcd_pWin * insOdds.abcd_b4 - abcd_bWin) / insOdds.abcd_b4; if (v > 0) g_abcd_b4 += v; }
           else if (banker1 === 5 && player1 < 5) { const v = (abcd_pWin * insOdds.abcd_b5 - abcd_bWin) / insOdds.abcd_b5; if (v > 0) g_abcd_b5 += v; }
           else if (banker1 === 6 && player1 < 6) { const v = (abcd_pWin * insOdds.abcd_b6 - abcd_bWin) / insOdds.abcd_b6; if (v > 0) g_abcd_b6 += v; }
           else if (banker1 === 7 && player1 < 6) { const v = (abcd_pWin * insOdds.abcd_b7 - abcd_bWin) / insOdds.abcd_b7; if (v > 0) g_abcd_b7 += v; }
@@ -1607,7 +1716,11 @@ function runBrain1Calculation() {
           if (needAbcdf) {
             for (let f = 0; f <= 9; f++) {
               const bFinal = (banker1 + f) % 10;
-              if (bFinal >= 4 && bFinal <= 8 && bFinal > player1) {
+              if (bFinal === 3 && bFinal > player1 && insOdds.abcdf_3 > 0) {
+                const od = insOdds.abcdf_3;
+                const v = (f_pWin[f] * od - f_bWin[f]) / od;
+                if (v > 0) g_abcdf[3] += v;
+              } else if (bFinal >= 4 && bFinal <= 8 && bFinal > player1) {
                 const od = insOdds['abcdf_' + bFinal];
                 const v = (f_pWin[f] * od - f_bWin[f]) / od;
                 if (v > 0) g_abcdf[bFinal] += v;
@@ -1637,16 +1750,28 @@ function runBrain1Calculation() {
   }
 
   if (totalHands > 0) {
+    syncKellyOddsFromCfg();
     const rRate = (appCfg.rebatePct || 0) / 100;
-    const bBaseEV = (bNum * 0.95 - pNum) / totalHands;
+    const rMode = appCfg.rebateMode || 'loss';
+    const bOdds = appCfg.bankerOdds || 0.95;
+    const tOdds = appCfg.tieOdds || 8;
+    const d7Odds = appCfg.dragon7Odds || 40;
+    const p8Odds = appCfg.panda8Odds || 25;
+    const stOdds = appCfg.stigerOdds || 22;
+    const btOdds = appCfg.btigerOdds || 50;
+    const s6_2Odds = appCfg.super6_2Odds || 12;
+    const s6_3Odds = appCfg.super6_3Odds || 20;
+
+    const bBaseEV = (bNum * bOdds - pNum) / totalHands;
     const pBaseEV = (pNum - bNum) / totalHands;
-    const tBaseEV = (tNum * 8 - bNum - pNum) / totalHands;
+    const tBaseEV = (tNum * tOdds - bNum - pNum) / totalHands;
 
-    const bRebateEV = (rRate * pNum) / totalHands;
-    const pRebateEV = (rRate * bNum) / totalHands;
+    // 返点EV：loss模式按对方赢(己方输口)概率计；win模式按己方赢所得积分(庄*bOdds, 闲*1.0)概率计
+    const bRebateEV = (rMode === 'win') ? ((rRate * bNum * bOdds) / totalHands) : ((rRate * pNum) / totalHands);
+    const pRebateEV = (rMode === 'win') ? ((rRate * pNum * 1.0) / totalHands) : ((rRate * bNum) / totalHands);
 
-    const pInsGain = (g_ab_7 + g_ab_8 + g_ab_9 + g_abcd_p5 + g_abcd_p6 + g_abcd_p7 + g_abcde[4] + g_abcde[5] + g_abcde[6] + g_abcde[7] + g_abcde[8] + g_abcde[9]) / totalHands;
-    const bInsGain = (g_cd_7 + g_cd_8 + g_cd_9 + g_abcd_b4 + g_abcd_b5 + g_abcd_b6 + g_abcd_b7 + g_abcdf[4] + g_abcdf[5] + g_abcdf[6] + g_abcdf[7] + g_abcdf[8] + g_abcdf[9]) / totalHands;
+    const pInsGain = (g_ab_7 + g_ab_8 + g_ab_9 + g_abcd_p3 + g_abcd_p5 + g_abcd_p6 + g_abcd_p7 + g_abcde[3] + g_abcde[4] + g_abcde[5] + g_abcde[6] + g_abcde[7] + g_abcde[8] + g_abcde[9]) / totalHands;
+    const bInsGain = (g_cd_7 + g_cd_8 + g_cd_9 + g_abcd_b3 + g_abcd_b4 + g_abcd_b5 + g_abcd_b6 + g_abcd_b7 + g_abcdf[3] + g_abcdf[4] + g_abcdf[5] + g_abcdf[6] + g_abcdf[7] + g_abcdf[8] + g_abcdf[9]) / totalHands;
 
     const bMidEV = bBaseEV + bRebateEV;
     const pMidEV = pBaseEV + pRebateEV;
@@ -1675,13 +1800,13 @@ function runBrain1Calculation() {
       banker: bTotalEV,
       player: pTotalEV,
       tie: tBaseEV,
-      dragon7: (dragonWin * 40 - dragonLose) / totalHands,
-      panda8: (pandaWin * 25 - pandaLose) / totalHands,
-      stiger: (tiger2Win * 22 - (totalHands - tiger2Win)) / totalHands,
-      btiger: (tiger3Win * 50 - (totalHands - tiger3Win)) / totalHands,
+      dragon7: (dragonWin * d7Odds - dragonLose) / totalHands,
+      panda8: (pandaWin * p8Odds - pandaLose) / totalHands,
+      stiger: (tiger2Win * stOdds - (totalHands - tiger2Win)) / totalHands,
+      btiger: (tiger3Win * btOdds - (totalHands - tiger3Win)) / totalHands,
       bpair: bPairRes.ev !== null ? bPairRes.ev : -1,
       ppair: pPairRes.ev !== null ? pPairRes.ev : -1,
-      super6: (tiger2Win * 12 + tiger3Win * 20 - tigerLose) / totalHands
+      super6: (tiger2Win * s6_2Odds + tiger3Win * s6_3Odds - tigerLose) / totalHands
     };
 
     BET_KEYS.forEach(k => {
@@ -1712,6 +1837,21 @@ function runBrain1Calculation() {
     let remCards = 0;
     for (let i = 0; i <= 9; i++) remCards += redShoe[i] + blueShoe[i];
 
+    const breakdownItems = [
+      ['闲7点(ab)', g_ab_7 / totalHands], ['闲8点(ab)', g_ab_8 / totalHands], ['闲9点(ab)', g_ab_9 / totalHands],
+      ['庄7点(cd)', g_cd_7 / totalHands], ['庄8点(cd)', g_cd_8 / totalHands], ['庄9点(cd)', g_cd_9 / totalHands],
+      ['闲5点(abcd)', g_abcd_p5 / totalHands], ['闲6点(abcd)', g_abcd_p6 / totalHands], ['闲7点(abcd)', g_abcd_p7 / totalHands],
+      ['庄4点(abcd)', g_abcd_b4 / totalHands], ['庄5点(abcd)', g_abcd_b5 / totalHands], ['庄6点(abcd)', g_abcd_b6 / totalHands], ['庄7点(abcd)', g_abcd_b7 / totalHands],
+      ['闲三4点', g_abcde[4] / totalHands], ['闲三5点', g_abcde[5] / totalHands], ['闲三6点', g_abcde[6] / totalHands],
+      ['闲三7点', g_abcde[7] / totalHands], ['闲三8点', g_abcde[8] / totalHands], ['闲三9点', g_abcde[9] / totalHands],
+      ['庄三4点', g_abcdf[4] / totalHands], ['庄三5点', g_abcdf[5] / totalHands], ['庄三6点', g_abcdf[6] / totalHands],
+      ['庄三7点', g_abcdf[7] / totalHands], ['庄三8点', g_abcdf[8] / totalHands], ['庄三9点', g_abcdf[9] / totalHands]
+    ];
+    if (insOdds.abcd_p3 > 0) breakdownItems.push(['闲3点(abcd)', g_abcd_p3 / totalHands]);
+    if (insOdds.abcd_b3 > 0) breakdownItems.push(['庄3点(abcd)', g_abcd_b3 / totalHands]);
+    if (insOdds.abcde_3 > 0) breakdownItems.push(['闲三3点', g_abcde[3] / totalHands]);
+    if (insOdds.abcdf_3 > 0) breakdownItems.push(['庄三3点', g_abcdf[3] / totalHands]);
+
     lastBreakdown = {
       bProbPct, pProbPct, tProbPct,
       bBaseEV, bInsGain, bRebateEV, bTotalEV,
@@ -1720,16 +1860,7 @@ function runBrain1Calculation() {
       recSnapshot: Object.assign({}, recommendedBets),
       remCards,
       penPct: ((416 - remCards) / 416 * 100).toFixed(1),
-      items: [
-        ['闲7点(ab)', g_ab_7 / totalHands], ['闲8点(ab)', g_ab_8 / totalHands], ['闲9点(ab)', g_ab_9 / totalHands],
-        ['庄7点(cd)', g_cd_7 / totalHands], ['庄8点(cd)', g_cd_8 / totalHands], ['庄9点(cd)', g_cd_9 / totalHands],
-        ['闲5点(abcd)', g_abcd_p5 / totalHands], ['闲6点(abcd)', g_abcd_p6 / totalHands], ['闲7点(abcd)', g_abcd_p7 / totalHands],
-        ['庄4点(abcd)', g_abcd_b4 / totalHands], ['庄5点(abcd)', g_abcd_b5 / totalHands], ['庄6点(abcd)', g_abcd_b6 / totalHands], ['庄7点(abcd)', g_abcd_b7 / totalHands],
-        ['闲三4点', g_abcde[4] / totalHands], ['闲三5点', g_abcde[5] / totalHands], ['闲三6点', g_abcde[6] / totalHands],
-        ['闲三7点', g_abcde[7] / totalHands], ['闲三8点', g_abcde[8] / totalHands], ['闲三9点', g_abcde[9] / totalHands],
-        ['庄三4点', g_abcdf[4] / totalHands], ['庄三5点', g_abcdf[5] / totalHands], ['庄三6点', g_abcdf[6] / totalHands],
-        ['庄三7点', g_abcdf[7] / totalHands], ['庄三8点', g_abcdf[8] / totalHands], ['庄三9点', g_abcdf[9] / totalHands]
-      ]
+      items: breakdownItems
     };
 
     const costMs = Math.round(performance.now() - tStart);
@@ -1803,10 +1934,12 @@ function evaluateBrain2Insurance() {
   } else if (hasAB && hasCD && E === null && F === null) {
     const p1 = (A + B) % 10, b1 = (C + D) % 10;
     if (p1 < 8 && b1 < 8) {
-      if (b1 === 4 && p1 < 4) cond = { stageKey: 'abcd_b4', phaseName: 'ABCD(前4张)', typeName: `庄4闲${p1}`, title: `庄4(1:${insOdds.abcd_b4})`, odds: insOdds.abcd_b4, betOn: 'player', mainSide: 'banker' };
+      if (b1 === 3 && p1 < 3 && insOdds.abcd_b3 > 0) cond = { stageKey: 'abcd_b3', phaseName: 'ABCD(前4张)', typeName: `庄3闲${p1}`, title: `庄3(1:${insOdds.abcd_b3})`, odds: insOdds.abcd_b3, betOn: 'player', mainSide: 'banker' };
+      else if (b1 === 4 && p1 < 4) cond = { stageKey: 'abcd_b4', phaseName: 'ABCD(前4张)', typeName: `庄4闲${p1}`, title: `庄4(1:${insOdds.abcd_b4})`, odds: insOdds.abcd_b4, betOn: 'player', mainSide: 'banker' };
       else if (b1 === 5 && p1 < 5) cond = { stageKey: 'abcd_b5', phaseName: 'ABCD(前4张)', typeName: `庄5闲${p1}`, title: `庄5(1:${insOdds.abcd_b5})`, odds: insOdds.abcd_b5, betOn: 'player', mainSide: 'banker' };
       else if (b1 === 6 && p1 < 6) cond = { stageKey: 'abcd_b6', phaseName: 'ABCD(前4张)', typeName: `庄6闲${p1}`, title: `庄6(1:${insOdds.abcd_b6})`, odds: insOdds.abcd_b6, betOn: 'player', mainSide: 'banker' };
       else if (b1 === 7 && p1 < 6) cond = { stageKey: 'abcd_b7', phaseName: 'ABCD(前4张)', typeName: `庄7闲${p1}`, title: `庄7(1:${insOdds.abcd_b7})`, odds: insOdds.abcd_b7, betOn: 'player', mainSide: 'banker' };
+      else if (p1 === 3 && b1 < 3 && insOdds.abcd_p3 > 0) cond = { stageKey: 'abcd_p3', phaseName: 'ABCD(前4张)', typeName: `闲3庄${b1}`, title: `闲3(1:${insOdds.abcd_p3})`, odds: insOdds.abcd_p3, betOn: 'banker', mainSide: 'player' };
       else if (p1 === 5 && b1 === 4) cond = { stageKey: 'abcd_p5', phaseName: 'ABCD(前4张)', typeName: `闲5庄4`, title: `闲5(1:${insOdds.abcd_p5})`, odds: insOdds.abcd_p5, betOn: 'banker', mainSide: 'player' };
       else if (p1 === 6 && b1 < 6) cond = { stageKey: 'abcd_p6', phaseName: 'ABCD(前4张)', typeName: `闲6庄${b1}`, title: `闲6(1:${insOdds.abcd_p6})`, odds: insOdds.abcd_p6, betOn: 'banker', mainSide: 'player' };
       else if (p1 === 7 && b1 < 6) cond = { stageKey: 'abcd_p7', phaseName: 'ABCD(前4张)', typeName: `闲7庄${b1}`, title: `闲7(1:${insOdds.abcd_p7})`, odds: insOdds.abcd_p7, betOn: 'banker', mainSide: 'player' };
@@ -1815,7 +1948,9 @@ function evaluateBrain2Insurance() {
     const p1 = (A + B) % 10, b1 = (C + D) % 10;
     if (p1 <= 5 && b1 <= 6 && doesBankerDrawWhenPlayerDrew(b1, E)) {
       const pF = (p1 + E) % 10;
-      if (pF > b1 && pF >= 4 && pF <= 8 && b1 < Math.min(pF, 7)) {
+      if (pF === 3 && b1 < 3 && insOdds.abcde_3 > 0) {
+        cond = { stageKey: 'abcde_3', phaseName: 'ABCDE(闲三张)', typeName: `闲三3庄${b1}`, title: `闲三3(1:${insOdds.abcde_3})`, odds: insOdds.abcde_3, betOn: 'banker', mainSide: 'player' };
+      } else if (pF > b1 && pF >= 4 && pF <= 8 && b1 < Math.min(pF, 7)) {
         cond = { stageKey: 'abcde_' + pF, phaseName: 'ABCDE(闲三张)', typeName: `闲三${pF}庄${b1}`, title: `闲三${pF}(1:${insOdds['abcde_' + pF]})`, odds: insOdds['abcde_' + pF], betOn: 'banker', mainSide: 'player' };
       } else if (pF === 9 && b1 < 7) {
         cond = { stageKey: 'abcde_9', phaseName: 'ABCDE(闲三张)', typeName: `闲三9和`, title: `闲三9和(1:${insOdds.abcde_9})`, odds: insOdds.abcde_9, betOn: 'tie', mainSide: 'player' };
@@ -1825,7 +1960,9 @@ function evaluateBrain2Insurance() {
     const p1 = (A + B) % 10, b1 = (C + D) % 10;
     if (p1 <= 5 && b1 < 3) {
       const bF = (b1 + F) % 10;
-      if (bF > p1 && bF >= 4 && bF <= 8) {
+      if (bF === 3 && bF > p1 && insOdds.abcdf_3 > 0) {
+        cond = { stageKey: 'abcdf_3', phaseName: 'ABCDF(庄三张)', typeName: `庄三3闲${p1}`, title: `庄三3(1:${insOdds.abcdf_3})`, odds: insOdds.abcdf_3, betOn: 'player', mainSide: 'banker' };
+      } else if (bF > p1 && bF >= 4 && bF <= 8) {
         cond = { stageKey: 'abcdf_' + bF, phaseName: 'ABCDF(庄三张)', typeName: `庄三${bF}闲${p1}`, title: `庄三${bF}(1:${insOdds['abcdf_' + bF]})`, odds: insOdds['abcdf_' + bF], betOn: 'player', mainSide: 'banker' };
       } else if (bF === 9 && bF > p1) {
         cond = { stageKey: 'abcdf_9', phaseName: 'ABCDF(庄三张)', typeName: `庄三9和`, title: `庄三9和(1:${insOdds.abcdf_9})`, odds: insOdds.abcdf_9, betOn: 'tie', mainSide: 'banker' };
@@ -2874,6 +3011,8 @@ function openReplayModal(scope = 'today') {
     </div>
   `).join('') : '<div style="color:#94a3b8;text-align:center;padding:6px;">尚无保护出手记录</div>';
 
+  const horizTableHtml = buildHorizontalAllHandsTableHtml(targetShoes);
+
   body.innerHTML = `
     <div style="display:flex;gap:5px;margin-bottom:2px;">
       <button class="tb-mini-btn ${scope==='today'?'blue':''}" style="padding:0 8px;" onclick="openReplayModal('today')">今日全靴(${allTodayShoes.length}靴)</button>
@@ -2883,32 +3022,119 @@ function openReplayModal(scope = 'today') {
 
     <div style="background:#1e293b;color:#fff;padding:7px 9px;border-radius:7px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px;text-align:center;">
       <div><div style="color:#94a3b8;">总手/出手</div><b>${sm.totalHands} / ${sm.bettedHands}手</b></div>
-      <div><div style="color:#94a3b8;">总投注流水</div><b>${sm.totalTurnover.toLocaleString()}</b></div>
+      <div><div style="color:#94a3b8;">总积分流水</div><b>${sm.totalTurnover.toLocaleString()}</b></div>
       <div><div style="color:#94a3b8;">台面净值(ROI)</div><b style="color:${sm.tableNet>=0?'#4ade80':'#f87171'}">${fmt(sm.tableNet)} (${roiPct})</b></div>
       <div><div style="color:#94a3b8;">含返综合总计</div><b style="color:#fbbf24">${fmt(sm.tableNet+sm.totalReb)}</b></div>
     </div>
 
-    <div class="odds-group-title" style="margin-top:3px;">📈 表一：按【投注时 EV 区间】分段大数据统计 (检验正EV转化率)</div>
+    <div class="odds-group-title" style="margin-top:3px;">📈 表一：按【出手时 EV 区间】分段大数据统计</div>
     <table class="rp-table">
-      <thead><tr><th>投注时EV区间</th><th>笔数</th><th>赢/输</th><th>平均EV</th><th>投注总额</th><th>实际盈亏</th><th>实际ROI</th></tr></thead>
+      <thead><tr><th>出手时EV区间</th><th>笔数</th><th>赢/输</th><th>平均EV</th><th>积分总额</th><th>实际盈亏</th><th>实际ROI</th></tr></thead>
       <tbody>${evRows}</tbody>
     </table>
 
-    <div class="odds-group-title" style="margin-top:4px;">📌 表二：11 项注项分类实战统计 (含平均出手EV与收益率)</div>
+    <div class="odds-group-title" style="margin-top:4px;">📌 表二：11 项分类实战统计 (含平均出手EV与收益率)</div>
     <table class="rp-table">
-      <thead><tr><th>注项</th><th>牌开</th><th>出手</th><th>赢/输</th><th>均值EV</th><th>总投注</th><th>净盈亏</th><th>ROI</th></tr></thead>
+      <thead><tr><th>注项</th><th>牌开</th><th>出手</th><th>赢/输</th><th>均值EV</th><th>总积分</th><th>净盈亏</th><th>ROI</th></tr></thead>
       <tbody>${itemRows}</tbody>
     </table>
 
-    <div class="odds-group-title" style="margin-top:4px;">🛡️ 表三：保险(保护)时机阶段汇总 & 逐笔牌型结构档案</div>
+    <div class="odds-group-title" style="margin-top:4px;">🛡️ 表三：保护时机阶段汇总 & 逐笔牌型结构档案</div>
     <table class="rp-table">
-      <thead><tr><th>投保阶段(何时保)</th><th>出手</th><th>中/输</th><th>保费流水</th><th>保护净利</th></tr></thead>
+      <thead><tr><th>保护阶段(何时保)</th><th>出手</th><th>中/输</th><th>保护流水</th><th>保护净利</th></tr></thead>
       <tbody>${insPhaseRows}</tbody>
     </table>
     <div style="display:flex;flex-direction:column;gap:3px;margin-top:3px;">${insLogHtml}</div>
+
+    <div class="odds-group-title" style="margin-top:4px;">📋 表四：多靴横列全数据逐手总表 (可左右滑动查看)</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #dcd7cd;border-radius:6px;">
+      ${horizTableHtml}
+    </div>
   `;
 
   document.getElementById('replay-modal').style.display = 'flex';
+}
+function closeReplayModal() { document.getElementById('replay-modal').style.display = 'none'; }
+
+function buildHorizontalAllHandsTableHtml(shoesList) {
+  const fmtPct = v => (v !== undefined && v !== null && !isNaN(v)) ? (v * 100).toFixed(2) + '%' : '-';
+  const fmtN = n => (n > 0 ? '+' : '') + Math.round(n);
+  let rowsHtml = '';
+
+  shoesList.forEach(s => {
+    if (!s.hands || s.hands.length === 0) return;
+    const total = s.hands.length;
+    for (let i = total - 1; i >= 0; i--) {
+      const r = s.hands[i];
+      const pc = r.preCalc || {};
+      const ipl = r.itemPL || {};
+      const b = r.bets || {};
+      const bev = r.betEVs || {};
+      const bMidEV = (pc.bBaseEV !== undefined && pc.bTotalEV !== undefined) ? (pc.bTotalEV - (pc.bInsGain || 0)) : null;
+      const pMidEV = (pc.pBaseEV !== undefined && pc.pTotalEV !== undefined) ? (pc.pTotalEV - (pc.pInsGain || 0)) : null;
+
+      let flyStr = '-';
+      if (r.flyColor) flyStr = (r.flyColor === 'red' ? '红' : '蓝') + (r.flyRank !== null && r.flyRank !== undefined ? rankLabel(r.flyRank) : '');
+      const pCards = [], bCards = [];
+      [0, 1, 4].forEach(u => {
+        if (r.usedCards && r.usedCards[u] !== null && r.usedCards[u] !== undefined) {
+          const c = r.cardColors ? r.cardColors[getEffectiveColorSlot(u, r.usedCards)] : 'red';
+          pCards.push((c === 'red' ? '红' : '蓝') + rankLabel(r.usedCards[u]));
+        }
+      });
+      [2, 3, 5].forEach(u => {
+        if (r.usedCards && r.usedCards[u] !== null && r.usedCards[u] !== undefined) {
+          const c = r.cardColors ? r.cardColors[getEffectiveColorSlot(u, r.usedCards)] : 'red';
+          bCards.push((c === 'red' ? '红' : '蓝') + rankLabel(r.usedCards[u]));
+        }
+      });
+
+      const hasIns = Array.isArray(r.lockedOrders) && r.lockedOrders.length > 0;
+      const insCell = hasIns
+        ? r.lockedOrders.map(o => `${o.title}[${fmtPct(o.ev)}]投${o.bet}(${fmtN(o.pl||0)})`).join('<br>')
+        : '-';
+
+      const sideCells = ['dragon7','panda8','stiger','btiger','bpair','ppair','super6','tie'].map(k => {
+        const amt = b[k] || 0;
+        if (amt <= 0) return `<td>-</td>`;
+        const pl = ipl[k] || 0;
+        return `<td style="white-space:nowrap;">${amt}<br><small style="color:#64748b">${fmtPct(bev[k])}</small><br><b style="color:${pl>0?'#15803d':'#dc2626'}">${fmtN(pl)}</b></td>`;
+      }).join('');
+
+      const bCell = b.banker > 0 ? `${b.banker}<br><b style="color:${(ipl.banker||0)>=0?'#15803d':'#dc2626'}">${fmtN(ipl.banker||0)}</b>` : '-';
+      const pCell = b.player > 0 ? `${b.player}<br><b style="color:${(ipl.player||0)>=0?'#15803d':'#dc2626'}">${fmtN(ipl.player||0)}</b>` : '-';
+      const netCol = (r.handTablePL || 0) > 0 ? '#15803d' : ((r.handTablePL || 0) < 0 ? '#dc2626' : '#475569');
+
+      rowsHtml += `<tr>
+        <td style="white-space:nowrap;">第${s.shoe}靴#${total - i}</td>
+        <td>${pc.remCards !== undefined ? pc.remCards : '-'}</td>
+        <td style="white-space:nowrap;"><b>${r.resolvedOutcome || '-'}</b>(${r.bPts}:${r.pPts})</td>
+        <td style="white-space:nowrap;">飞:${flyStr}<br>闲:${pCards.join('')}<br>庄:${bCards.join('')}</td>
+        <td style="white-space:nowrap;font-family:monospace;">${fmtPct(pc.bBaseEV)}/${fmtPct(bMidEV)}/${fmtPct(pc.bTotalEV)}</td>
+        <td style="white-space:nowrap;font-family:monospace;">${fmtPct(pc.pBaseEV)}/${fmtPct(pMidEV)}/${fmtPct(pc.pTotalEV)}</td>
+        <td>${bCell}</td>
+        <td>${pCell}</td>
+        <td style="white-space:nowrap;">${insCell}</td>
+        ${sideCells}
+        <td style="font-weight:900;color:${netCol};">${fmtN(r.handTablePL || 0)}</td>
+        <td style="color:#0284c7;">+${(r.handRebate || 0).toFixed(1)}</td>
+      </tr>`;
+    }
+  });
+
+  if (!rowsHtml) return '<div style="padding:10px;text-align:center;color:#94a3b8;">暂无已确认手数记录</div>';
+  return `<table class="rp-table" style="min-width:1080px;">
+    <thead>
+      <tr>
+        <th>靴/手</th><th>余牌</th><th>结果</th><th>飞牌与用牌</th>
+        <th>庄三段EV(基/返/综)</th><th>闲三段EV(基/返/综)</th>
+        <th>庄主项</th><th>闲主项</th><th>保护(类型/EV/净值)</th>
+        <th>龙七</th><th>熊八</th><th>小虎</th><th>大虎</th><th>庄对</th><th>闲对</th><th>幸运6</th><th>和局</th>
+        <th>本手净值</th><th>返点</th>
+      </tr>
+    </thead>
+    <tbody>${rowsHtml}</tbody>
+  </table>`;
 }
 function closeReplayModal() { document.getElementById('replay-modal').style.display = 'none'; }
 
@@ -2993,8 +3219,8 @@ function generatePlainTextReport() {
   const fmt = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
 
   const lines = [];
-  lines.push(`📊【手机精算终端 4.0 · 大数据深度复盘战报】`);
-  lines.push(`时间: ${new Date().toLocaleString('zh-CN', { hour12: false })}`);
+  lines.push(`📊【手机精算终端 5.0 · 大数据深度复盘战报】`);
+  lines.push(`时间: ${new Date().toLocaleString('zh-CN', { hour12: false })} | 返点模式: ${appCfg.rebateMode === 'win' ? '按赢额' : '按输口'}(${appCfg.rebatePct}%)`);
   lines.push(`总手数: ${sm.totalHands}手(出手${sm.bettedHands}手) | 总流水: ${sm.totalTurnover}`);
   lines.push(`台面净值: ${fmt(sm.tableNet)} | 返点: +${Math.round(sm.totalReb)} | 综合: ${fmt(sm.tableNet + sm.totalReb)}`);
   lines.push(`────────────────────────`);
@@ -3050,16 +3276,18 @@ function buildStandaloneReportHtmlString() {
   </tr>`).join('');
 
   return `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>大数据复盘账单_${new Date().toISOString().slice(0,10)}</title>
-  <style>body{font-family:-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;padding:12px;max-width:860px;margin:0 auto;}
+  <title>5.0大数据复盘账单_${new Date().toISOString().slice(0,10)}</title>
+  <style>body{font-family:-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;padding:12px;max-width:1280px;margin:0 auto;}
   table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;font-size:12px;margin-bottom:16px;}
   th{background:#1e293b;color:#fff;padding:7px 4px;}td{padding:6px 4px;border-bottom:1px solid #e2e8f0;text-align:center;}
   </style></head><body>
-  <h2>📊 手机精算终端 4.0 · 大数据深度复盘账单</h2>
+  <h2>📊 手机精算终端 5.0 · 大数据深度复盘账单</h2>
   <p>总手数: <b>${sm.totalHands}手</b> | 总流水: <b>${sm.totalTurnover.toLocaleString()}</b> | 台面总净值: <b>${fmt(sm.tableNet)}</b> | 累计返点: <b>+${Math.round(sm.totalReb)}</b></p>
   <h3>一、11项分类实战统计表</h3>
-  <table><thead><tr><th>注项</th><th>牌面开出</th><th>我出手</th><th>赢/输</th><th>总投注</th><th>单项净盈亏</th></tr></thead><tbody>${t1Rows}</tbody></table>
-  <h3>二、大数据完整战报与保险结构档案</h3>
+  <table><thead><tr><th>注项</th><th>牌面开出</th><th>我出手</th><th>赢/输</th><th>总积分</th><th>单项净盈亏</th></tr></thead><tbody>${t1Rows}</tbody></table>
+  <h3>二、多靴横列全数据明细总表</h3>
+  <div style="overflow-x:auto;">${buildHorizontalAllHandsTableHtml(allShoes)}</div>
+  <h3>三、文字战报与保护结构档案</h3>
   <pre style="background:#fff;padding:12px;border-radius:8px;font-size:12px;white-space:pre-wrap;line-height:1.5;">${generatePlainTextReport()}</pre>
   <script id="bac-backup-json" type="application/json">${JSON.stringify(snap)}<\/script>
   </body></html>`;
@@ -3067,16 +3295,16 @@ function buildStandaloneReportHtmlString() {
 
 async function shareReportNative() {
   const htmlStr = buildStandaloneReportHtmlString();
-  const fileName = `大数据复盘账单_${new Date().toISOString().slice(0,10)}.html`;
+  const fileName = `5.0大数据复盘账单_${new Date().toISOString().slice(0,10)}.html`;
   try {
     if (navigator.share) {
       const file = new File([htmlStr], fileName, { type: 'text/html' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ title: '大数据复盘账单', text: 'EV区间统计与保险结构对账单', files: [file] });
+        await navigator.share({ title: '5.0大数据复盘账单', text: '全靴横列统计与保护结构对账单', files: [file] });
         showToast('📤 已调起系统分享！', 'ok');
         return;
       }
-      await navigator.share({ title: '大数据复盘战报', text: generatePlainTextReport() });
+      await navigator.share({ title: '5.0大数据复盘战报', text: generatePlainTextReport() });
       showToast('📤 已调起系统文字分享！', 'ok');
       return;
     }
@@ -3084,52 +3312,132 @@ async function shareReportNative() {
   exportReadableHtmlReport();
 }
 
-function exportReadableHtmlReport() {
+async function exportReadableHtmlReport() {
   const htmlStr = buildStandaloneReportHtmlString();
+  const fileName = `5.0大数据复盘账单_${new Date().toISOString().slice(0,10)}.html`;
+  try {
+    if (navigator.share && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      const file = new File([htmlStr], fileName, { type: 'text/html' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: fileName });
+        showToast('📄 已调起手机文件保存/分享！', 'ok');
+        return;
+      }
+    }
+  } catch (e) {}
   const blob = new Blob([htmlStr], { type: 'text/html;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `大数据复盘账单_${new Date().toISOString().slice(0,10)}.html`;
+  a.download = fileName;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   showToast('📄 已导出直看网页账单(.html)！', 'ok');
 }
 
-function exportReplayCsv() {
+async function exportReplayCsv() {
   const allShoes = buildAllTodayShoesList();
-  const headers = ['靴号','状态','手数','时间','赛果','庄点','闲点','庄投注','庄当时EV%','庄盈亏','闲投注','闲当时EV%','闲盈亏','和投注','和盈亏','龙七投注','龙七盈亏','熊八投注','熊八盈亏','小虎投注','小虎盈亏','大虎投注','大虎盈亏','庄对投注','庄对盈亏','闲对投注','闲对盈亏','幸运六投注','幸运六盈亏','锁定保护阶段与牌型结构','保护盈亏','本手总净值','返点'];
+  // 横列全数据导出：每一手牌一行，包含用牌情况、庄闲三段EV、主注EV与结果、保护类型/EV/结果、各旁注EV与结果，支持多靴跨靴筛选
+  const headers = [
+    '靴号','状态','手数','时间','余牌数','赛果','庄点','闲点','飞牌','闲家用牌','庄家用牌',
+    '庄第1段(基础EV%)','庄第2段(+返EV%)','庄第3段(综合EV%)',
+    '闲第1段(基础EV%)','闲第2段(+返EV%)','闲第3段(综合EV%)',
+    '庄积分','庄当时EV%','庄净值',
+    '闲积分','闲当时EV%','闲净值',
+    '保护类型与赔率','保护当时EV%','保护保时牌型','保护积分','保护净值',
+    '龙七积分','龙七当时EV%','龙七净值',
+    '熊八积分','熊八当时EV%','熊八净值',
+    '小虎积分','小虎当时EV%','小虎净值',
+    '大虎积分','大虎当时EV%','大虎净值',
+    '庄对积分','庄对当时EV%','庄对净值',
+    '闲对积分','闲对当时EV%','闲对净值',
+    '幸运六积分','幸运六当时EV%','幸运六净值',
+    '和局积分','和局当时EV%','和局净值',
+    '本手台面总净值','本手返点'
+  ];
   const rows = [headers.join(',')];
   let cnt = 0;
+
+  const fmtPct = v => (v !== undefined && v !== null && !isNaN(v)) ? (v * 100).toFixed(2) + '%' : '';
 
   allShoes.forEach(s => {
     if (!s.hands) return;
     const total = s.hands.length;
     for (let i = total - 1; i >= 0; i--) {
       const r = s.hands[i];
+      const pc = r.preCalc || {};
       const ipl = r.itemPL || {};
       const b = r.bets || {};
       const bev = r.betEVs || {};
-      const insStr = (Array.isArray(r.lockedOrders) && r.lockedOrders.length > 0)
-        ? r.lockedOrders.map(o => `[${o.phaseName||''}${o.title}x${o.bet}|${o.cardStruct||''}]`).join(';') : '';
+
+      const bMidEV = (pc.bBaseEV !== undefined && pc.bTotalEV !== undefined) ? (pc.bTotalEV - (pc.bInsGain || 0)) : null;
+      const pMidEV = (pc.pBaseEV !== undefined && pc.pTotalEV !== undefined) ? (pc.pTotalEV - (pc.pInsGain || 0)) : null;
+
+      let flyStr = '-';
+      if (r.flyColor) {
+        flyStr = (r.flyColor === 'red' ? '红' : '蓝') + (r.flyRank !== null && r.flyRank !== undefined ? rankLabel(r.flyRank) : '');
+      }
+      const pCards = [], bCards = [];
+      [0, 1, 4].forEach(u => {
+        if (r.usedCards && r.usedCards[u] !== null && r.usedCards[u] !== undefined) {
+          const c = r.cardColors ? r.cardColors[getEffectiveColorSlot(u, r.usedCards)] : 'red';
+          pCards.push((c === 'red' ? '红' : '蓝') + rankLabel(r.usedCards[u]));
+        }
+      });
+      [2, 3, 5].forEach(u => {
+        if (r.usedCards && r.usedCards[u] !== null && r.usedCards[u] !== undefined) {
+          const c = r.cardColors ? r.cardColors[getEffectiveColorSlot(u, r.usedCards)] : 'red';
+          bCards.push((c === 'red' ? '红' : '蓝') + rankLabel(r.usedCards[u]));
+        }
+      });
+
+      const hasIns = Array.isArray(r.lockedOrders) && r.lockedOrders.length > 0;
+      const insTypes = hasIns ? r.lockedOrders.map(o => `${o.phaseName||''}${o.title}`).join(';') : '';
+      const insEVs   = hasIns ? r.lockedOrders.map(o => fmtPct(o.ev)).join(';') : '';
+      const insStru  = hasIns ? r.lockedOrders.map(o => o.cardStruct || '').join(';') : '';
+      const insBetSum = hasIns ? r.lockedOrders.reduce((acc, o) => acc + (o.bet || 0), 0) : 0;
+
       rows.push([
-        s.shoe, `"${s.status}"`, total - i, `"${r.time || ''}"`, `"${r.resolvedOutcome || ''}"`, r.bPts, r.pPts,
-        b.banker||0, bev.banker!==undefined && bev.banker!==null ? (bev.banker*100).toFixed(2) : '', ipl.banker||0,
-        b.player||0, bev.player!==undefined && bev.player!==null ? (bev.player*100).toFixed(2) : '', ipl.player||0,
-        b.tie||0, ipl.tie||0,
-        b.dragon7||0, ipl.dragon7||0, b.panda8||0, ipl.panda8||0, b.stiger||0, ipl.stiger||0, b.btiger||0, ipl.btiger||0,
-        b.bpair||0, ipl.bpair||0, b.ppair||0, ipl.ppair||0, b.super6||0, ipl.super6||0,
-        `"${insStr}"`, Math.round(r.handInsPL||0), Math.round(r.handTablePL||0), (r.handRebate||0).toFixed(2)
+        s.shoe, `"${s.status}"`, total - i, `"${r.time || ''}"`, pc.remCards !== undefined ? pc.remCards : '',
+        `"${r.resolvedOutcome || ''}"`, r.bPts >= 0 ? r.bPts : '', r.pPts >= 0 ? r.pPts : '',
+        `"${flyStr}"`, `"${pCards.join(' ')}"`, `"${bCards.join(' ')}"`,
+        fmtPct(pc.bBaseEV), fmtPct(bMidEV), fmtPct(pc.bTotalEV),
+        fmtPct(pc.pBaseEV), fmtPct(pMidEV), fmtPct(pc.pTotalEV),
+        b.banker||0, fmtPct(bev.banker), Math.round((ipl.banker||0)*100)/100,
+        b.player||0, fmtPct(bev.player), Math.round((ipl.player||0)*100)/100,
+        `"${insTypes}"`, `"${insEVs}"`, `"${insStru}"`, insBetSum, Math.round((r.handInsPL||0)*100)/100,
+        b.dragon7||0, fmtPct(bev.dragon7), ipl.dragon7||0,
+        b.panda8||0, fmtPct(bev.panda8), ipl.panda8||0,
+        b.stiger||0, fmtPct(bev.stiger), ipl.stiger||0,
+        b.btiger||0, fmtPct(bev.btiger), ipl.btiger||0,
+        b.bpair||0, fmtPct(bev.bpair), ipl.bpair||0,
+        b.ppair||0, fmtPct(bev.ppair), ipl.ppair||0,
+        b.super6||0, fmtPct(bev.super6), ipl.super6||0,
+        b.tie||0, fmtPct(bev.tie), ipl.tie||0,
+        Math.round((r.handTablePL||0)*100)/100, (r.handRebate||0).toFixed(2)
       ].join(','));
       cnt++;
     }
   });
 
   if (cnt === 0) { showToast('⚠️ 尚无已确认记录可导出', 'warn'); return; }
-  const blob = new Blob(['\uFEFF' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const csvContent = '\uFEFF' + rows.join('\r\n');
+  const fileName = `5.0全数据横列对账表_${new Date().toISOString().slice(0,10)}.csv`;
+  // 在 iPhone / 轻松签 App 内优先调用原生分享菜单，可直接发微信、用Excel/WPS打开或存入手机“文件”
+  try {
+    if (navigator.share && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      const csvFile = new File([csvContent], fileName, { type: 'text/csv;charset=utf-8' });
+      if (navigator.canShare && navigator.canShare({ files: [csvFile] })) {
+        await navigator.share({ files: [csvFile], title: fileName });
+        showToast(`📊 已调起手机导出 (${cnt}手横列Excel表)！`, 'ok');
+        return;
+      }
+    }
+  } catch (e) {}
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `大数据对账表_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = fileName;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  showToast(`📊 已导出 CSV 表格 (${cnt}手)！`, 'ok');
+  showToast(`📊 已导出 5.0 横列 Excel 表 (${cnt}手)！`, 'ok');
 }
 
 function importRecordsBackup(event) {
@@ -3368,10 +3676,10 @@ function closeGainModal() { document.getElementById('gain-modal').style.display 
 const ODDS_SECTIONS = [
   { title: 'AB (闲前2张)', items: [['ab_7','闲7'],['ab_8','闲8'],['ab_9','闲9(和)']] },
   { title: 'CD (庄前2张)', items: [['cd_7','庄7'],['cd_8','庄8'],['cd_9','庄9(和)']] },
-  { title: 'ABCD (庄保护)', items: [['abcd_b4','庄4'],['abcd_b5','庄5'],['abcd_b6','庄6'],['abcd_b7','庄7']] },
-  { title: 'ABCD (闲保护)', items: [['abcd_p5','闲5'],['abcd_p6','闲6'],['abcd_p7','闲7']] },
-  { title: 'ABCDE (闲三张)', items: [['abcde_4','4点'],['abcde_5','5点'],['abcde_6','6点'],['abcde_7','7点'],['abcde_8','8点'],['abcde_9','9点(和)']] },
-  { title: 'ABCDF (庄三张)', items: [['abcdf_4','4点'],['abcdf_5','5点'],['abcdf_6','6点'],['abcdf_7','7点'],['abcdf_8','8点'],['abcdf_9','9点(和)']] }
+  { title: 'ABCD (庄保护·庄3默认0关闭)', items: [['abcd_b3','庄3'],['abcd_b4','庄4'],['abcd_b5','庄5'],['abcd_b6','庄6'],['abcd_b7','庄7']] },
+  { title: 'ABCD (闲保护·闲3默认0关闭)', items: [['abcd_p3','闲3'],['abcd_p5','闲5'],['abcd_p6','闲6'],['abcd_p7','闲7']] },
+  { title: 'ABCDE (闲三张·3点默认0关闭)', items: [['abcde_3','3点'],['abcde_4','4点'],['abcde_5','5点'],['abcde_6','6点'],['abcde_7','7点'],['abcde_8','8点'],['abcde_9','9点(和)']] },
+  { title: 'ABCDF (庄三张·3点默认0关闭)', items: [['abcdf_3','3点'],['abcdf_4','4点'],['abcdf_5','5点'],['abcdf_6','6点'],['abcdf_7','7点'],['abcdf_8','8点'],['abcdf_9','9点(和)']] }
 ];
 
 function openSettingsModal() {
@@ -3380,10 +3688,20 @@ function openSettingsModal() {
   document.getElementById('cfg-kelly-br').value = appCfg.kellyBankroll;
   document.getElementById('cfg-kelly-mult').value = appCfg.kellyMult;
   document.getElementById('cfg-rebate').value = appCfg.rebatePct;
+  document.getElementById('cfg-rebate-mode').value = appCfg.rebateMode || 'loss';
+  document.getElementById('cfg-chip-preset').value = String(appCfg.chipPresetIdx || 0);
+  document.getElementById('cfg-odd-banker').value = appCfg.bankerOdds || 0.95;
+  document.getElementById('cfg-odd-tie').value = appCfg.tieOdds || 8;
   document.getElementById('cfg-pair-odds').value = appCfg.pairOdds || 11;
+  document.getElementById('cfg-odd-dragon7').value = appCfg.dragon7Odds || 40;
+  document.getElementById('cfg-odd-panda8').value = appCfg.panda8Odds || 25;
+  document.getElementById('cfg-odd-stiger').value = appCfg.stigerOdds || 22;
+  document.getElementById('cfg-odd-btiger').value = appCfg.btigerOdds || 50;
+  document.getElementById('cfg-odd-s6-2').value = appCfg.super6_2Odds || 12;
+  document.getElementById('cfg-odd-s6-3').value = appCfg.super6_3Odds || 20;
   document.getElementById('cfg-bet-unit').value = appCfg.betUnit;
   document.getElementById('cfg-side-unit').value = appCfg.sideUnit || 10;
-  document.getElementById('cfg-ins-unit').value = String(appCfg.insUnit);
+  document.getElementById('cfg-ins-unit').value = appCfg.insUnit || 5;
   document.getElementById('odds-form-body').innerHTML = ODDS_SECTIONS.map(sec => `
     <div>
       <div class="odds-group-title">${sec.title}</div>
@@ -3404,20 +3722,32 @@ function saveSettingsModal() {
   appCfg.kellyBankroll = parseFloat(document.getElementById('cfg-kelly-br').value) || 20000;
   appCfg.kellyMult = parseFloat(document.getElementById('cfg-kelly-mult').value) || 0.5;
   appCfg.rebatePct = parseFloat(document.getElementById('cfg-rebate').value) || 0;
+  appCfg.rebateMode = document.getElementById('cfg-rebate-mode').value || 'loss';
+  appCfg.chipPresetIdx = parseInt(document.getElementById('cfg-chip-preset').value, 10) || 0;
+  appCfg.bankerOdds = parseFloat(document.getElementById('cfg-odd-banker').value) || 0.95;
+  appCfg.tieOdds = parseFloat(document.getElementById('cfg-odd-tie').value) || 8;
   appCfg.pairOdds = parseFloat(document.getElementById('cfg-pair-odds').value) || 11;
+  appCfg.dragon7Odds = parseFloat(document.getElementById('cfg-odd-dragon7').value) || 40;
+  appCfg.panda8Odds = parseFloat(document.getElementById('cfg-odd-panda8').value) || 25;
+  appCfg.stigerOdds = parseFloat(document.getElementById('cfg-odd-stiger').value) || 22;
+  appCfg.btigerOdds = parseFloat(document.getElementById('cfg-odd-btiger').value) || 50;
+  appCfg.super6_2Odds = parseFloat(document.getElementById('cfg-odd-s6-2').value) || 12;
+  appCfg.super6_3Odds = parseFloat(document.getElementById('cfg-odd-s6-3').value) || 20;
   appCfg.betUnit = parseInt(document.getElementById('cfg-bet-unit').value, 10) || 10;
   appCfg.sideUnit = parseInt(document.getElementById('cfg-side-unit').value, 10) || 10;
   appCfg.insUnit = parseInt(document.getElementById('cfg-ins-unit').value, 10) || 5;
   document.getElementById('top-rebate-inp').value = appCfg.rebatePct;
   ODDS_SECTIONS.forEach(sec => sec.items.forEach(([k]) => {
     const v = parseFloat(document.getElementById('inp-' + k).value);
-    if (!isNaN(v) && v > 0) insOdds[k] = v;
+    if (!isNaN(v) && v >= 0) insOdds[k] = v;
   }));
   closeSettingsModal();
+  updateTopRebateModeLabel();
+  renderChipStrip();
   replayFullShoe();
   tryTriggerBrain1();
   evaluateBrain2Insurance();
-  showToast('⚙️ 设置已保存！', 'ok');
+  showToast('⚙️ 5.0 多能体设置已保存！', 'ok');
 }
 
 // ============================================================================
@@ -3526,6 +3856,7 @@ function findTargetSlotAt(x, y) {
 
 initIndexedDB();
 loadStateFromLocal();
+renderChipStrip();
 renderBetInputs();
 renderColorZone();
 renderUsedZone();
@@ -3536,5 +3867,4 @@ initInteractions();
 </script>
 </body>
 </html>
-
 
