@@ -3,10 +3,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>手机竖屏精算终端 5.0</title>
+<title>横屏精算终端 5.0 (人体工学旗舰版)</title>
 <style>
   :root {
     --bg-main: #dedbd4;
@@ -17,373 +16,394 @@
     --pool-red: #ebd0ce;
     --pool-blue: #cedceb;
     --text-dark: #1e293b;
+    /* 加大横版核心操作区（颜色区、牌池、用牌区）扑克尺寸，保持立状比例 */
+    --p-h: clamp(36px, 11.2vh, 56px);
+    --p-w: calc(var(--p-h) * 0.79);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-user-drag: none; }
   html, body {
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     background: var(--bg-main);
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
     color: var(--text-dark);
     overflow: hidden;
-    touch-action: manipulation;
+    touch-action: none;
   }
 
-  /* 顶部非模态防误触提示横幅 */
+  /* 顶部非模态防误触提示横幅 (闲置时彻底移出屏幕外，消除屏幕中线任何图层干扰) */
   #toast-banner {
-    position: fixed; top: 56px; left: 50%; transform: translateX(-50%) translateY(-130px);
-    background: #1e293b; color: #fff; padding: 6px 12px; border-radius: 8px;
+    position: fixed; top: -9999px; left: -9999px;
+    background: #1e293b; color: #fff; padding: 5px 14px; border-radius: 8px;
     font-size: 11.5px; font-weight: 800; box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-    border: 1.5px solid #f59e0b; z-index: 10000; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    pointer-events: none; white-space: nowrap; max-width: 94vw; overflow: hidden; text-overflow: ellipsis;
+    border: 1.5px solid #f59e0b; z-index: 10000;
+    pointer-events: none; white-space: nowrap; max-width: 92vw; overflow: hidden; text-overflow: ellipsis;
+    display: none;
   }
-  #toast-banner.show { transform: translateX(-50%) translateY(0); }
+  #toast-banner.show { display: block; top: 40px; left: 50%; transform: translateX(-50%); }
   #toast-banner.err { background: #7f1d1d; border-color: #f87171; }
   #toast-banner.ok { background: #064e3b; border-color: #34d399; }
 
-  /* 手机四层主容器：第3、4层固定高度整体下移，把所有弹性空间全部留给第2层【本靴记录】 */
-  .mobile-shell {
+  /* 横版全局主框架：采用与竖版一致的 Flex 纵向架构，彻底消除 Grid 跨列磁吸跳动 */
+  .landscape-shell {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
-    padding: max(3px, env(safe-area-inset-top)) 4px max(4px, env(safe-area-inset-bottom)) 4px;
-    gap: 3.5px;
+    padding: 3px 6px 4px 8px;
+    gap: 3px;
   }
 
-  /* ==================== 第 1 层：双行顶栏 + 右侧跨两层大确认键（绝不遮挡） ==================== */
-  .layer-1 {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 58px;
-    gap: 4px;
+  /* ==================== 顶部栏：加高至 34px，按钮加高至 26px，消除点击偏移与死区 ==================== */
+  .top-bar {
+    height: 34px;
+    flex-shrink: 0;
     background: #1e2430;
     color: #f8fafc;
-    border-radius: 8px;
-    padding: 4px 5px;
-    flex-shrink: 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.14);
-  }
-  .l1-left {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 3.5px;
-    min-width: 0;
-    overflow: hidden;
-  }
-  .l1-row1 {
+    border-radius: 7px;
+    padding: 0 18px 0 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.14);
+  }
+  .tb-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    height: 100%;
+  }
+  .tb-stat-pill {
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 11.5px;
+    font-size: 10.5px;
     font-weight: 900;
     background: #0f172a;
-    padding: 2.5px 7px;
+    height: 26px;
+    padding: 0 8px;
     border-radius: 5px;
     border: 1px solid #334155;
+    display: flex;
+    align-items: center;
+    gap: 7px;
     white-space: nowrap;
   }
-  .l1-row2 {
-    display: grid;
-    grid-template-columns: auto auto repeat(5, 1fr);
-    align-items: center;
-    gap: 2.5px;
-    width: 100%;
-  }
   .m-check {
-    display: flex; align-items: center; gap: 2px;
-    font-size: 10px; font-weight: 800; background: #0f172a;
-    height: 22px; padding: 0 4px; border-radius: 4px; border: 1px solid #334155; white-space: nowrap;
+    display: flex; align-items: center; gap: 3px;
+    font-size: 10.5px; font-weight: 800; background: #0f172a;
+    height: 26px; padding: 0 7px; border-radius: 5px; border: 1px solid #334155; white-space: nowrap;
+    cursor: pointer;
   }
-  .m-check input { width: 12px; height: 12px; accent-color: #2563eb; }
+  .m-check input { width: 13px; height: 13px; accent-color: #2563eb; cursor: pointer; }
   .reb-box {
-    display: flex; align-items: center; gap: 1px;
-    font-size: 10px; font-weight: 800; background: #0f172a;
-    height: 22px; padding: 0 3px; border-radius: 4px; border: 1px solid #334155; white-space: nowrap;
+    display: flex; align-items: center; gap: 2px;
+    font-size: 10.5px; font-weight: 800; background: #0f172a;
+    height: 26px; padding: 0 6px; border-radius: 5px; border: 1px solid #334155; white-space: nowrap;
   }
   .reb-inp {
-    width: 27px; height: 16px; background: #1e293b; color: #38bdf8;
+    width: 32px; height: 19px; background: #1e293b; color: #38bdf8;
     border: 1px solid #475569; border-radius: 3px; text-align: center;
-    font-weight: 800; font-size: 10px;
+    font-weight: 800; font-size: 10.5px;
   }
   .tb-mini-btn {
-    height: 22px; padding: 0 2px; border-radius: 4px;
-    border: 1px solid rgba(255,255,255,0.18); background: #334155;
-    color: #fff; font-size: 10px; font-weight: 800;
+    height: 26px; padding: 0 9px; border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.2); background: #334155;
+    color: #fff; font-size: 10.5px; font-weight: 800;
     display: flex; align-items: center; justify-content: center;
-    white-space: nowrap; cursor: pointer; min-width: 0;
+    white-space: nowrap; cursor: pointer;
   }
-  .tb-mini-btn:active { transform: scale(0.95); }
+  .tb-mini-btn:active { transform: scale(0.95); opacity: 0.85; }
   .tb-mini-btn.blue { background: #2563eb; border-color: #60a5fa; }
   .tb-mini-btn.red { background: #dc2626; border-color: #f87171; }
   .tb-mini-btn.purple { background: #6d28d9; border-color: #a78bfa; }
   .tb-mini-btn.amber { background: #d97706; border-color: #fbbf24; }
 
-  /* 跨两层高度的大确认键 */
-  .btn-confirm-tall {
-    width: 100%; height: 100%;
+  .btn-confirm-wide {
+    height: 26px;
+    padding: 0 16px;
+    margin-right: 12px;
     background: linear-gradient(180deg, #22c55e, #16a34a);
     border: 1.5px solid #86efac;
-    border-radius: 7px;
+    border-radius: 6px;
     color: #fff;
-    font-size: 13px;
+    font-size: 11.5px;
     font-weight: 900;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    line-height: 1.15;
-    box-shadow: 0 2px 6px rgba(22,163,74,0.35);
+    gap: 4px;
+    box-shadow: 0 2px 5px rgba(22,163,74,0.35);
+    white-space: nowrap;
+    flex-shrink: 0;
     cursor: pointer;
-    transition: 0.15s;
   }
-  .btn-confirm-tall.warn-step {
+  .btn-confirm-wide.warn-step {
     background: linear-gradient(180deg, #f59e0b, #d97706);
     border-color: #fde68a;
-    font-size: 11px;
   }
-  .btn-confirm-tall:active { transform: scale(0.95); }
+  .btn-confirm-wide:active { transform: scale(0.95); }
 
-  /* ==================== 第 2 层：自适应弹性高度（把iPhone 17/Pro Max多余空间全给本靴记录） ==================== */
-  .layer-2 {
-    flex: 1;
-    min-height: 106px;
-    display: grid;
-    grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+  /* ==================== 上半工作区：左上本靴记录(27%宽) + 右上核心牌区(73%宽) ==================== */
+  .upper-workspace {
+    height: 60%;
+    flex-shrink: 0;
+    min-height: 0;
+    display: flex;
     gap: 4px;
   }
-  .l2-history {
+
+  /* 左上：本靴用牌记录 (左侧留出 54px 充足内边距，彻底避开左侧灵动岛遮挡) */
+  .panel-history {
+    width: 27%;
+    flex-shrink: 0;
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
-    border-radius: 8px;
-    padding: 3px 5px;
+    border-radius: 7px;
+    padding: 3px 5px 3px max(54px, env(safe-area-inset-left, 54px));
     display: flex;
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
   }
-  .l2-hdr {
-    font-size: 10px; font-weight: 800; color: #475569;
+  .ph-hdr {
+    font-size: 9px; font-weight: 800; color: #475569;
     border-bottom: 1px solid #e2dfd9; padding-bottom: 2px; margin-bottom: 2px;
     display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
   }
   .rec-scroll {
-    flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2.5px;
+    flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px;
     -webkit-overflow-scrolling: touch;
   }
   .rec-item {
     background: #fff; border: 1px solid #e5e2dc; border-radius: 4px;
-    padding: 2px 4px; font-size: 9.5px; line-height: 1.22;
+    padding: 1.5px 4px; font-size: 8.5px; line-height: 1.18;
     display: flex; flex-direction: column; gap: 1px; flex-shrink: 0;
   }
   .rec-top { display: flex; justify-content: space-between; align-items: center; font-weight: 800; }
-  .rec-cards { display: flex; align-items: center; gap: 3px; color: #334155; font-weight: 700; flex-wrap: wrap; font-size: 9px; }
-  .dot-r, .dot-b { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 1px; vertical-align: 0px; }
+  .rec-cards { display: flex; align-items: center; gap: 2.5px; color: #334155; font-weight: 700; flex-wrap: wrap; font-size: 8px; }
+  .dot-r, .dot-b { display: inline-block; width: 5.5px; height: 5.5px; border-radius: 50%; margin-right: 1px; }
   .dot-r { background: var(--red-card); }
   .dot-b { background: var(--blue-card); }
-  .hit-tag { font-size: 8.5px; padding: 0 2.5px; border-radius: 3px; font-weight: 800; }
+  .hit-tag { font-size: 7.5px; padding: 0 2px; border-radius: 2.5px; font-weight: 800; }
   .hit-tag.win { background: #dcfce7; color: #15803d; }
   .hit-tag.lose { background: #fee2e2; color: #b91c1c; }
-  .mini-link { font-size: 9px; color: #2563eb; background: #dbeafe; padding: 0 4px; border-radius: 3px; font-weight: 800; cursor: pointer; }
+  .mini-link { font-size: 8px; color: #2563eb; background: #dbeafe; padding: 0 3.5px; border-radius: 3px; font-weight: 800; cursor: pointer; }
 
-  .l2-stats {
-    background: #1e2430;
-    color: #f8fafc;
-    border-radius: 8px;
-    padding: 4px 6px;
+  /* 右上：扑克核心操作区 (颜色区、牌池、用牌区同比例放大，紧凑排布) */
+  .panel-card-table {
+    flex: 1;
+    min-width: 0;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 7px;
+    padding: 2px 8px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    font-size: 9.5px;
-  }
-  .st-row { display: flex; justify-content: space-between; align-items: center; line-height: 1.1; }
-  .st-lbl { color: #cbd5e1; font-weight: 600; }
-  .st-val { font-family: "SF Mono", Menlo, Consolas, monospace; font-weight: 800; }
-
-  /* ==================== 第 3 层：固定锁定·颜色区与牌池同版型·用牌区等比放大居中 ==================== */
-  .layer-3 {
-    --p-w: calc((100vw - 18px - 24px) / 13);
-    --p-h: 39px;
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-border);
-    border-radius: 8px;
-    padding: 5px 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    flex-shrink: 0;
+    align-items: center;
+    min-height: 0;
     overflow: hidden;
   }
-  /* 1. 颜色行：上下增加留白，飞/预/R/B及6色槽与下方牌池版型大小100%一致，2张一组明显隔开 */
+
+  /* 1. 颜色区 */
   .color-bar {
     display: flex;
     align-items: center;
-    width: 100%;
-    padding: 3px 0;
+    width: calc(var(--p-w) * 13 + 54px);
+    max-width: 100%;
   }
   .c-pair {
     display: flex;
-    gap: 2px;
-    margin-right: 9px;
+    gap: 3.5px;
+    margin-right: 12px;
   }
-  .c-pair:last-of-type {
-    margin-right: 0;
-  }
+  .c-pair:last-of-type { margin-right: 0; }
   .c-slot, .rb-src {
     width: var(--p-w);
     height: var(--p-h);
-    border-radius: 5px;
+    border-radius: 5.5px;
     background: #e6e4df;
     border: 1.5px solid #ccc8be;
     display: flex; align-items: center; justify-content: center;
-    font-size: 14.5px; font-weight: 900; color: #1e293b;
+    font-size: clamp(13px, 3.6vh, 18px); font-weight: 900; color: #1e293b;
     position: relative;
     flex-shrink: 0;
   }
   .c-slot.fly-slot {
-    border-style: dashed; border-color: #94a3b8; font-size: 13px; color: #64748b;
-    margin-right: auto; /* 飞牌居左，其余整体偏右对称 */
+    border-style: dashed; border-color: #94a3b8; color: #64748b;
+    margin-right: auto;
   }
   .c-slot.next-fly-vert {
-    border-style: dashed; border-color: #94a3b8; font-size: 11.5px; color: #64748b;
-    margin-left: 6px;
+    border-style: dashed; border-color: #94a3b8; font-size: clamp(11px, 2.8vh, 14px); color: #64748b;
+    margin-left: 7px;
   }
   .c-slot.red { background: var(--red-card); border-color: #c53932; color: #fff; }
   .c-slot.blue { background: var(--blue-card); border-color: #2b67ce; color: #fff; }
   .c-slot .check-mark {
     font-size: 11px; font-weight: 900; color: #16a34a;
-    background: rgba(255,255,255,0.92); width: 16px; height: 16px;
+    background: rgba(255,255,255,0.92); width: 17px; height: 17px;
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
   }
-  .rb-btn-group { display: flex; gap: 3px; margin-left: 10px; padding-left: 8px; border-left: 1.5px solid #dfdcd5; }
+  .rb-btn-group {
+    display: flex; gap: 4.5px;
+    margin-left: auto;
+    padding-left: 10px;
+    border-left: 1.5px solid #dfdcd5;
+  }
   .rb-src {
-    font-size: 15px; font-weight: 900; color: #fff;
+    color: #fff;
     box-shadow: 0 1.5px 3px rgba(0,0,0,0.18);
   }
-  .rb-src:active { transform: scale(0.92); }
+  .rb-src:active { opacity: 0.85; }
   .rb-src.red-src { background: var(--red-card); border-color: #c53932; }
   .rb-src.blue-src { background: var(--blue-card); border-color: #2b67ce; }
 
-  /* 2. 13列牌池：与颜色区同宽同高，牌值偏上醒目，余数紧贴底部微字 */
-  .pool-section { display: flex; flex-direction: column; gap: 3px; width: 100%; }
-  .pool-row { display: grid; grid-template-columns: repeat(13, var(--p-w)); gap: 2px; justify-content: space-between; width: 100%; }
+  /* 2. 13列牌池：外框保持绝对静止防止iOS指针磁吸抖动，鼠标经过时仅内部牌值数字(.c-rank)微放大 */
+  .pool-section { display: flex; flex-direction: column; gap: 3px; align-items: center; }
+  .pool-row { display: grid; grid-template-columns: repeat(13, var(--p-w)); gap: 4.5px; justify-content: center; }
   .p-card {
     width: var(--p-w);
     height: var(--p-h);
-    border-radius: 5px;
-    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 5.5px;
+    border: 1.5px solid rgba(0,0,0,0.1);
     position: relative;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    padding-top: 4px;
+    padding-top: 2.5px;
   }
-  .p-card:active { transform: scale(0.93); }
+  .p-card:hover {
+    border-color: rgba(0,0,0,0.42);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+  }
+  .p-card:hover .c-rank {
+    transform: scale(1.18);
+  }
   .p-card.red-pool { background: var(--pool-red); color: #1e293b; }
   .p-card.blue-pool { background: var(--pool-blue); color: #1e293b; }
   .p-card.zero-gray { background: #d6d3cd !important; color: #9ca3af !important; opacity: 0.55; }
-  .p-card .c-rank { font-size: 15.5px; font-weight: 900; line-height: 1; pointer-events: none; }
+  .p-card .c-rank {
+    font-size: clamp(14px, 3.9vh, 19px); font-weight: 900; line-height: 1;
+    pointer-events: none; transition: transform 0.08s ease;
+  }
   .p-card .c-num {
-    position: absolute; bottom: 1px;
-    font-size: 7.5px; font-weight: 700; color: #64748b; opacity: 0.88;
+    position: absolute; bottom: 1.5px;
+    font-size: clamp(7.5px, 1.9vh, 9.5px); font-weight: 700; color: #64748b; opacity: 0.9;
     line-height: 1; pointer-events: none;
   }
 
-  /* 3. 用牌区：往中间靠拢，卡片严格按牌池同比例放大(1.22倍)，不变形、方便对牌 */
+  /* 3. 用牌区：同步按比例放大，醒目清晰 */
   .hands-pure-row {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px;
+    gap: 20px;
     width: 100%;
-    padding: 1px 0;
   }
   .hand-group {
     background: #ebe8e0;
     border: 1.5px solid #d5d1c7;
     border-radius: 8px;
-    padding: 3px 10px 5px 10px;
+    padding: 2px 12px 3.5px 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2.5px;
+    gap: 2px;
   }
-  .hand-hdr { font-size: 11.5px; font-weight: 900; color: #1e293b; }
-  .hand-slots { display: flex; gap: 5px; justify-content: center; }
+  .hand-hdr { font-size: clamp(10px, 2.6vh, 12px); font-weight: 900; color: #1e293b; line-height: 1.1; }
+  .hand-slots { display: flex; gap: 5.5px; justify-content: center; }
   .u-slot {
-    width: calc(var(--p-w) * 1.22);
-    height: calc(var(--p-h) * 1.22);
+    width: calc(var(--p-w) * 1.15);
+    height: calc(var(--p-h) * 1.12);
     border-radius: 6px;
     background: #f7f6f2;
     border: 1.5px solid #cbd5e1;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18.5px; font-weight: 900;
+    font-size: clamp(15px, 4.2vh, 21px); font-weight: 900;
   }
   .u-slot.red-card { background: var(--red-card); border-color: #c53932; color: #fff; }
   .u-slot.blue-card { background: var(--blue-card); border-color: #2b67ce; color: #fff; }
-  .u-slot.locked-gray { background: #dedbd3 !important; border-color: #c5c1b8 !important; color: #78716c !important; border-style: dotted; font-size: 13px; }
-  .c-slot.drag-over, .u-slot.drag-over { outline: 2.5px solid #111; transform: scale(1.06); }
+  .u-slot.locked-gray { background: #dedbd3 !important; border-color: #c5c1b8 !important; color: #78716c !important; border-style: dotted; font-size: 12px; }
+  .c-slot.drag-over, .u-slot.drag-over { outline: 2.5px solid #16a34a; background-color: rgba(34,197,94,0.15); }
 
-  /* ==================== 第 4 层：死锁宽高比例，左栏三段EV与2位小数完整显示 ==================== */
-  .layer-4 {
-    height: 252px;
-    flex-shrink: 0;
-    display: grid;
-    grid-template-columns: 30.8% minmax(0, 1fr);
-    gap: 3.5px;
+  /* ==================== 下半工作区：左下【此靴统计(11%) + 三段EV(16%-4px) = 27%】与上方【本靴记录(27%)】完全等宽对齐 ==================== */
+  .lower-workspace {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    gap: 4px;
   }
 
-  /* 第4层左列：紧凑内边距，确保三段EV与两位小数完整显示绝不截断 */
-  .l4-left {
+  /* 1. 左下：窄版积分统计台账 */
+  .panel-ledger {
+    width: 11%;
+    flex-shrink: 0;
+    background: #1e2430;
+    color: #f8fafc;
+    border-radius: 7px;
+    padding: 2.5px 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    font-size: 8px;
+    overflow: hidden;
+  }
+  .st-row { display: flex; justify-content: space-between; align-items: center; white-space: nowrap; line-height: 1.08; }
+  .st-lbl { color: #cbd5e1; font-weight: 600; }
+  .st-val { font-family: "SF Mono", Menlo, Consolas, monospace; font-weight: 800; }
+
+  /* 2. 右下左：窄版三段EV与概率增益面板 (右边缘与上方本靴记录100%对齐) */
+  .panel-ev-data {
+    width: calc(16% - 4px);
+    flex-shrink: 0;
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
-    border-radius: 8px;
-    padding: 3px 2.5px;
+    border-radius: 7px;
+    padding: 2px 3px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     min-width: 0;
     overflow: hidden;
-    gap: 2px;
   }
-  /* 结果提示区：未出结果前空白，出结果后仅简明显示点数 */
   .verdict-panel {
-    height: 35px;
-    border-radius: 6px;
+    height: 20px;
+    border-radius: 4px;
     background: #eceae3;
     border: 1px solid #d5d1c8;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1px 3px;
+    padding: 0 2px;
     text-align: center;
     flex-shrink: 0;
   }
   .verdict-panel.win-banker { background: #dc2626; border-color: #991b1b; color: #fff; }
   .verdict-panel.win-player { background: #2563eb; border-color: #1e40af; color: #fff; }
   .verdict-panel.win-tie { background: #16a34a; border-color: #15803d; color: #fff; }
-  .vp-title { font-size: 12px; font-weight: 900; line-height: 1.1; }
-  .vp-sub { font-size: 8.5px; font-weight: 800; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .vp-title { font-size: 9.5px; font-weight: 900; line-height: 1.02; }
+  .vp-sub { font-size: 7.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1; }
 
   .data-block {
     background: #fff;
     border: 1px solid #e5e2dc;
-    border-radius: 5px;
-    padding: 2px 2.5px;
+    border-radius: 3.5px;
+    padding: 1px 2.5px;
     display: flex;
     flex-direction: column;
-    gap: 1px;
     min-width: 0;
     overflow: hidden;
   }
-  .db-title { font-size: 8px; font-weight: 800; color: #64748b; line-height: 1.1; }
+  .db-title { font-size: 7px; font-weight: 800; color: #64748b; line-height: 1.02; }
   .db-mono {
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 8.2px; font-weight: 800;
+    font-size: clamp(7.2px, 0.85vw, 9px); font-weight: 800;
     letter-spacing: -0.45px;
     white-space: nowrap;
-    line-height: 1.22;
+    line-height: 1.1;
   }
   .ev-neg { color: #c83e37; }
   .ev-pos { color: #15803d; background: #dcfce7; padding: 0 1px; border-radius: 2px; }
@@ -391,50 +411,77 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 800;
     padding: 0 1px;
     white-space: nowrap;
+    line-height: 1;
   }
 
-  /* 第4层右列：所有框死锁固定网格尺寸，绝不挤压 */
-  .l4-right {
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-border);
-    border-radius: 8px;
-    padding: 4px;
-    display: grid;
-    grid-template-rows: 98px 30px 1fr;
-    gap: 3.5px;
+  /* 3. 右下右：【左4旁注 | 中间(闲·保·庄 + 注码) | 右4旁注】三舱对称布局 */
+  .panel-dual-cabins {
+    flex: 1;
+    display: flex;
+    gap: 4px;
     min-width: 0;
+    min-height: 0;
     overflow: hidden;
   }
 
-  /* 右上：左闲、中[两行清晰保护提示+保护框]、右庄 */
+  /* 左右对称四格旁注列：左(龙七/熊八/小老虎/大老虎) | 右(庄对/闲对/幸运6/和局) */
+  .side-wing-col {
+    width: 18.5%;
+    flex-shrink: 0;
+    background: var(--panel-bg);
+    border: 1.5px solid #cfccc4;
+    border-radius: 7px;
+    padding: 2.5px 3px;
+    display: grid;
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    gap: 2.5px;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /* 中央主舱：上排【闲·保·庄】，下排【专属注码区】 */
+  .center-main-cabin {
+    flex: 1;
+    background: var(--panel-bg);
+    border: 1.5px solid #b8b3a8;
+    border-radius: 7px;
+    padding: 3px 4px;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) 26px;
+    gap: 3px;
+    min-width: 0;
+    min-height: 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+
   .main-bet-zone {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr) minmax(0, 1fr);
-    gap: 3.5px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 4px;
     height: 100%;
+    min-height: 0;
   }
   .ins-col-wrap {
     display: grid;
-    grid-template-rows: 34px 1fr;
-    gap: 2.5px;
+    grid-template-rows: 23px minmax(0, 1fr);
+    gap: 2px;
     min-width: 0;
     height: 100%;
   }
-  /* 保护提示框：严格分两行（第1行：买不买 + EV | 第2行：几赔几 + 牌型） */
   .lamp-bar {
-    height: 34px;
-    border-radius: 6px;
+    height: 23px;
+    border-radius: 4.5px;
     background: #e5e3dc;
     border: 1.5px solid #cfccc4;
-    padding: 2px 5px;
+    padding: 1px 4px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    font-size: 9.5px;
+    font-size: 8.5px;
     font-weight: 900;
     min-width: 0;
     overflow: hidden;
@@ -446,25 +493,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    line-height: 1.15;
+    line-height: 1.05;
     white-space: nowrap;
   }
-  .lamp-r2 { font-size: 9px; opacity: 0.94; }
+  .lamp-r2 { font-size: 7.5px; opacity: 0.94; }
 
   .main-box {
     background: #eceae4;
     border: 1.5px solid #d5d2c9;
-    border-radius: 7px;
-    padding: 3px 4px;
+    border-radius: 6px;
+    padding: 2px 5px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    cursor: pointer;
     min-width: 0;
     overflow: hidden;
     height: 100%;
   }
-  .main-box.ins-flat { padding: 2px 4px; }
+  .main-box.ins-flat { padding: 1px 4px; }
   .main-box.selected-box, .bet-card.selected-box {
     border-color: #2563eb;
     background: #eff6ff;
@@ -474,45 +520,44 @@
     background: #fef9c3;
     border-color: #eab308;
   }
-  .mb-hdr { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 900; white-space: nowrap; }
+  .mb-hdr { display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; font-weight: 900; white-space: nowrap; }
   .mb-amt {
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 17px; font-weight: 900; text-align: center; color: #0f172a;
-    line-height: 1; min-height: 17px;
+    font-size: 16.5px; font-weight: 900; text-align: center; color: #0f172a;
+    line-height: 1; min-height: 16.5px;
     display: flex; align-items: center; justify-content: center;
   }
-  .main-box.ins-flat .mb-amt { font-size: 14px; min-height: 14px; }
+  .main-box.ins-flat .mb-amt { font-size: 13px; min-height: 13px; }
   .mb-lock-sub {
-    font-size: 8px; color: #b45309; background: rgba(254,243,199,0.9);
+    font-size: 7px; color: #b45309; background: rgba(254,243,199,0.9);
     border-radius: 3px; padding: 0 2px; text-align: center; font-weight: 800;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    min-height: 11px; line-height: 11px;
+    min-height: 9px; line-height: 9px;
   }
 
-  /* 右中：单横排居中筹码栏 + 全清 */
+  /* 中央主舱底部：注码区 */
   .chip-strip {
-    height: 30px;
+    height: 26px;
     background: #e5e2dc;
     border: 1px solid #cfccc4;
-    border-radius: 6px;
-    padding: 0 4px;
+    border-radius: 5px;
+    padding: 0 5px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 2px;
+    gap: 3px;
   }
   .m-chip {
-    width: 25px; height: 25px;
+    width: 22px; height: 22px;
     border-radius: 50%;
     border: 1.5px dashed rgba(255,255,255,0.85);
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 9.5px; font-weight: 900; color: #fff;
+    font-size: 8.5px; font-weight: 900; color: #fff;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 1px 2px rgba(0,0,0,0.25);
-    cursor: pointer;
     flex-shrink: 0;
   }
-  .m-chip:active { transform: scale(0.9); }
+  .m-chip:active { opacity: 0.8; }
   .chip-5 { background: #dc2626; }
   .chip-10 { background: #16a34a; }
   .chip-50 { background: #2563eb; }
@@ -520,124 +565,213 @@
   .chip-500 { background: #7e22ce; }
   .chip-1000 { background: #d97706; }
   .btn-clear-all {
-    height: 22px; padding: 0 5px; border-radius: 4px;
+    height: 20px; padding: 0 5px; border-radius: 4px;
     border: 1px solid #cbd5e1; background: #fff; color: #dc2626;
-    font-size: 9.5px; font-weight: 900; cursor: pointer; white-space: nowrap;
+    font-size: 8.5px; font-weight: 900; white-space: nowrap;
   }
 
-  /* 右下：8项旁注 (2×4 死锁等宽等高矩阵) */
-  .side-matrix {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
-    gap: 3px;
-    height: 100%;
-  }
+  /* 旁注卡片：下注金额严格水平居中显示 */
   .bet-card {
     background: #eceae4;
     border: 1.5px solid #d5d2c9;
-    border-radius: 6px;
-    padding: 2px 3px;
+    border-radius: 4.5px;
+    padding: 1px 4px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    cursor: pointer;
+    position: relative;
     min-width: 0;
     overflow: hidden;
   }
-  .bc-top { display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; font-weight: 900; white-space: nowrap; }
-  .bc-ev { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.5px; font-weight: 800; color: #64748b; letter-spacing: -0.3px; }
+  .bc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 900;
+    white-space: nowrap;
+    line-height: 1.05;
+  }
+  .bc-bot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    min-height: 11px;
+    line-height: 1;
+  }
+  .bc-ev { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8px; font-weight: 800; color: #64748b; }
   .mb-hdr .bc-ev { font-size: 10px; }
   .bc-ev.neg { color: #dc2626; }
-  .bc-ev.pos { color: #15803d; background: #dcfce7; padding: 0 1.5px; border-radius: 2px; }
+  .bc-ev.pos { color: #15803d; background: #dcfce7; padding: 0 2px; border-radius: 2px; }
   .bc-amt {
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 13px; font-weight: 900; text-align: center; color: #0f172a;
-    line-height: 1; min-height: 13px;
-    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 900; color: #0f172a;
+    text-align: center;
+    width: 100%;
+    line-height: 1;
   }
-  /* 推荐条：无推荐时 visibility:hidden 保持框高度一动不动，有推荐时才显现 */
   .bc-rec-btn {
-    height: 14px; border-radius: 3px;
-    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.5px; font-weight: 800;
+    height: 11px; padding: 0 2.5px; border-radius: 2.5px;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 7.5px; font-weight: 800;
     display: flex; align-items: center; justify-content: center;
     white-space: nowrap; overflow: hidden;
     visibility: hidden;
   }
-  .main-box .bc-rec-btn { height: 16px; font-size: 9px; }
+  .side-wing-col .bc-rec-btn {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+  .main-box .bc-rec-btn { height: 13px; font-size: 8.5px; width: 100%; }
   .bc-rec-btn.hot { visibility: visible; background: #16a34a; color: #fff; }
   .bc-rec-btn.forbid-btn { visibility: visible; background: #fef3c7; color: #b45309; border: 1px solid #f59e0b; }
 
   /* 弹窗通用样式 */
   .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 8px; }
-  .modal-box { width: 100%; max-width: 560px; max-height: 91dvh; background: #faf8f5; border-radius: 12px; border: 1px solid #d4cfc5; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.35); }
-  .modal-head { padding: 8px 12px; background: #1e2430; color: #fff; font-weight: 800; font-size: 12.5px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-  .modal-body { padding: 9px; overflow-y: auto; display: flex; flex-direction: column; gap: 7px; font-size: 11px; -webkit-overflow-scrolling: touch; }
-  .modal-foot { padding: 7px 10px; background: #ebe7df; display: flex; justify-content: space-between; align-items: center; gap: 5px; flex-wrap: wrap; flex-shrink: 0; }
+  .modal-box { width: 100%; max-width: 680px; max-height: 92dvh; background: #faf8f5; border-radius: 12px; border: 1px solid #d4cfc5; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.35); }
+  .modal-head { padding: 7px 12px; background: #1e2430; color: #fff; font-weight: 800; font-size: 12.5px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .modal-body { padding: 8px 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; font-size: 11px; -webkit-overflow-scrolling: touch; }
+  .modal-foot { padding: 6px 10px; background: #ebe7df; display: flex; justify-content: space-between; align-items: center; gap: 5px; flex-wrap: wrap; flex-shrink: 0; }
   .odds-group-title { font-weight: 800; color: #1d4ed8; border-bottom: 1px solid #e2ddd3; padding-bottom: 2px; margin-bottom: 3px; font-size: 11px; }
-  .odds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .odds-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
   .odds-item { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #dcd7cd; border-radius: 5px; padding: 3px 5px; font-size: 10px; font-weight: 700; }
-  .odds-item input, .odds-item select { width: 50px; border: 1px solid #bbb; border-radius: 4px; text-align: center; font-weight: 800; font-size: 10.5px; padding: 1px 0; }
+  .odds-item input, .odds-item select { width: 52px; border: 1px solid #bbb; border-radius: 4px; text-align: center; font-weight: 800; font-size: 10.5px; padding: 1px 0; }
 
-  /* 精细大数据复盘表格样式 */
-  .rp-table { width: 100%; border-collapse: collapse; font-size: 9.8px; background: #fff; border-radius: 6px; overflow: hidden; }
+  .rp-table { width: 100%; border-collapse: collapse; font-size: 10px; background: #fff; border-radius: 6px; overflow: hidden; }
   .rp-table th { background: #1e2430; color: #fff; padding: 4px 3px; text-align: center; font-weight: 800; white-space: nowrap; }
   .rp-table td { padding: 3.5px 3px; border-bottom: 1px solid #e5e2dc; text-align: center; }
   .rp-table td:first-child { text-align: left; font-weight: 800; }
 
-  #drag-ghost { position: fixed; width: 38px; height: 50px; border-radius: 6px; pointer-events: none; z-index: 9999; display: none; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: #fff; opacity: 0.92; box-shadow: 0 5px 14px rgba(0,0,0,0.35); transform: translate(-50%, -50%); }
-  #drag-ghost.red { background: var(--red-card); }
-  #drag-ghost.blue { background: var(--blue-card); }
-  #drag-ghost.card { background: #1e293b; }
+  /* 拖拽影子：与扑克牌等大、半透明不挡视线、使用GPU硬件加速translate3d零延迟移动 */
+  #drag-ghost {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--p-w);
+    height: var(--p-h);
+    border-radius: 5.5px;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: 900;
+    color: #fff;
+    opacity: 0.78;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.32);
+    will-change: transform;
+  }
+  #drag-ghost.red { background: var(--red-card); border: 1.5px solid #fff; }
+  #drag-ghost.blue { background: var(--blue-card); border: 1.5px solid #fff; }
+  #drag-ghost.card { background: #1e293b; border: 1.5px solid #fbbf24; }
 </style>
 </head>
 <body>
 
 <div id="toast-banner">⚠️ 提示信息</div>
 
-<div class="mobile-shell">
-  <!-- ==================== 第 1 层：双行顶栏 + 右侧跨两层大确认键（绝不遮挡） ==================== -->
-  <div class="layer-1">
-    <div class="l1-left">
-      <div class="l1-row1">
+<div class="landscape-shell">
+  <!-- ==================== 顶部栏：设置按钮全部靠左，与右侧大确认键明显隔开防误触 ==================== -->
+  <div class="top-bar">
+    <div class="tb-left">
+      <div class="tb-stat-pill">
         <span id="top-shoe-info" style="color:#94a3b8;">第1靴·第1手</span>
         <span>总:<b id="top-balance" style="color:#fbbf24;margin-left:2px;">20,000</b></span>
         <span id="top-shoe-pl" style="color:#4ade80;">本靴:+0</span>
       </div>
-      <div class="l1-row2">
-        <label class="m-check">
-          <input type="checkbox" id="chk-fly-priority" onchange="toggleFlyPriority(this.checked)">
-          <span>飞牌</span>
-        </label>
-        <div class="reb-box">
-          <span id="top-reb-mode-lbl" onclick="toggleQuickRebateMode()" style="color:#38bdf8;cursor:pointer;" title="点击切换：按输口返 / 按赢额返">输返</span>
-          <input type="number" step="0.1" class="reb-inp" id="top-rebate-inp" value="1.3" onchange="onQuickRebateChange(this.value)">
-          <span>%</span>
-        </div>
-        <button class="tb-mini-btn blue" id="btn-new-shoe" onclick="archiveAndStartNewShoe()">新靴</button>
-        <button class="tb-mini-btn red" id="btn-reset-day" onclick="resetAllTodayLedger()">重置</button>
-        <button class="tb-mini-btn purple" onclick="openReplayModal('today')">复盘</button>
-        <button class="tb-mini-btn amber" onclick="openHistoryDaysModal()">账本</button>
-        <button class="tb-mini-btn" onclick="openSettingsModal()">⚙️</button>
+      <label class="m-check" id="lbl-fly-priority">
+        <input type="checkbox" id="chk-fly-priority" onchange="toggleFlyPriority(this.checked)">
+        <span>飞牌</span>
+      </label>
+      <div class="reb-box">
+        <span id="top-reb-mode-lbl" onclick="toggleQuickRebateMode()" style="color:#38bdf8;cursor:pointer;padding:2px 3px;" title="点击切换：按输口返 / 按赢额返">输返</span>
+        <input type="number" step="0.1" class="reb-inp" id="top-rebate-inp" value="1.3" onchange="onQuickRebateChange(this.value)">
+        <span>%</span>
       </div>
+      <div class="tb-mini-btn blue" id="btn-new-shoe" onclick="archiveAndStartNewShoe()">新靴</div>
+      <div class="tb-mini-btn red" id="btn-reset-day" onclick="resetAllTodayLedger()">重置</div>
+      <div class="tb-mini-btn purple" id="btn-open-replay" onclick="openReplayModal('today')">复盘</div>
+      <div class="tb-mini-btn amber" id="btn-open-history" onclick="openHistoryDaysModal()">账本</div>
+      <div class="tb-mini-btn" id="btn-open-settings" onclick="openSettingsModal()">⚙️</div>
     </div>
-    <button class="btn-confirm-tall" id="btn-confirm-hand" onclick="confirmHandRecord()">
+
+    <div class="btn-confirm-wide" id="btn-confirm-hand" onclick="confirmHandRecord()">
       <span id="confirm-icon">✅</span>
       <span id="confirm-txt">确 认</span>
-    </button>
+    </div>
   </div>
 
-  <!-- ==================== 第 2 层：弹性增高本靴记录(可显示多条) + 右单列统计 ==================== -->
-  <div class="layer-2">
-    <div class="l2-history">
-      <div class="l2-hdr">
+  <!-- ==================== 上半工作区：左上用牌记录(27%) + 右上扑克核心操作区(73%) ==================== -->
+  <div class="upper-workspace">
+    <!-- 左上：本靴用牌记录 -->
+    <div class="panel-history">
+      <div class="ph-hdr">
         <span>📋 本靴记录 <b id="rec-count-tag" style="color:#2563eb;">(0手)</b></span>
         <span id="status-tip" style="color:#0284c7;font-size:9.5px;"></span>
       </div>
       <div class="rec-scroll" id="record-list"></div>
     </div>
 
-    <div class="l2-stats" onclick="openReplayModal('today')" style="cursor:pointer;" title="点击打开大数据深度复盘">
+    <!-- 右上：扑克核心操作区 -->
+    <div class="panel-card-table">
+      <!-- 1. 颜色行 -->
+      <div class="color-bar">
+        <div class="c-slot fly-slot" data-cslot="fly" id="slot-fly"><span id="fly-content">飞</span></div>
+        <div class="c-pair">
+          <div class="c-slot" data-cslot="0" id="slot-0"><span id="cmark-0"></span></div>
+          <div class="c-slot" data-cslot="1" id="slot-1"><span id="cmark-1"></span></div>
+        </div>
+        <div class="c-pair">
+          <div class="c-slot" data-cslot="2" id="slot-2"><span id="cmark-2"></span></div>
+          <div class="c-slot" data-cslot="3" id="slot-3"><span id="cmark-3"></span></div>
+        </div>
+        <div class="c-pair">
+          <div class="c-slot" data-cslot="4" id="slot-4"><span id="cmark-4"></span></div>
+          <div class="c-slot" data-cslot="5" id="slot-5"><span id="cmark-5"></span></div>
+        </div>
+        <div class="rb-btn-group">
+          <div class="rb-src red-src" id="src-red" data-color="red">R</div>
+          <div class="rb-src blue-src" id="src-blue" data-color="blue">B</div>
+        </div>
+        <div class="c-slot next-fly-vert" data-cslot="next_fly" id="slot-next-fly">
+          <span id="next-fly-content">预</span>
+        </div>
+      </div>
+
+      <!-- 2. 13列牌池 -->
+      <div class="pool-section">
+        <div class="pool-row" id="red-pool-row"></div>
+        <div class="pool-row" id="blue-pool-row"></div>
+      </div>
+
+      <!-- 3. 纯净用牌区 -->
+      <div class="hands-pure-row">
+        <div class="hand-group">
+          <span class="hand-hdr" id="p-hand-title">闲家</span>
+          <div class="hand-slots">
+            <div class="u-slot" data-uslot="0" id="uslot-0"></div>
+            <div class="u-slot" data-uslot="1" id="uslot-1"></div>
+            <div class="u-slot" data-uslot="4" id="uslot-4"></div>
+          </div>
+        </div>
+        <div class="hand-group">
+          <span class="hand-hdr" id="b-hand-title">庄家</span>
+          <div class="hand-slots">
+            <div class="u-slot" data-uslot="2" id="uslot-2"></div>
+            <div class="u-slot" data-uslot="3" id="uslot-3"></div>
+            <div class="u-slot" data-uslot="5" id="uslot-5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 下半工作区：左下缩窄统计(15.5%) + 右下左三段EV(21.5%) + 右下右三段叠放下注区(63%) ==================== -->
+  <div class="lower-workspace">
+    <!-- 1. 左下：缩窄版积分统计台账 -->
+    <div class="panel-ledger" onclick="openReplayModal('today')" title="点击打开大数据深度复盘">
       <div class="st-row"><span class="st-lbl">此靴主项:</span><span class="st-val" id="st-shoe-main">0</span></div>
       <div class="st-row"><span class="st-lbl">此靴保护:</span><span class="st-val" id="st-shoe-ins">0</span></div>
       <div class="st-row"><span class="st-lbl">此靴旁项:</span><span class="st-val" id="st-shoe-side">0</span></div>
@@ -646,65 +780,9 @@
       <div class="st-row"><span class="st-lbl" style="color:#4ade80;font-weight:800;">今日净值:</span><span class="st-val" id="st-day-net" style="color:#4ade80;">0</span></div>
       <div class="st-row"><span class="st-lbl">今日返点:</span><span class="st-val" id="st-day-reb" style="color:#38bdf8;">+0</span></div>
     </div>
-  </div>
 
-  <!-- ==================== 第 3 层：统一立状卡片颜色区 + 13列牌池 + 纯净用牌区 ==================== -->
-  <div class="layer-3">
-    <!-- 颜色行：飞牌居左，其余6槽+R/B+立状下轮预备整体靠右对称，全部同尺寸 -->
-    <div class="color-bar">
-      <div class="c-slot fly-slot" data-cslot="fly" id="slot-fly"><span id="fly-content">飞</span></div>
-      <div class="c-pair">
-        <div class="c-slot" data-cslot="0" id="slot-0"><span id="cmark-0"></span></div>
-        <div class="c-slot" data-cslot="1" id="slot-1"><span id="cmark-1"></span></div>
-      </div>
-      <div class="c-pair">
-        <div class="c-slot" data-cslot="2" id="slot-2"><span id="cmark-2"></span></div>
-        <div class="c-slot" data-cslot="3" id="slot-3"><span id="cmark-3"></span></div>
-      </div>
-      <div class="c-pair">
-        <div class="c-slot" data-cslot="4" id="slot-4"><span id="cmark-4"></span></div>
-        <div class="c-slot" data-cslot="5" id="slot-5"><span id="cmark-5"></span></div>
-      </div>
-      <div class="rb-btn-group">
-        <div class="rb-src red-src" id="src-red" data-color="red">R</div>
-        <div class="rb-src blue-src" id="src-blue" data-color="blue">B</div>
-      </div>
-      <div class="c-slot next-fly-vert" data-cslot="next_fly" id="slot-next-fly">
-        <span id="next-fly-content">预</span>
-      </div>
-    </div>
-
-    <!-- 13列牌池 -->
-    <div class="pool-section">
-      <div class="pool-row" id="red-pool-row"></div>
-      <div class="pool-row" id="blue-pool-row"></div>
-    </div>
-
-    <!-- 纯净用牌区 -->
-    <div class="hands-pure-row">
-      <div class="hand-group">
-        <span class="hand-hdr" id="p-hand-title">闲家</span>
-        <div class="hand-slots">
-          <div class="u-slot" data-uslot="0" id="uslot-0"></div>
-          <div class="u-slot" data-uslot="1" id="uslot-1"></div>
-          <div class="u-slot" data-uslot="4" id="uslot-4"></div>
-        </div>
-      </div>
-      <div class="hand-group">
-        <span class="hand-hdr" id="b-hand-title">庄家</span>
-        <div class="hand-slots">
-          <div class="u-slot" data-uslot="2" id="uslot-2"></div>
-          <div class="u-slot" data-uslot="3" id="uslot-3"></div>
-          <div class="u-slot" data-uslot="5" id="uslot-5"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== 第 4 层：固定死锁尺寸·左精简数据区 | 右清爽下注区 ==================== -->
-  <div class="layer-4">
-    <!-- 左栏：顶部极简结果区 + 5组紧凑数据 -->
-    <div class="l4-left">
+    <!-- 2. 右下左：左移后的结果判定 + 庄闲三段EV数据区 -->
+    <div class="panel-ev-data">
       <div class="verdict-panel" id="center-verdict-box">
         <div class="vp-title" id="cv-title-txt"></div>
         <div class="vp-sub" id="cv-sub-txt"></div>
@@ -726,110 +804,104 @@
         <div class="db-mono" id="prob-line-t">和:--%</div>
       </div>
 
-      <div class="data-block" style="color:#15803d;">
-        <div class="db-mono" id="gain-line-b">庄增:--%</div>
-        <div class="db-mono" id="gain-line-p">闲增:--%</div>
+      <div class="data-block" style="color:#15803d;flex-direction:row;justify-content:space-between;">
+        <span class="db-mono" id="gain-line-b">庄增:--%</span>
+        <span class="db-mono" id="gain-line-p">闲增:--%</span>
       </div>
 
       <div class="data-bot-row">
         <span id="penetration-tag" style="color:#475569;">余416</span>
-        <span class="mini-link" onclick="openGainModal()">25项</span>
+        <span class="mini-link" onclick="openGainModal()">25项明细</span>
       </div>
     </div>
 
-    <!-- 右栏：死锁固定尺寸，0与无推荐自动隐藏，点击已选框金额直接回退筹码 -->
-    <div class="l4-right">
-      <!-- 上方：闲 / [两行保护提示+保护框] / 庄 -->
-      <div class="main-bet-zone">
-        <!-- 左：闲 -->
-        <div class="main-box selected-box" id="box-player" onclick="onBetBoxTap('player')" ondblclick="clearSingleBox('player')" oncontextmenu="clearSingleBox('player');return false;">
-          <div class="mb-hdr"><span style="color:#2563eb;">●闲</span><span class="bc-ev" id="e-player"></span></div>
-          <div class="mb-amt" id="b-player"></div>
-          <div class="bc-rec-btn" id="r-player" onclick="fillSingleRec(event,'player')"></div>
-        </div>
-
-        <!-- 中：两行清晰保护提示 + 保护框 -->
-        <div class="ins-col-wrap">
-          <div class="lamp-bar" id="ins-lamp" onclick="selectBetBox('ins')">
-            <div class="lamp-r1"><span id="il-act"></span><span id="il-ev"></span></div>
-            <div class="lamp-r2"><span id="il-odds"></span><span id="il-type"></span></div>
-          </div>
-          <div class="main-box ins-flat" id="box-ins" onclick="onBetBoxTap('ins')" ondblclick="clearSingleBox('ins')" oncontextmenu="clearSingleBox('ins');return false;">
-            <div class="mb-hdr" style="font-size:10.5px;"><span>🛡️保护</span><span id="ins-box-stage" style="font-size:8.5px;color:#2563eb;"></span></div>
-            <div class="mb-amt" id="b-ins"></div>
-            <div class="mb-lock-sub" id="ins-stage-detail" style="visibility:hidden;"></div>
-            <div class="bc-rec-btn" id="r-ins" onclick="fillSingleRec(event,'ins')"></div>
-          </div>
-        </div>
-
-        <!-- 右：庄 -->
-        <div class="main-box" id="box-banker" onclick="onBetBoxTap('banker')" ondblclick="clearSingleBox('banker')" oncontextmenu="clearSingleBox('banker');return false;">
-          <div class="mb-hdr"><span style="color:#dc2626;">●庄</span><span class="bc-ev" id="e-banker"></span></div>
-          <div class="mb-amt" id="b-banker"></div>
-          <div class="bc-rec-btn" id="r-banker" onclick="fillSingleRec(event,'banker')"></div>
-        </div>
-      </div>
-
-      <!-- 中间：单横排居中筹码 + 全清 -->
-      <div class="chip-strip">
-        <div class="m-chip chip-5" id="chip-btn-0" onclick="onChipSlotClick(0)">5</div>
-        <div class="m-chip chip-10" id="chip-btn-1" onclick="onChipSlotClick(1)">10</div>
-        <div class="m-chip chip-50" id="chip-btn-2" onclick="onChipSlotClick(2)">50</div>
-        <div class="m-chip chip-100" id="chip-btn-3" onclick="onChipSlotClick(3)">100</div>
-        <div class="m-chip chip-500" id="chip-btn-4" onclick="onChipSlotClick(4)">500</div>
-        <div class="m-chip chip-1000" id="chip-btn-5" onclick="onChipSlotClick(5)">1K</div>
-        <button class="btn-clear-all" onclick="clearCurrentBets()">🗑️全清</button>
-      </div>
-
-      <!-- 下方：8项旁注 (第一排：龙七、熊八、小老虎、大老虎 | 第二排：庄对、闲对、幸运六、和局) -->
-      <div class="side-matrix">
+    <!-- 3. 右下右：左4旁注(龙七/熊八/小虎/大虎) | 中央主舱(闲·保·庄 + 底下注码) | 右4旁注(庄对/闲对/幸运6/和局) -->
+    <div class="panel-dual-cabins">
+      <!-- 左旁注列：龙七 / 熊八 / 小老虎 / 大老虎 -->
+      <div class="side-wing-col">
         <div class="bet-card" id="box-dragon7" onclick="onBetBoxTap('dragon7')" ondblclick="clearSingleBox('dragon7')" oncontextmenu="clearSingleBox('dragon7');return false;">
           <div class="bc-top"><span>龙七</span><span class="bc-ev" id="e-dragon7"></span></div>
-          <div class="bc-amt" id="b-dragon7"></div>
-          <div class="bc-rec-btn" id="r-dragon7" onclick="fillSingleRec(event,'dragon7')"></div>
+          <div class="bc-bot"><span class="bc-amt" id="b-dragon7"></span><div class="bc-rec-btn" id="r-dragon7" onclick="fillSingleRec(event,'dragon7')"></div></div>
         </div>
         <div class="bet-card" id="box-panda8" onclick="onBetBoxTap('panda8')" ondblclick="clearSingleBox('panda8')" oncontextmenu="clearSingleBox('panda8');return false;">
           <div class="bc-top"><span>熊八</span><span class="bc-ev" id="e-panda8"></span></div>
-          <div class="bc-amt" id="b-panda8"></div>
-          <div class="bc-rec-btn" id="r-panda8" onclick="fillSingleRec(event,'panda8')"></div>
+          <div class="bc-bot"><span class="bc-amt" id="b-panda8"></span><div class="bc-rec-btn" id="r-panda8" onclick="fillSingleRec(event,'panda8')"></div></div>
         </div>
         <div class="bet-card" id="box-stiger" onclick="onBetBoxTap('stiger')" ondblclick="clearSingleBox('stiger')" oncontextmenu="clearSingleBox('stiger');return false;">
           <div class="bc-top"><span>小老虎</span><span class="bc-ev" id="e-stiger"></span></div>
-          <div class="bc-amt" id="b-stiger"></div>
-          <div class="bc-rec-btn" id="r-stiger" onclick="fillSingleRec(event,'stiger')"></div>
+          <div class="bc-bot"><span class="bc-amt" id="b-stiger"></span><div class="bc-rec-btn" id="r-stiger" onclick="fillSingleRec(event,'stiger')"></div></div>
         </div>
         <div class="bet-card" id="box-btiger" onclick="onBetBoxTap('btiger')" ondblclick="clearSingleBox('btiger')" oncontextmenu="clearSingleBox('btiger');return false;">
           <div class="bc-top"><span>大老虎</span><span class="bc-ev" id="e-btiger"></span></div>
-          <div class="bc-amt" id="b-btiger"></div>
-          <div class="bc-rec-btn" id="r-btiger" onclick="fillSingleRec(event,'btiger')"></div>
+          <div class="bc-bot"><span class="bc-amt" id="b-btiger"></span><div class="bc-rec-btn" id="r-btiger" onclick="fillSingleRec(event,'btiger')"></div></div>
+        </div>
+      </div>
+
+      <!-- 中央主舱：闲 · 保护 · 庄 + 底部注码 -->
+      <div class="center-main-cabin">
+        <div class="main-bet-zone">
+          <div class="main-box selected-box" id="box-player" onclick="onBetBoxTap('player')" ondblclick="clearSingleBox('player')" oncontextmenu="clearSingleBox('player');return false;">
+            <div class="mb-hdr"><span style="color:#2563eb;">● 闲</span><span class="bc-ev" id="e-player"></span></div>
+            <div class="mb-amt" id="b-player"></div>
+            <div class="bc-rec-btn" id="r-player" onclick="fillSingleRec(event,'player')"></div>
+          </div>
+
+          <div class="ins-col-wrap">
+            <div class="lamp-bar" id="ins-lamp" onclick="selectBetBox('ins')">
+              <div class="lamp-r1"><span id="il-act"></span><span id="il-ev"></span></div>
+              <div class="lamp-r2"><span id="il-odds"></span><span id="il-type"></span></div>
+            </div>
+            <div class="main-box ins-flat" id="box-ins" onclick="onBetBoxTap('ins')" ondblclick="clearSingleBox('ins')" oncontextmenu="clearSingleBox('ins');return false;">
+              <div class="mb-hdr" style="font-size:10.5px;"><span>🛡️保护</span><span id="ins-box-stage" style="font-size:8px;color:#2563eb;"></span></div>
+              <div class="mb-amt" id="b-ins"></div>
+              <div class="mb-lock-sub" id="ins-stage-detail" style="visibility:hidden;"></div>
+              <div class="bc-rec-btn" id="r-ins" onclick="fillSingleRec(event,'ins')"></div>
+            </div>
+          </div>
+
+          <div class="main-box" id="box-banker" onclick="onBetBoxTap('banker')" ondblclick="clearSingleBox('banker')" oncontextmenu="clearSingleBox('banker');return false;">
+            <div class="mb-hdr"><span style="color:#dc2626;">● 庄</span><span class="bc-ev" id="e-banker"></span></div>
+            <div class="mb-amt" id="b-banker"></div>
+            <div class="bc-rec-btn" id="r-banker" onclick="fillSingleRec(event,'banker')"></div>
+          </div>
         </div>
 
+        <!-- 中央主舱底部注码栏 -->
+        <div class="chip-strip">
+          <div class="m-chip chip-5" id="chip-btn-0" onclick="onChipSlotClick(0)">5</div>
+          <div class="m-chip chip-10" id="chip-btn-1" onclick="onChipSlotClick(1)">10</div>
+          <div class="m-chip chip-50" id="chip-btn-2" onclick="onChipSlotClick(2)">50</div>
+          <div class="m-chip chip-100" id="chip-btn-3" onclick="onChipSlotClick(3)">100</div>
+          <div class="m-chip chip-500" id="chip-btn-4" onclick="onChipSlotClick(4)">500</div>
+          <div class="m-chip chip-1000" id="chip-btn-5" onclick="onChipSlotClick(5)">1K</div>
+          <div class="btn-clear-all" id="btn-clear-bets" onclick="clearCurrentBets()">🗑️全清</div>
+        </div>
+      </div>
+
+      <!-- 右旁注列：庄对 / 闲对 / 幸运6 / 和局 -->
+      <div class="side-wing-col">
         <div class="bet-card" id="box-bpair" onclick="onBetBoxTap('bpair')" ondblclick="clearSingleBox('bpair')" oncontextmenu="clearSingleBox('bpair');return false;">
           <div class="bc-top"><span style="color:#dc2626;">庄对</span><span class="bc-ev" id="e-bpair"></span></div>
-          <div class="bc-amt" id="b-bpair"></div>
-          <div class="bc-rec-btn" id="r-bpair" onclick="fillSingleRec(event,'bpair')"></div>
+          <div class="bc-bot"><span class="bc-amt" id="b-bpair"></span><div class="bc-rec-btn" id="r-bpair" onclick="fillSingleRec(event,'bpair')"></div></div>
         </div>
         <div class="bet-card" id="box-ppair" onclick="onBetBoxTap('ppair')" ondblclick="clearSingleBox('ppair')" oncontextmenu="clearSingleBox('ppair');return false;">
           <div class="bc-top"><span style="color:#2563eb;">闲对</span><span class="bc-ev" id="e-ppair"></span></div>
-          <div class="bc-amt" id="b-ppair"></div>
-          <div class="bc-rec-btn" id="r-ppair" onclick="fillSingleRec(event,'ppair')"></div>
+          <div class="bc-bot"><span class="bc-amt" id="b-ppair"></span><div class="bc-rec-btn" id="r-ppair" onclick="fillSingleRec(event,'ppair')"></div></div>
         </div>
         <div class="bet-card" id="box-super6" onclick="onBetBoxTap('super6')" ondblclick="clearSingleBox('super6')" oncontextmenu="clearSingleBox('super6');return false;">
-          <div class="bc-top"><span>幸运六</span><span class="bc-ev" id="e-super6"></span></div>
-          <div class="bc-amt" id="b-super6"></div>
-          <div class="bc-rec-btn" id="r-super6" onclick="fillSingleRec(event,'super6')"></div>
+          <div class="bc-top"><span>幸运6</span><span class="bc-ev" id="e-super6"></span></div>
+          <div class="bc-bot"><span class="bc-amt" id="b-super6"></span><div class="bc-rec-btn" id="r-super6" onclick="fillSingleRec(event,'super6')"></div></div>
         </div>
         <div class="bet-card" id="box-tie" onclick="onBetBoxTap('tie')" ondblclick="clearSingleBox('tie')" oncontextmenu="clearSingleBox('tie');return false;">
           <div class="bc-top"><span style="color:#16a34a;">和局</span><span class="bc-ev" id="e-tie"></span></div>
-          <div class="bc-amt" id="b-tie"></div>
-          <div class="bc-rec-btn" id="r-tie" onclick="fillSingleRec(event,'tie')"></div>
+          <div class="bc-bot"><span class="bc-amt" id="b-tie"></span><div class="bc-rec-btn" id="r-tie" onclick="fillSingleRec(event,'tie')"></div></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ==================== 弹窗 1：大数据深度复盘中心 (EV区间统计 + 11项分类统计 + 保险时机/牌型结构剖析) ==================== -->
+<!-- ==================== 弹窗 1：大数据深度复盘中心 ==================== -->
 <div class="modal-mask" id="replay-modal">
   <div class="modal-box">
     <div class="modal-head">
@@ -883,7 +955,7 @@
   </div>
 </div>
 
-<!-- ==================== 弹窗 4：参数与25项保护倍率设置 ==================== -->
+<!-- ==================== 弹窗 4：5.0 多能体参数设置 ==================== -->
 <div class="modal-mask" id="settings-modal">
   <div class="modal-box">
     <div class="modal-head">
@@ -906,7 +978,7 @@
         </div>
         <div class="odds-item" style="margin-top:4px;">
           <span>🪙 注码档位 (四选一)</span>
-          <select id="cfg-chip-preset" style="width:210px;">
+          <select id="cfg-chip-preset" style="width:230px;">
             <option value="0">档1: 5 / 10 / 50 / 100 / 500 / 1K</option>
             <option value="1">档2: 10 / 50 / 100 / 500 / 1K / 5K</option>
             <option value="2">档3: 50 / 100 / 500 / 1K / 5K / 1W</option>
@@ -989,7 +1061,6 @@ let selectedBoxKey = 'player';
 let currentBets = { banker:0, player:0, tie:0, dragon7:0, panda8:0, stiger:0, btiger:0, bpair:0, ppair:0, super6:0 };
 let recommendedBets = { banker:0, player:0, tie:0, dragon7:0, panda8:0, stiger:0, btiger:0, bpair:0, ppair:0, super6:0 };
 let currentLiveEVs = { banker:null, player:null, tie:null, dragon7:null, panda8:null, stiger:null, btiger:null, bpair:null, ppair:null, super6:null };
-// 每个注项的筹码添加历史栈，实现点击已选框金额逐笔回退
 let betChipHistory = { banker:[], player:[], tie:[], dragon7:[], panda8:[], stiger:[], btiger:[], bpair:[], ppair:[], super6:[], ins:[] };
 
 let liveInsCond = null;
@@ -1022,7 +1093,7 @@ let appCfg = {
   kellyBankroll: 20000,
   kellyMult: 0.5,
   rebatePct: 1.3,
-  rebateMode: 'loss', // 'loss' = 1.按输口, 'win' = 2.按赢额(所得积分)
+  rebateMode: 'loss',
   chipPresetIdx: 0,
   bankerOdds: 0.95,
   tieOdds: 8,
@@ -1039,7 +1110,7 @@ let appCfg = {
 };
 const DEFAULT_INS_ODDS = {
   ab_7: 2, ab_8: 7, ab_9: 9, cd_7: 2, cd_8: 7, cd_9: 9,
-  abcd_b3: 0, abcd_p3: 0, // 预留3点保护伏笔接口(默认0关闭，不影响任何现有正常数据)
+  abcd_b3: 0, abcd_p3: 0,
   abcd_b4: 1.5, abcd_b5: 2, abcd_b6: 3, abcd_b7: 4, abcd_p5: 2, abcd_p6: 3, abcd_p7: 4,
   abcde_3: 0, abcde_4: 1.5, abcde_5: 2, abcde_6: 3, abcde_7: 4, abcde_8: 9, abcde_9: 10,
   abcdf_3: 0, abcdf_4: 1.5, abcdf_5: 2, abcdf_6: 3, abcdf_7: 4, abcdf_8: 9, abcdf_9: 10
@@ -1093,7 +1164,7 @@ function resetIncompleteConfirmBtn() {
   const btn = document.getElementById('btn-confirm-hand');
   const icon = document.getElementById('confirm-icon');
   const txt = document.getElementById('confirm-txt');
-  if (btn) btn.className = 'btn-confirm-tall';
+  if (btn) btn.className = 'btn-confirm-wide';
   if (icon) icon.textContent = '✅';
   if (txt) txt.textContent = '确 认';
 }
@@ -1120,7 +1191,7 @@ function syncShoesFromPools() {
 }
 
 // ============================================================================
-// 双引擎毫秒级防丢持久化 (LocalStorage + IndexedDB 双向互备，闪退/卡死重启100%自动恢复)
+// 双引擎毫秒级防丢持久化 (与竖屏 5.0 共享同一套 LocalStorage + IndexedDB 存储键，横竖切换数据无缝互通)
 // ============================================================================
 let idbInstance = null;
 function initIndexedDB() {
@@ -1132,7 +1203,6 @@ function initIndexedDB() {
     };
     req.onsuccess = function(e) {
       idbInstance = e.target.result;
-      // 双向校验：若闪退后 IndexedDB 拥有更新的快照（或 LocalStorage 被系统清理），自动从 IndexedDB 恢复
       try {
         const tx = idbInstance.transaction('stateStore', 'readonly');
         const getReq = tx.objectStore('stateStore').get('latest');
@@ -1146,6 +1216,7 @@ function initIndexedDB() {
           } catch (err) {}
           if ((idbSnap.savedAt || 0) > localSavedAt) {
             applySnapshotData(idbSnap);
+            renderChipStrip();
             renderBetInputs();
             replayFullShoe();
             renderColorZone();
@@ -1242,7 +1313,6 @@ function toggleQuickRebateMode() {
   showToast(appCfg.rebateMode === 'win' ? '🔄 已切换为：2.按赢口所得积分计返点' : '🔄 已切换为：1.按输口计返点', 'ok');
 }
 
-// 监听 App 切后台、锁屏或意外关闭事件，强制执行同步落盘保护
 window.addEventListener('pagehide', saveStateToLocal);
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') saveStateToLocal();
@@ -1259,7 +1329,6 @@ function getEffectiveColorSlot(uIdx, uCardsArr) {
   return uIdx;
 }
 
-// 独立超几何庄对/闲对精确计算（不改动大脑1，直接基于13列A~K红蓝余数池）
 function calcExactPairProbAndEV(c1, c2) {
   if (!c1 || !c2) return { prob: null, ev: null };
   let rTot = 0, bTot = 0;
@@ -1431,13 +1500,11 @@ function replayFullShoe() {
       itemPL.banker = bBet > 0 ? bBet * bOdds : 0;
       itemPL.player = pBet > 0 ? -pBet : 0;
       itemPL.tie    = tBet > 0 ? -tBet : 0;
-      // 模式1(loss): 按输口闲注计返点 | 模式2(win): 按赢口庄实际所得积分(bBet * bOdds)计返点
       reb += (rMode === 'win') ? (bBet * bOdds * rRate) : (pBet * rRate);
     } else if (outcome === '闲') {
       itemPL.banker = bBet > 0 ? -bBet : 0;
       itemPL.player = pBet > 0 ? pBet : 0;
       itemPL.tie    = tBet > 0 ? -tBet : 0;
-      // 模式1(loss): 按输口庄注计返点 | 模式2(win): 按赢口闲实际所得积分(pBet * 1.0)计返点
       reb += (rMode === 'win') ? (pBet * 1.0 * rRate) : (bBet * rRate);
     } else {
       itemPL.banker = 0;
@@ -1479,7 +1546,6 @@ function replayFullShoe() {
     shoeMainPL += mPL; shoeSidePL += sPL; shoeInsPL += iPL; shoeRebate += reb;
   }
 
-  // 扣减当前桌面已放的飞牌与用牌
   if (fly_rank !== null && fly_color) {
     if (fly_color === 'red') redPool[fly_rank] = Math.max(0, redPool[fly_rank] - 1);
     else if (fly_color === 'blue') bluePool[fly_rank] = Math.max(0, bluePool[fly_rank] - 1);
@@ -1527,7 +1593,7 @@ function updateDashboardUI(shoeMainPL, shoeInsPL, shoeSidePL, shoeRebate) {
   let remCards = 0;
   for (let i = 0; i <= 9; i++) remCards += redShoe[i] + blueShoe[i];
   const penEl = document.getElementById('penetration-tag');
-  if (penEl) penEl.textContent = `余${remCards}`;
+  if (penEl) penEl.textContent = `余${remCards}张`;
 
   const setSt = (id, val) => {
     const el = document.getElementById(id);
@@ -1592,7 +1658,7 @@ function tryTriggerBrain1() {
 }
 
 // ============================================================================
-// 大脑1：100% 锁定桌面版 4.0 博士6重循环核心 + 25项保护增益字典（一行未动）
+// 大脑1：博士6重循环核心 + 25项保护增益字典
 // ============================================================================
 function runBrain1Calculation() {
   syncShoesFromPools();
@@ -1766,7 +1832,6 @@ function runBrain1Calculation() {
     const pBaseEV = (pNum - bNum) / totalHands;
     const tBaseEV = (tNum * tOdds - bNum - pNum) / totalHands;
 
-    // 返点EV：loss模式按对方赢(己方输口)概率计；win模式按己方赢所得积分(庄*bOdds, 闲*1.0)概率计
     const bRebateEV = (rMode === 'win') ? ((rRate * bNum * bOdds) / totalHands) : ((rRate * pNum) / totalHands);
     const pRebateEV = (rMode === 'win') ? ((rRate * pNum * 1.0) / totalHands) : ((rRate * bNum) / totalHands);
 
@@ -1786,9 +1851,9 @@ function runBrain1Calculation() {
     document.getElementById('ev-3stage-banker').innerHTML = `${fmtSpan(bBaseEV)}/${fmtSpan(bMidEV)}/${fmtSpan(bTotalEV)}`;
     document.getElementById('ev-3stage-player').innerHTML = `${fmtSpan(pBaseEV)}/${fmtSpan(pMidEV)}/${fmtSpan(pTotalEV)}`;
 
-    document.getElementById('prob-line-b').textContent = `庄:${bProbPct}%(${(bBaseEV >= 0 ? '+' : '') + (bBaseEV*100).toFixed(2)}%)`;
-    document.getElementById('prob-line-p').textContent = `闲:${pProbPct}%(${(pBaseEV >= 0 ? '+' : '') + (pBaseEV*100).toFixed(2)}%)`;
-    document.getElementById('prob-line-t').textContent = `和:${tProbPct}%(${(tBaseEV >= 0 ? '+' : '') + (tBaseEV*100).toFixed(2)}%)`;
+    document.getElementById('prob-line-b').textContent = `庄:${bProbPct}% (${(bBaseEV >= 0 ? '+' : '') + (bBaseEV*100).toFixed(2)}%)`;
+    document.getElementById('prob-line-p').textContent = `闲:${pProbPct}% (${(pBaseEV >= 0 ? '+' : '') + (pBaseEV*100).toFixed(2)}%)`;
+    document.getElementById('prob-line-t').textContent = `和:${tProbPct}% (${(tBaseEV >= 0 ? '+' : '') + (tBaseEV*100).toFixed(2)}%)`;
 
     document.getElementById('gain-line-b').textContent = `庄增:+${(bInsGain * 100).toFixed(3)}%`;
     document.getElementById('gain-line-p').textContent = `闲增:+${(pInsGain * 100).toFixed(3)}%`;
@@ -1891,7 +1956,6 @@ function getRemainingMainBetPayoutQuota(mainSide, excludeStageKey = null) {
   return Math.max(0, mainBetAmt - usedPayout);
 }
 
-// 生成触发保险瞬间的牌型结构快照（供大数据复盘分析“在何时保的、什么牌型结构保的”）
 function buildCurrentCardStructureSnapshot() {
   const fmtCard = u => {
     const r = used_cards[u];
@@ -1910,7 +1974,7 @@ function buildCurrentCardStructureSnapshot() {
 }
 
 // ============================================================================
-// 大脑2：100% 锁定桌面版 4.0 实时保护检测 + 两行清晰显示 (第1行:买不买+EV | 第2行:几赔几+牌型)
+// 大脑2：实时保护检测
 // ============================================================================
 function evaluateBrain2Insurance() {
   syncShoesFromPools();
@@ -2059,7 +2123,6 @@ function evaluateBrain2Insurance() {
   }
 }
 
-// 严格按两行渲染保险提示：第1行(买不买 + EV) | 第2行(几赔几 + 牌型)
 function renderInsuranceUI(state, actTxt, evTxt, oddsTxt, typeTxt) {
   const lamp = document.getElementById('ins-lamp');
   lamp.className = 'lamp-bar' + (state === 'buy' ? ' buy' : (state === 'nobuy' ? ' nobuy' : (state === 'forbid' ? ' forbid' : '')));
@@ -2254,9 +2317,10 @@ function placeCardIntoFly(rIdx) {
   tryTriggerBrain1();
 }
 
+// 仅限飞牌框：有牌值时双击仅退回牌值（保留飞牌底色）；无牌值时再双击才清除飞牌底色
 function removeFlyCard() {
   resetIncompleteConfirmBtn();
-  fly_rank = null; fly_color = null;
+  fly_rank = null;
   replayFullShoe();
   renderColorZone();
   tryTriggerBrain1();
@@ -2378,7 +2442,6 @@ function renderPoolZone() {
   }
 }
 
-// 渲染用牌区 + 极简结果判定区（未出结果前不显示多余提示语，完局仅显示“庄赢 7:6”及命中的特殊牌型）
 function renderUsedZone() {
   const lock = getThirdCardLockStatus();
   for (let u = 0; u < 6; u++) {
@@ -2453,21 +2516,16 @@ function renderUsedZone() {
   }
 }
 
-// ============================================================================
-// 筹码添加、点击已选框金额回退上一枚筹码、一键填入推荐
-// ============================================================================
 function selectBetBox(key) {
   selectedBoxKey = key;
   updateBetBoxHighlights();
 }
 
-// 点击下注框：若未选中则选中该框；若已选中且有金额，再次点击直接回退上一枚筹码！
 function onBetBoxTap(key) {
   if (selectedBoxKey !== key) {
     selectBetBox(key);
     return;
   }
-  // 已处于选中状态，执行回退上一笔筹码
   if (key === 'ins') {
     const hist = betChipHistory.ins;
     if (hist && hist.length > 0) {
@@ -2568,7 +2626,6 @@ function clearSingleBox(key) {
   saveStateToLocal();
 }
 
-// 金额为 0 时一律不显示数字，保持界面干净利落
 function renderBetInputs() {
   const totalInsBet = lockedInsOrders.reduce((s, o) => s + (o.bet || 0), 0);
   document.getElementById('b-ins').textContent = totalInsBet > 0 ? totalInsBet.toLocaleString() : '';
@@ -2592,9 +2649,6 @@ function clearCurrentBets() {
   saveStateToLocal();
 }
 
-// ============================================================================
-// 确认本手归档：无牌严禁按；有牌但牌局未结束需二次确认防误触；完整记录当时投注EV与保险牌型结构
-// ============================================================================
 function confirmHandRecord() {
   const dealtCount = used_cards.filter(v => v !== null).length;
   if (dealtCount === 0) {
@@ -2608,9 +2662,9 @@ function confirmHandRecord() {
     const btn = document.getElementById('btn-confirm-hand');
     const icon = document.getElementById('confirm-icon');
     const txt = document.getElementById('confirm-txt');
-    if (btn) btn.className = 'btn-confirm-tall warn-step';
-    if (icon) icon.textContent = '⚠️未完';
-    if (txt) txt.textContent = '再点录';
+    if (btn) btn.className = 'btn-confirm-wide warn-step';
+    if (icon) icon.textContent = '⚠️';
+    if (txt) txt.textContent = '未完再点录';
     showToast('⚠️ 牌局尚未发完，再点一次【确认】强制录入！', 'warn');
     if (incompleteTimer) clearTimeout(incompleteTimer);
     incompleteTimer = setTimeout(() => { resetIncompleteConfirmBtn(); }, 3500);
@@ -2632,7 +2686,6 @@ function confirmHandRecord() {
     carryReason = '6张→预备顺延飞';
   }
 
-  // 记录本手每个注项下注时的精确 EV 快照（供大数据按 EV 分段复盘）
   const betEVsSnap = {};
   BET_KEYS.forEach(k => {
     if (currentLiveEVs[k] !== null && currentLiveEVs[k] !== undefined) {
@@ -2689,7 +2742,6 @@ function confirmHandRecord() {
   showToast(`✅ 第 ${handRecords.length} 手已归档！`, 'ok');
 }
 
-// 渲染第2层左侧本靴记录（紧凑多行显示）
 function renderRecordList() {
   const container = document.getElementById('record-list');
   document.getElementById('rec-count-tag').textContent = `(${handRecords.length}手)`;
@@ -2723,8 +2775,7 @@ function renderRecordList() {
       const betAmt = (r.bets && r.bets[sk]) || 0;
       if (betAmt > 0) {
         const spl = Math.round((r.itemPL && r.itemPL[sk]) || 0);
-        const evVal = (r.betEVs && r.betEVs[sk] !== null && r.betEVs[sk] !== undefined) ? `${(r.betEVs[sk]*100).toFixed(1)}%` : '';
-        statusBadges.push(`<span class="hit-tag ${spl > 0 ? 'win' : (spl < 0 ? 'lose' : '')}">${BET_NAMES[sk]}${evVal ? '('+evVal+')' : ''}:${spl > 0 ? '+' + spl : spl}</span>`);
+        statusBadges.push(`<span class="hit-tag ${spl > 0 ? 'win' : (spl < 0 ? 'lose' : '')}">${BET_NAMES[sk]}:${spl > 0 ? '+' + spl : spl}</span>`);
       }
     });
     if (Array.isArray(r.lockedOrders) && r.lockedOrders.length > 0) {
@@ -2743,7 +2794,7 @@ function renderRecordList() {
 }
 
 // ============================================================================
-// 大数据深度复盘引擎：1.EV区间分段统计 + 2.11项分类统计(无漏打) + 3.保险时机与牌型结构剖析
+// 大数据深度复盘引擎
 // ============================================================================
 function buildAllTodayShoesList(customDayObj = null) {
   if (customDayObj) return customDayObj.shoes || [];
@@ -2770,7 +2821,6 @@ function buildAllTodayShoesList(customDayObj = null) {
 }
 
 function analyzeBigDataReplay(shoesList) {
-  // 1. EV 区间分段统计
   const evBrackets = [
     { key: 'neg',  label: '< 0% (负EV出手)', min: -999, max: 0, count: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, weightedEVSum: 0 },
     { key: 'b1',   label: '0% ~ +0.5% (微利)', min: 0, max: 0.005, count: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, weightedEVSum: 0 },
@@ -2779,7 +2829,6 @@ function analyzeBigDataReplay(shoesList) {
     { key: 'b4',   label: '> +8.0% (极高EV)', min: 0.08, max: 999, count: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, weightedEVSum: 0 }
   ];
 
-  // 2. 11项分类统计 (去掉漏打，增加平均投注EV%与ROI%)
   const all11 = [
     { key: 'banker', label: '● 庄 (主注)' },
     { key: 'player', label: '● 闲 (主注)' },
@@ -2798,7 +2847,6 @@ function analyzeBigDataReplay(shoesList) {
     itemStats[it.key] = { label: it.label, opened: 0, bets: 0, wins: 0, losses: 0, pushes: 0, turnover: 0, netPL: 0, evWeightedSum: 0, evCountedTurn: 0 };
   });
 
-  // 3. 保险专项档案列表 & 阶段汇总
   const insPhaseMap = {
     'AB(闲前2张)': { count: 0, wins: 0, losses: 0, turnover: 0, netPL: 0 },
     'CD(庄前2张)': { count: 0, wins: 0, losses: 0, turnover: 0, netPL: 0 },
@@ -2934,128 +2982,6 @@ function analyzeBigDataReplay(shoesList) {
   };
 }
 
-let currentReplayViewScope = 'today';
-
-function openReplayModal(scope = 'today') {
-  currentReplayViewScope = scope;
-  const body = document.getElementById('replay-modal-body');
-  const allTodayShoes = buildAllTodayShoesList();
-
-  let targetShoes = allTodayShoes;
-  let scopeTitle = `今日全靴大数据 (${allTodayShoes.length}靴)`;
-
-  if (scope === 'shoe') {
-    targetShoes = [allTodayShoes[allTodayShoes.length - 1]];
-    scopeTitle = `第 ${shoeNumber} 靴`;
-  } else if (typeof scope === 'number' && historyDaysArchive[scope]) {
-    const dayObj = historyDaysArchive[scope];
-    targetShoes = dayObj.shoes || [];
-    scopeTitle = `历史：${dayObj.dateStr}`;
-  }
-
-  document.getElementById('replay-modal-title').textContent = `📊 大数据深度复盘 · ${scopeTitle}`;
-
-  const bd = analyzeBigDataReplay(targetShoes);
-  const sm = bd.summary;
-  const fmt = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
-  const colSpan = n => `<b style="color:${n > 0 ? '#15803d' : (n < 0 ? '#dc2626' : '#475569')}">${fmt(n)}</b>`;
-  const roiPct = sm.totalTurnover > 0 ? ((sm.tableNet / sm.totalTurnover) * 100).toFixed(2) + '%' : '0.00%';
-
-  // 表1：按投注时 EV 区间分段统计
-  const evRows = bd.evBrackets.map(b => {
-    const avgEV = b.turnover > 0 ? ((b.weightedEVSum / b.turnover) * 100).toFixed(2) + '%' : '--';
-    const realROI = b.turnover > 0 ? ((b.netPL / b.turnover) * 100).toFixed(1) + '%' : '--';
-    return `<tr>
-      <td>${b.label}</td>
-      <td>${b.count}笔</td>
-      <td>${b.count > 0 ? `<span style="color:#15803d;font-weight:800;">${b.wins}赢</span>/<span style="color:#dc2626;">${b.losses}输</span>` : '-'}</td>
-      <td>${avgEV}</td>
-      <td>${b.turnover > 0 ? b.turnover.toLocaleString() : '-'}</td>
-      <td>${colSpan(b.netPL)}</td>
-      <td style="font-weight:800;">${realROI}</td>
-    </tr>`;
-  }).join('');
-
-  // 表2：11项分类统计（无漏打，含平均出手EV与实际ROI）
-  const itemRows = bd.itemList.map(st => {
-    const avgEV = st.evCountedTurn > 0 ? ((st.evWeightedSum / st.evCountedTurn) * 100).toFixed(2) + '%' : '--';
-    const roi = st.turnover > 0 ? ((st.netPL / st.turnover) * 100).toFixed(1) + '%' : '--';
-    return `<tr>
-      <td>${st.label}</td>
-      <td>${st.opened}次</td>
-      <td>${st.bets}次</td>
-      <td>${st.bets > 0 ? `<span style="color:#15803d;font-weight:800;">${st.wins}赢</span>/<span style="color:#dc2626;">${st.losses}输</span>` : '-'}</td>
-      <td>${avgEV}</td>
-      <td>${st.turnover > 0 ? st.turnover.toLocaleString() : '-'}</td>
-      <td>${colSpan(st.netPL)}</td>
-      <td>${roi}</td>
-    </tr>`;
-  }).join('');
-
-  // 表3：保险（保护）阶段与牌型结构深度剖析
-  const insPhaseRows = Object.entries(bd.insPhaseMap).map(([pName, pObj]) => `<tr>
-    <td>${pName}</td>
-    <td>${pObj.count}次</td>
-    <td>${pObj.count > 0 ? `${pObj.wins}中/${pObj.losses}输` : '-'}</td>
-    <td>${pObj.turnover > 0 ? pObj.turnover.toLocaleString() : '-'}</td>
-    <td>${colSpan(pObj.netPL)}</td>
-  </tr>`).join('');
-
-  const insLogHtml = bd.insLogs.length > 0 ? bd.insLogs.map(lg => `
-    <div style="background:#fff;border:1px solid #e2ddd3;border-radius:5px;padding:4px 6px;font-size:10px;line-height:1.35;">
-      <div style="display:flex;justify-content:space-between;font-weight:800;">
-        <span>第${lg.shoe}靴#${lg.handNo} | <b>${lg.phase}</b> · ${lg.title} ${lg.ev !== undefined && lg.ev !== null ? `(EV:+${(lg.ev*100).toFixed(1)}%)` : ''}</span>
-        <span>投:${lg.bet} ➔ ${colSpan(lg.pl)}</span>
-      </div>
-      <div style="color:#475569;">🃏 保时牌型结构: <b>${lg.cardStruct}</b> | 终局:${lg.outcome}</div>
-    </div>
-  `).join('') : '<div style="color:#94a3b8;text-align:center;padding:6px;">尚无保护出手记录</div>';
-
-  const horizTableHtml = buildHorizontalAllHandsTableHtml(targetShoes);
-
-  body.innerHTML = `
-    <div style="display:flex;gap:5px;margin-bottom:2px;">
-      <button class="tb-mini-btn ${scope==='today'?'blue':''}" style="padding:0 8px;" onclick="openReplayModal('today')">今日全靴(${allTodayShoes.length}靴)</button>
-      <button class="tb-mini-btn ${scope==='shoe'?'blue':''}" style="padding:0 8px;" onclick="openReplayModal('shoe')">当前第${shoeNumber}靴</button>
-      <button class="tb-mini-btn amber" style="padding:0 8px;" onclick="closeReplayModal();openHistoryDaysModal();">📅历史账本库(${historyDaysArchive.length}天)</button>
-    </div>
-
-    <div style="background:#1e293b;color:#fff;padding:7px 9px;border-radius:7px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px;text-align:center;">
-      <div><div style="color:#94a3b8;">总手/出手</div><b>${sm.totalHands} / ${sm.bettedHands}手</b></div>
-      <div><div style="color:#94a3b8;">总积分流水</div><b>${sm.totalTurnover.toLocaleString()}</b></div>
-      <div><div style="color:#94a3b8;">台面净值(ROI)</div><b style="color:${sm.tableNet>=0?'#4ade80':'#f87171'}">${fmt(sm.tableNet)} (${roiPct})</b></div>
-      <div><div style="color:#94a3b8;">含返综合总计</div><b style="color:#fbbf24">${fmt(sm.tableNet+sm.totalReb)}</b></div>
-    </div>
-
-    <div class="odds-group-title" style="margin-top:3px;">📈 表一：按【出手时 EV 区间】分段大数据统计</div>
-    <table class="rp-table">
-      <thead><tr><th>出手时EV区间</th><th>笔数</th><th>赢/输</th><th>平均EV</th><th>积分总额</th><th>实际盈亏</th><th>实际ROI</th></tr></thead>
-      <tbody>${evRows}</tbody>
-    </table>
-
-    <div class="odds-group-title" style="margin-top:4px;">📌 表二：11 项分类实战统计 (含平均出手EV与收益率)</div>
-    <table class="rp-table">
-      <thead><tr><th>注项</th><th>牌开</th><th>出手</th><th>赢/输</th><th>均值EV</th><th>总积分</th><th>净盈亏</th><th>ROI</th></tr></thead>
-      <tbody>${itemRows}</tbody>
-    </table>
-
-    <div class="odds-group-title" style="margin-top:4px;">🛡️ 表三：保护时机阶段汇总 & 逐笔牌型结构档案</div>
-    <table class="rp-table">
-      <thead><tr><th>保护阶段(何时保)</th><th>出手</th><th>中/输</th><th>保护流水</th><th>保护净利</th></tr></thead>
-      <tbody>${insPhaseRows}</tbody>
-    </table>
-    <div style="display:flex;flex-direction:column;gap:3px;margin-top:3px;">${insLogHtml}</div>
-
-    <div class="odds-group-title" style="margin-top:4px;">📋 表四：多靴横列全数据逐手总表 (可左右滑动查看)</div>
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #dcd7cd;border-radius:6px;">
-      ${horizTableHtml}
-    </div>
-  `;
-
-  document.getElementById('replay-modal').style.display = 'flex';
-}
-function closeReplayModal() { document.getElementById('replay-modal').style.display = 'none'; }
-
 function buildHorizontalAllHandsTableHtml(shoesList) {
   const fmtPct = v => (v !== undefined && v !== null && !isNaN(v)) ? (v * 100).toFixed(2) + '%' : '-';
   const fmtN = n => (n > 0 ? '+' : '') + Math.round(n);
@@ -3136,11 +3062,123 @@ function buildHorizontalAllHandsTableHtml(shoesList) {
     <tbody>${rowsHtml}</tbody>
   </table>`;
 }
+
+function openReplayModal(scope = 'today') {
+  const body = document.getElementById('replay-modal-body');
+  const allTodayShoes = buildAllTodayShoesList();
+
+  let targetShoes = allTodayShoes;
+  let scopeTitle = `今日全靴大数据 (${allTodayShoes.length}靴)`;
+
+  if (scope === 'shoe') {
+    targetShoes = [allTodayShoes[allTodayShoes.length - 1]];
+    scopeTitle = `第 ${shoeNumber} 靴`;
+  } else if (typeof scope === 'number' && historyDaysArchive[scope]) {
+    const dayObj = historyDaysArchive[scope];
+    targetShoes = dayObj.shoes || [];
+    scopeTitle = `历史：${dayObj.dateStr}`;
+  }
+
+  document.getElementById('replay-modal-title').textContent = `📊 大数据深度复盘 · ${scopeTitle}`;
+
+  const bd = analyzeBigDataReplay(targetShoes);
+  const sm = bd.summary;
+  const fmt = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
+  const colSpan = n => `<b style="color:${n > 0 ? '#15803d' : (n < 0 ? '#dc2626' : '#475569')}">${fmt(n)}</b>`;
+  const roiPct = sm.totalTurnover > 0 ? ((sm.tableNet / sm.totalTurnover) * 100).toFixed(2) + '%' : '0.00%';
+
+  const evRows = bd.evBrackets.map(b => {
+    const avgEV = b.turnover > 0 ? ((b.weightedEVSum / b.turnover) * 100).toFixed(2) + '%' : '--';
+    const realROI = b.turnover > 0 ? ((b.netPL / b.turnover) * 100).toFixed(1) + '%' : '--';
+    return `<tr>
+      <td>${b.label}</td>
+      <td>${b.count}笔</td>
+      <td>${b.count > 0 ? `<span style="color:#15803d;font-weight:800;">${b.wins}赢</span>/<span style="color:#dc2626;">${b.losses}输</span>` : '-'}</td>
+      <td>${avgEV}</td>
+      <td>${b.turnover > 0 ? b.turnover.toLocaleString() : '-'}</td>
+      <td>${colSpan(b.netPL)}</td>
+      <td style="font-weight:800;">${realROI}</td>
+    </tr>`;
+  }).join('');
+
+  const itemRows = bd.itemList.map(st => {
+    const avgEV = st.evCountedTurn > 0 ? ((st.evWeightedSum / st.evCountedTurn) * 100).toFixed(2) + '%' : '--';
+    const roi = st.turnover > 0 ? ((st.netPL / st.turnover) * 100).toFixed(1) + '%' : '--';
+    return `<tr>
+      <td>${st.label}</td>
+      <td>${st.opened}次</td>
+      <td>${st.bets}次</td>
+      <td>${st.bets > 0 ? `<span style="color:#15803d;font-weight:800;">${st.wins}赢</span>/<span style="color:#dc2626;">${st.losses}输</span>` : '-'}</td>
+      <td>${avgEV}</td>
+      <td>${st.turnover > 0 ? st.turnover.toLocaleString() : '-'}</td>
+      <td>${colSpan(st.netPL)}</td>
+      <td>${roi}</td>
+    </tr>`;
+  }).join('');
+
+  const insPhaseRows = Object.entries(bd.insPhaseMap).map(([pName, pObj]) => `<tr>
+    <td>${pName}</td>
+    <td>${pObj.count}次</td>
+    <td>${pObj.count > 0 ? `${pObj.wins}中/${pObj.losses}输` : '-'}</td>
+    <td>${pObj.turnover > 0 ? pObj.turnover.toLocaleString() : '-'}</td>
+    <td>${colSpan(pObj.netPL)}</td>
+  </tr>`).join('');
+
+  const insLogHtml = bd.insLogs.length > 0 ? bd.insLogs.map(lg => `
+    <div style="background:#fff;border:1px solid #e2ddd3;border-radius:5px;padding:4px 6px;font-size:10px;line-height:1.35;">
+      <div style="display:flex;justify-content:space-between;font-weight:800;">
+        <span>第${lg.shoe}靴#${lg.handNo} | <b>${lg.phase}</b> · ${lg.title} ${lg.ev !== undefined && lg.ev !== null ? `(EV:+${(lg.ev*100).toFixed(1)}%)` : ''}</span>
+        <span>投:${lg.bet} ➔ ${colSpan(lg.pl)}</span>
+      </div>
+      <div style="color:#475569;">🃏 保时牌型结构: <b>${lg.cardStruct}</b> | 终局:${lg.outcome}</div>
+    </div>
+  `).join('') : '<div style="color:#94a3b8;text-align:center;padding:6px;">尚无保护出手记录</div>';
+
+  const horizTableHtml = buildHorizontalAllHandsTableHtml(targetShoes);
+
+  body.innerHTML = `
+    <div style="display:flex;gap:5px;margin-bottom:2px;">
+      <button class="tb-mini-btn ${scope==='today'?'blue':''}" style="padding:0 8px;" onclick="openReplayModal('today')">今日全靴(${allTodayShoes.length}靴)</button>
+      <button class="tb-mini-btn ${scope==='shoe'?'blue':''}" style="padding:0 8px;" onclick="openReplayModal('shoe')">当前第${shoeNumber}靴</button>
+      <button class="tb-mini-btn amber" style="padding:0 8px;" onclick="closeReplayModal();openHistoryDaysModal();">📅历史账本库(${historyDaysArchive.length}天)</button>
+    </div>
+
+    <div style="background:#1e293b;color:#fff;padding:7px 9px;border-radius:7px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px;text-align:center;">
+      <div><div style="color:#94a3b8;">总手/出手</div><b>${sm.totalHands} / ${sm.bettedHands}手</b></div>
+      <div><div style="color:#94a3b8;">总积分流水</div><b>${sm.totalTurnover.toLocaleString()}</b></div>
+      <div><div style="color:#94a3b8;">台面净值(ROI)</div><b style="color:${sm.tableNet>=0?'#4ade80':'#f87171'}">${fmt(sm.tableNet)} (${roiPct})</b></div>
+      <div><div style="color:#94a3b8;">含返综合总计</div><b style="color:#fbbf24">${fmt(sm.tableNet+sm.totalReb)}</b></div>
+    </div>
+
+    <div class="odds-group-title" style="margin-top:3px;">📈 表一：按【出手时 EV 区间】分段大数据统计</div>
+    <table class="rp-table">
+      <thead><tr><th>出手时EV区间</th><th>笔数</th><th>赢/输</th><th>平均EV</th><th>积分总额</th><th>实际盈亏</th><th>实际ROI</th></tr></thead>
+      <tbody>${evRows}</tbody>
+    </table>
+
+    <div class="odds-group-title" style="margin-top:4px;">📌 表二：11 项分类实战统计</div>
+    <table class="rp-table">
+      <thead><tr><th>注项</th><th>牌开</th><th>出手</th><th>赢/输</th><th>均值EV</th><th>总积分</th><th>净盈亏</th><th>ROI</th></tr></thead>
+      <tbody>${itemRows}</tbody>
+    </table>
+
+    <div class="odds-group-title" style="margin-top:4px;">🛡️ 表三：保护时机阶段汇总 & 逐笔牌型结构档案</div>
+    <table class="rp-table">
+      <thead><tr><th>保护阶段(何时保)</th><th>出手</th><th>中/输</th><th>保护流水</th><th>保护净利</th></tr></thead>
+      <tbody>${insPhaseRows}</tbody>
+    </table>
+    <div style="display:flex;flex-direction:column;gap:3px;margin-top:3px;">${insLogHtml}</div>
+
+    <div class="odds-group-title" style="margin-top:4px;">📋 表四：多靴横列全数据逐手总表 (可左右滑动查看)</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #dcd7cd;border-radius:6px;">
+      ${horizTableHtml}
+    </div>
+  `;
+
+  document.getElementById('replay-modal').style.display = 'flex';
+}
 function closeReplayModal() { document.getElementById('replay-modal').style.display = 'none'; }
 
-// ============================================================================
-// 📅 历史日期永久账本库
-// ============================================================================
 function archiveCurrentDayIntoHistory(tagLabel = '自动归档') {
   const allShoes = buildAllTodayShoesList();
   const hasAny = allShoes.some(s => s.hands && s.hands.length > 0);
@@ -3183,7 +3221,7 @@ function openHistoryDaysModal() {
   const fmt = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
   if (historyDaysArchive.length === 0) {
     body.innerHTML = `<div style="text-align:center;color:#64748b;padding:20px;">
-      历史账本库暂无归档。<br><small>每次点击【🌅重置】清空今日时，系统会自动把当天全部靴与逐手大数据永久归档到此处。</small>
+      历史账本库暂无归档。<br><small>每次点击【重置】清空今日时，系统会自动把当天全部靴与逐手大数据永久归档到此处。</small>
     </div>`;
   } else {
     body.innerHTML = historyDaysArchive.map((d, idx) => `
@@ -3209,9 +3247,6 @@ function deleteHistoryDayItem(idx) {
   openHistoryDaysModal();
 }
 
-// ============================================================================
-// 手机分享 / 战报复制 / 网页账单 / CSV 导出
-// ============================================================================
 function generatePlainTextReport() {
   const allShoes = buildAllTodayShoesList();
   const bd = analyzeBigDataReplay(allShoes);
@@ -3219,7 +3254,7 @@ function generatePlainTextReport() {
   const fmt = n => (n > 0 ? '+' : '') + Math.round(n).toLocaleString();
 
   const lines = [];
-  lines.push(`📊【手机精算终端 5.0 · 大数据深度复盘战报】`);
+  lines.push(`📊【精算终端 5.0 · 大数据深度复盘战报】`);
   lines.push(`时间: ${new Date().toLocaleString('zh-CN', { hour12: false })} | 返点模式: ${appCfg.rebateMode === 'win' ? '按赢额' : '按输口'}(${appCfg.rebatePct}%)`);
   lines.push(`总手数: ${sm.totalHands}手(出手${sm.bettedHands}手) | 总流水: ${sm.totalTurnover}`);
   lines.push(`台面净值: ${fmt(sm.tableNet)} | 返点: +${Math.round(sm.totalReb)} | 综合: ${fmt(sm.tableNet + sm.totalReb)}`);
@@ -3255,7 +3290,7 @@ function copyTextBattleReport() {
   ta.select();
   try {
     document.execCommand('copy');
-    showToast('📋 大数据文字战报已复制！可直接粘贴到微信或备忘录', 'ok');
+    showToast('📋 大数据文字战报已复制！', 'ok');
   } catch (e) {
     showToast('⚠️ 复制失败，请使用分享功能', 'err');
   }
@@ -3281,7 +3316,7 @@ function buildStandaloneReportHtmlString() {
   table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;font-size:12px;margin-bottom:16px;}
   th{background:#1e293b;color:#fff;padding:7px 4px;}td{padding:6px 4px;border-bottom:1px solid #e2e8f0;text-align:center;}
   </style></head><body>
-  <h2>📊 手机精算终端 5.0 · 大数据深度复盘账单</h2>
+  <h2>📊 精算终端 5.0 · 大数据深度复盘账单</h2>
   <p>总手数: <b>${sm.totalHands}手</b> | 总流水: <b>${sm.totalTurnover.toLocaleString()}</b> | 台面总净值: <b>${fmt(sm.tableNet)}</b> | 累计返点: <b>+${Math.round(sm.totalReb)}</b></p>
   <h3>一、11项分类实战统计表</h3>
   <table><thead><tr><th>注项</th><th>牌面开出</th><th>我出手</th><th>赢/输</th><th>总积分</th><th>单项净盈亏</th></tr></thead><tbody>${t1Rows}</tbody></table>
@@ -3335,7 +3370,6 @@ async function exportReadableHtmlReport() {
 
 async function exportReplayCsv() {
   const allShoes = buildAllTodayShoesList();
-  // 横列全数据导出：每一手牌一行，包含用牌情况、庄闲三段EV、主注EV与结果、保护类型/EV/结果、各旁注EV与结果，支持多靴跨靴筛选
   const headers = [
     '靴号','状态','手数','时间','余牌数','赛果','庄点','闲点','飞牌','闲家用牌','庄家用牌',
     '庄第1段(基础EV%)','庄第2段(+返EV%)','庄第3段(综合EV%)',
@@ -3421,7 +3455,6 @@ async function exportReplayCsv() {
   if (cnt === 0) { showToast('⚠️ 尚无已确认记录可导出', 'warn'); return; }
   const csvContent = '\uFEFF' + rows.join('\r\n');
   const fileName = `5.0全数据横列对账表_${new Date().toISOString().slice(0,10)}.csv`;
-  // 在 iPhone / 轻松签 App 内优先调用原生分享菜单，可直接发微信、用Excel/WPS打开或存入手机“文件”
   try {
     if (navigator.share && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       const csvFile = new File([csvContent], fileName, { type: 'text/csv;charset=utf-8' });
@@ -3454,6 +3487,7 @@ function importRecordsBackup(event) {
       }
       if (!parsed) throw new Error('Invalid');
       applySnapshotData(parsed);
+      renderChipStrip();
       renderBetInputs();
       replayFullShoe();
       renderColorZone();
@@ -3663,7 +3697,7 @@ function openGainModal() {
         <div><b>【庄综合】${fPct(b.bTotalEV)}</b> = 基${fPct(b.bBaseEV)} + 返${fPct(b.bRebateEV)} + 增${fPct(b.bInsGain)}</div>
         <div><b>【闲综合】${fPct(b.pTotalEV)}</b> = 基${fPct(b.pBaseEV)} + 返${fPct(b.pRebateEV)} + 增${fPct(b.pInsGain)}</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px 10px;margin-top:4px;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px 10px;margin-top:4px;">
         ${b.items.map(([name, val]) => `<div style="display:flex;justify-content:space-between;border-bottom:1px dashed #e5e0d5;padding:2px 0;">
           <span>${name}</span><b style="color:${val > 0 ? '#15803d' : '#94a3b8'};">${val.toFixed(6)}</b>
         </div>`).join('')}
@@ -3751,10 +3785,83 @@ function saveSettingsModal() {
 }
 
 // ============================================================================
-// 零冷却极速连续双击与拖拽交互 (完美兼容手指触控 + 手机蓝牙鼠标左/右键操作)
+// 零冷却极速连续双击与拖拽交互
+// ============================================================================
+// 零冷却极速连续双击与 120fps 丝滑硬件加速拖拽交互
 // ============================================================================
 let dragPayload = null, isDraggingMoved = false, startX = 0, startY = 0;
+let cachedTargetRects = [];
+let lastHoveredTarget = null;
+let ghostHalfW = 22, ghostHalfH = 28;
 const ghostEl = document.getElementById('drag-ghost');
+
+// 强制锁定 iOS 横屏视口坐标零偏移，解决顶栏下半截点击偏移问题
+function lockViewportZeroScroll() {
+  if (window.scrollX !== 0 || window.scrollY !== 0) {
+    window.scrollTo(0, 0);
+  }
+}
+window.addEventListener('resize', lockViewportZeroScroll);
+window.addEventListener('orientationchange', () => { setTimeout(lockViewportZeroScroll, 80); });
+
+// 为顶栏按钮与常用功能键绑定按下即刻响应（防止鼠标点击时微移被iOS当成滑动吞掉click事件）
+function bindReliableButtonTap(id, handler) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let lastFire = 0;
+  const trigger = (e) => {
+    const now = performance.now();
+    if (now - lastFire < 260) return;
+    lastFire = now;
+    if (e && e.cancelable) e.preventDefault();
+    lockViewportZeroScroll();
+    handler();
+  };
+  el.addEventListener('mousedown', e => { if (e.button === 0) trigger(e); });
+  el.addEventListener('touchend', e => { trigger(e); }, { passive: false });
+  el.onclick = e => { trigger(e); };
+}
+
+function cacheDragTargets(kind) {
+  const selector = (kind === 'color') ? '.c-slot' : '.u-slot, #slot-fly';
+  const els = document.querySelectorAll(selector);
+  cachedTargetRects = [];
+  for (let i = 0; i < els.length; i++) {
+    const el = els[i];
+    const r = el.getBoundingClientRect();
+    cachedTargetRects.push({
+      el,
+      left: r.left - 8,
+      right: r.right + 8,
+      top: r.top - 8,
+      bottom: r.bottom + 8,
+      cx: (r.left + r.right) * 0.5,
+      cy: (r.top + r.bottom) * 0.5
+    });
+  }
+  const sampleSlot = document.getElementById('slot-0');
+  if (sampleSlot) {
+    const sr = sampleSlot.getBoundingClientRect();
+    ghostHalfW = sr.width * 0.5;
+    ghostHalfH = sr.height * 0.5;
+  }
+}
+
+function findTargetSlotAt(x, y) {
+  let bestEl = null;
+  let bestDist = 999999;
+  for (let i = 0; i < cachedTargetRects.length; i++) {
+    const item = cachedTargetRects[i];
+    if (x >= item.left && x <= item.right && y >= item.top && y <= item.bottom) {
+      const d = Math.hypot(x - item.cx, y - item.cy);
+      if (d < bestDist) {
+        bestDist = d;
+        bestEl = item.el;
+      }
+    }
+  }
+  return bestEl;
+}
 
 function bindFastDoubleTap(el, callback) {
   let lastTouchTime = 0;
@@ -3775,7 +3882,7 @@ function bindFastDoubleTap(el, callback) {
     if (e.button !== 0) return;
     const now = performance.now();
     const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
-    if (now - lastClickTime <= 360 && dist < 20) {
+    if (now - lastClickTime <= 360 && dist < 22) {
       e.preventDefault();
       lastClickTime = 0;
       callback();
@@ -3787,6 +3894,15 @@ function bindFastDoubleTap(el, callback) {
   });
 }
 
+function startDragSession(kind, value, x, y) {
+  startX = x;
+  startY = y;
+  dragPayload = { kind, value };
+  isDraggingMoved = false;
+  lastHoveredTarget = null;
+  cacheDragTargets(kind);
+}
+
 function bindPoolCardEvents(cardEl, rIdx, poolColor) {
   cardEl.addEventListener('click', () => {
     const cnt = poolColor === 'red' ? redPool[rIdx] : bluePool[rIdx];
@@ -3795,11 +3911,27 @@ function bindPoolCardEvents(cardEl, rIdx, poolColor) {
     }
   });
   bindFastDoubleTap(cardEl, () => fillNextCardByDoubleTap(rIdx));
-  cardEl.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; dragPayload = { kind: 'card', value: rIdx }; isDraggingMoved = false; }, { passive: true });
-  cardEl.addEventListener('mousedown', e => { if (e.button !== 0) return; startX = e.clientX; startY = e.clientY; dragPayload = { kind: 'card', value: rIdx }; isDraggingMoved = false; });
+  cardEl.addEventListener('touchstart', e => {
+    startDragSession('card', rIdx, e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+  cardEl.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    startDragSession('card', rIdx, e.clientX, e.clientY);
+  });
 }
 
 function initInteractions() {
+  // 顶栏按钮全部接入防吞点击直连触发器
+  bindReliableButtonTap('btn-new-shoe', archiveAndStartNewShoe);
+  bindReliableButtonTap('btn-reset-day', resetAllTodayLedger);
+  bindReliableButtonTap('btn-open-replay', () => openReplayModal('today'));
+  bindReliableButtonTap('btn-open-history', openHistoryDaysModal);
+  bindReliableButtonTap('btn-open-settings', openSettingsModal);
+  bindReliableButtonTap('btn-confirm-hand', confirmHandRecord);
+  bindReliableButtonTap('top-reb-mode-lbl', toggleQuickRebateMode);
+  bindReliableButtonTap('btn-clear-bets', clearCurrentBets);
+
   bindFastDoubleTap(document.getElementById('slot-fly'), () => { if (fly_rank !== null) removeFlyCard(); else if (fly_color !== null) setSlotColor('fly', null); });
   bindFastDoubleTap(document.getElementById('slot-next-fly'), () => { if (next_fly_color !== null) setSlotColor('next_fly', null); });
   for (let i = 0; i < 6; i++) bindFastDoubleTap(document.getElementById('slot-' + i), () => { if (card_colors[i] !== null) setSlotColor(String(i), null); });
@@ -3808,28 +3940,49 @@ function initInteractions() {
   ['src-red', 'src-blue'].forEach(id => {
     const src = document.getElementById(id), color = src.getAttribute('data-color');
     bindFastDoubleTap(src, () => fillNextColorByDoubleTap(color));
-    src.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; dragPayload = { kind: 'color', value: color }; isDraggingMoved = false; }, { passive: true });
-    src.addEventListener('mousedown', e => { if (e.button !== 0) return; startX = e.clientX; startY = e.clientY; dragPayload = { kind: 'color', value: color }; isDraggingMoved = false; });
+    src.addEventListener('touchstart', e => {
+      startDragSession('color', color, e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    src.addEventListener('mousedown', e => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      startDragSession('color', color, e.clientX, e.clientY);
+    });
   });
 
   const onMove = (x, y, ev) => {
     if (!dragPayload) return;
-    if (Math.abs(x - startX) > 6 || Math.abs(y - startY) > 6) isDraggingMoved = true;
-    if (isDraggingMoved) {
-      if (ev && ev.cancelable) ev.preventDefault();
-      ghostEl.style.display = 'flex';
-      ghostEl.className = dragPayload.kind === 'color' ? dragPayload.value : 'card';
-      ghostEl.textContent = dragPayload.kind === 'color' ? (dragPayload.value === 'red' ? 'R' : 'B') : rankLabel(dragPayload.value);
-      ghostEl.style.left = x + 'px'; ghostEl.style.top = y + 'px';
-      document.querySelectorAll('.c-slot, .u-slot').forEach(s => s.classList.remove('drag-over'));
-      const t = findTargetSlotAt(x, y); if (t) t.classList.add('drag-over');
+    if (!isDraggingMoved) {
+      if (Math.abs(x - startX) > 3 || Math.abs(y - startY) > 3) {
+        isDraggingMoved = true;
+        ghostEl.style.display = 'flex';
+        ghostEl.className = dragPayload.kind === 'color' ? dragPayload.value : 'card';
+        ghostEl.textContent = dragPayload.kind === 'color' ? (dragPayload.value === 'red' ? 'R' : 'B') : rankLabel(dragPayload.value);
+      } else {
+        return;
+      }
+    }
+    if (ev && ev.cancelable) ev.preventDefault();
+    ghostEl.style.transform = `translate3d(${x - ghostHalfW}px, ${y - ghostHalfH}px, 0)`;
+    const t = findTargetSlotAt(x, y);
+    if (t !== lastHoveredTarget) {
+      if (lastHoveredTarget) lastHoveredTarget.classList.remove('drag-over');
+      if (t) t.classList.add('drag-over');
+      lastHoveredTarget = t;
     }
   };
-  window.addEventListener('touchmove', e => onMove(e.touches[0].clientX, e.touches[0].clientY, e), { passive: false });
-  window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY, null));
+  window.addEventListener('touchmove', e => {
+    if (!dragPayload) return;
+    onMove(e.touches[0].clientX, e.touches[0].clientY, e);
+  }, { passive: false });
+  window.addEventListener('mousemove', e => {
+    if (!dragPayload) return;
+    onMove(e.clientX, e.clientY, e);
+  });
 
   const onEnd = (x, y) => {
-    if (dragPayload && isDraggingMoved) {
+    if (!dragPayload) return;
+    if (isDraggingMoved) {
       const target = findTargetSlotAt(x, y);
       if (target) {
         if (dragPayload.kind === 'color') setSlotColor(target.getAttribute('data-cslot'), dragPayload.value);
@@ -3837,21 +3990,23 @@ function initInteractions() {
         else if (target.hasAttribute('data-uslot')) placeCardIntoUsedSlot(parseInt(target.getAttribute('data-uslot'), 10), dragPayload.value);
       }
     }
-    dragPayload = null; ghostEl.style.display = 'none';
-    document.querySelectorAll('.c-slot, .u-slot').forEach(s => s.classList.remove('drag-over'));
-    setTimeout(() => { isDraggingMoved = false; }, 40);
+    if (lastHoveredTarget) {
+      lastHoveredTarget.classList.remove('drag-over');
+      lastHoveredTarget = null;
+    }
+    dragPayload = null;
+    ghostEl.style.display = 'none';
+    ghostEl.style.transform = 'translate3d(-9999px, -9999px, 0)';
+    setTimeout(() => { isDraggingMoved = false; }, 30);
   };
-  window.addEventListener('touchend', e => onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY));
-  window.addEventListener('mouseup', e => onEnd(e.clientX, e.clientY));
-}
-
-function findTargetSlotAt(x, y) {
-  const els = document.querySelectorAll(dragPayload.kind === 'color' ? '.c-slot' : '.u-slot, #slot-fly');
-  for (let el of els) {
-    const r = el.getBoundingClientRect();
-    if (x >= r.left - 3 && x <= r.right + 3 && y >= r.top - 4 && y <= r.bottom + 4) return el;
-  }
-  return null;
+  window.addEventListener('touchend', e => {
+    if (!dragPayload) return;
+    onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+  });
+  window.addEventListener('mouseup', e => {
+    if (!dragPayload) return;
+    onEnd(e.clientX, e.clientY);
+  });
 }
 
 initIndexedDB();
