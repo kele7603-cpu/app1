@@ -3,9 +3,10 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>横屏精算终端 5.0 (人体工学旗舰版)</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>横屏精算终端 5.1 (旗舰版)</title>
 <style>
   :root {
     --bg-main: #dedbd4;
@@ -16,157 +17,163 @@
     --pool-red: #ebd0ce;
     --pool-blue: #cedceb;
     --text-dark: #1e293b;
-    /* 加大横版核心操作区（颜色区、牌池、用牌区）扑克尺寸，保持立状比例 */
-    --p-h: clamp(36px, 11.2vh, 56px);
-    --p-w: calc(var(--p-h) * 0.79);
+    --app-w: 100vw;
+    --app-h: 100vh;
+    /* 按比例放大扑克牌尺寸，保持颜色区与牌池严格同版型 */
+    --p-h: clamp(36px, calc(var(--app-h) * 0.122), 54px);
+    --p-w: calc(var(--p-h) * 0.78);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-user-drag: none; }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   html, body {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     background: var(--bg-main);
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
     color: var(--text-dark);
     overflow: hidden;
-    touch-action: none;
+    touch-action: manipulation;
   }
 
-  /* 顶部非模态防误触提示横幅 (闲置时彻底移出屏幕外，消除屏幕中线任何图层干扰) */
+  /* 全能签竖屏壳自动旋转 90 度满屏横版容器 */
+  #app-viewport {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--app-w, 100vw);
+    height: var(--app-h, 100vh);
+    overflow: hidden;
+    background: var(--bg-main);
+  }
+  body.force-rot-cw #app-viewport {
+    top: 0;
+    left: 100%;
+    width: var(--app-w, 100vh);
+    height: var(--app-h, 100vw);
+    transform-origin: 0 0;
+    transform: rotate(90deg);
+  }
+  body.force-rot-ccw #app-viewport {
+    top: 100%;
+    left: 0;
+    width: var(--app-w, 100vh);
+    height: var(--app-h, 100vw);
+    transform-origin: 0 0;
+    transform: rotate(-90deg);
+  }
+
+  /* 顶部非模态防误触提示横幅 */
   #toast-banner {
-    position: fixed; top: -9999px; left: -9999px;
+    position: absolute; top: -9999px; left: -9999px;
     background: #1e293b; color: #fff; padding: 5px 14px; border-radius: 8px;
     font-size: 11.5px; font-weight: 800; box-shadow: 0 6px 20px rgba(0,0,0,0.35);
     border: 1.5px solid #f59e0b; z-index: 10000;
-    pointer-events: none; white-space: nowrap; max-width: 92vw; overflow: hidden; text-overflow: ellipsis;
+    pointer-events: none; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis;
     display: none;
   }
-  #toast-banner.show { display: block; top: 40px; left: 50%; transform: translateX(-50%); }
+  #toast-banner.show { display: block; top: 8px; left: 50%; transform: translateX(-50%); }
   #toast-banner.err { background: #7f1d1d; border-color: #f87171; }
   #toast-banner.ok { background: #064e3b; border-color: #34d399; }
 
-  /* 横版全局主框架：采用与竖版一致的 Flex 纵向架构，彻底消除 Grid 跨列磁吸跳动 */
+  /* 横版主容器：左侧贴近灵动岛(padding-left:1px)，右侧预留14px防触碰苹果底部上滑条 */
   .landscape-shell {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
-    padding: 3px 6px 4px 8px;
-    gap: 3px;
+    padding: 3px 14px 6px 1px;
+    gap: 4px;
   }
 
-  /* ==================== 顶部栏：加高至 34px，按钮加高至 26px，消除点击偏移与死区 ==================== */
-  .top-bar {
-    height: 34px;
+  /* ==================== 上半工作区(65.5%高)：左列(27%宽) + 右侧操作区(73%宽) ==================== */
+  .upper-workspace {
+    height: 65.5%;
     flex-shrink: 0;
+    min-height: 0;
+    display: flex;
+    gap: 4px;
+  }
+
+  /* 左上列：双行控制栏 + 本靴用牌记录 (严格锁死 27% 宽与 100% 高，绝不向下溢出遮挡左下角) */
+  .upper-left-col {
+    width: 27%;
+    height: 100%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .left-top-bar {
     background: #1e2430;
     color: #f8fafc;
     border-radius: 7px;
-    padding: 0 18px 0 8px;
+    padding: 3px 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.14);
+  }
+  .ltb-row1 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 6px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.14);
-  }
-  .tb-left {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-    height: 100%;
-  }
-  .tb-stat-pill {
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 10.5px;
+    font-size: 9.5px;
     font-weight: 900;
     background: #0f172a;
-    height: 26px;
-    padding: 0 8px;
-    border-radius: 5px;
+    padding: 2px 5px;
+    border-radius: 4px;
     border: 1px solid #334155;
-    display: flex;
-    align-items: center;
-    gap: 7px;
     white-space: nowrap;
   }
+  .ltb-row2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px;
+    width: 100%;
+  }
+  .ltb-btns-left {
+    display: flex;
+    align-items: center;
+    gap: 2.5px;
+  }
   .m-check {
-    display: flex; align-items: center; gap: 3px;
-    font-size: 10.5px; font-weight: 800; background: #0f172a;
-    height: 26px; padding: 0 7px; border-radius: 5px; border: 1px solid #334155; white-space: nowrap;
-    cursor: pointer;
-  }
-  .m-check input { width: 13px; height: 13px; accent-color: #2563eb; cursor: pointer; }
-  .reb-box {
     display: flex; align-items: center; gap: 2px;
-    font-size: 10.5px; font-weight: 800; background: #0f172a;
-    height: 26px; padding: 0 6px; border-radius: 5px; border: 1px solid #334155; white-space: nowrap;
+    font-size: 9.5px; font-weight: 800; background: #0f172a;
+    height: 21px; padding: 0 4.5px; border-radius: 4px; border: 1px solid #334155; white-space: nowrap;
+    margin-left: auto; cursor: pointer;
   }
-  .reb-inp {
-    width: 32px; height: 19px; background: #1e293b; color: #38bdf8;
-    border: 1px solid #475569; border-radius: 3px; text-align: center;
-    font-weight: 800; font-size: 10.5px;
-  }
+  .m-check input { width: 11px; height: 11px; accent-color: #2563eb; }
   .tb-mini-btn {
-    height: 26px; padding: 0 9px; border-radius: 5px;
+    height: 21px; padding: 0 5px; border-radius: 4px;
     border: 1px solid rgba(255,255,255,0.2); background: #334155;
-    color: #fff; font-size: 10.5px; font-weight: 800;
+    color: #fff; font-size: 9.5px; font-weight: 800;
     display: flex; align-items: center; justify-content: center;
     white-space: nowrap; cursor: pointer;
   }
-  .tb-mini-btn:active { transform: scale(0.95); opacity: 0.85; }
+  .tb-mini-btn:active { transform: scale(0.95); }
   .tb-mini-btn.blue { background: #2563eb; border-color: #60a5fa; }
   .tb-mini-btn.red { background: #dc2626; border-color: #f87171; }
   .tb-mini-btn.purple { background: #6d28d9; border-color: #a78bfa; }
   .tb-mini-btn.amber { background: #d97706; border-color: #fbbf24; }
 
-  .btn-confirm-wide {
-    height: 26px;
-    padding: 0 16px;
-    margin-right: 12px;
-    background: linear-gradient(180deg, #22c55e, #16a34a);
-    border: 1.5px solid #86efac;
-    border-radius: 6px;
-    color: #fff;
-    font-size: 11.5px;
-    font-weight: 900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    box-shadow: 0 2px 5px rgba(22,163,74,0.35);
-    white-space: nowrap;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-  .btn-confirm-wide.warn-step {
-    background: linear-gradient(180deg, #f59e0b, #d97706);
-    border-color: #fde68a;
-  }
-  .btn-confirm-wide:active { transform: scale(0.95); }
-
-  /* ==================== 上半工作区：左上本靴记录(27%宽) + 右上核心牌区(73%宽) ==================== */
-  .upper-workspace {
-    height: 60%;
-    flex-shrink: 0;
-    min-height: 0;
-    display: flex;
-    gap: 4px;
-  }
-
-  /* 左上：本靴用牌记录 (左侧留出 54px 充足内边距，彻底避开左侧灵动岛遮挡) */
+  /* 本靴记录独立带框容器，带明显右侧上下拉条 */
   .panel-history {
-    width: 27%;
-    flex-shrink: 0;
+    flex: 1;
     background: var(--panel-bg);
-    border: 1px solid var(--panel-border);
+    border: 1.5px solid #bcb8ae;
     border-radius: 7px;
-    padding: 3px 5px 3px max(54px, env(safe-area-inset-left, 54px));
+    padding: 3px 4px 3px 5px;
     display: flex;
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
   }
   .ph-hdr {
     font-size: 9px; font-weight: 800; color: #475569;
@@ -174,12 +181,31 @@
     display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
   }
   .rec-scroll {
-    flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px;
+    flex: 1;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5px;
+    padding-right: 3px;
+    padding-bottom: 22px;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+  .rec-scroll::-webkit-scrollbar {
+    width: 6px;
+    display: block;
+  }
+  .rec-scroll::-webkit-scrollbar-track {
+    background: #e2dfd9;
+    border-radius: 4px;
+  }
+  .rec-scroll::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 4px;
   }
   .rec-item {
     background: #fff; border: 1px solid #e5e2dc; border-radius: 4px;
-    padding: 1.5px 4px; font-size: 8.5px; line-height: 1.18;
+    padding: 2px 4px; font-size: 8.5px; line-height: 1.2;
     display: flex; flex-direction: column; gap: 1px; flex-shrink: 0;
   }
   .rec-top { display: flex; justify-content: space-between; align-items: center; font-weight: 800; }
@@ -187,120 +213,180 @@
   .dot-r, .dot-b { display: inline-block; width: 5.5px; height: 5.5px; border-radius: 50%; margin-right: 1px; }
   .dot-r { background: var(--red-card); }
   .dot-b { background: var(--blue-card); }
-  .hit-tag { font-size: 7.5px; padding: 0 2px; border-radius: 2.5px; font-weight: 800; }
+  .hit-tag { font-size: 7.5px; padding: 0 2px; border-radius: 2px; font-weight: 800; }
   .hit-tag.win { background: #dcfce7; color: #15803d; }
   .hit-tag.lose { background: #fee2e2; color: #b91c1c; }
-  .mini-link { font-size: 8px; color: #2563eb; background: #dbeafe; padding: 0 3.5px; border-radius: 3px; font-weight: 800; cursor: pointer; }
+  .mini-link { font-size: 8px; color: #2563eb; background: #dbeafe; padding: 0 3.5px; border-radius: 2.5px; font-weight: 800; cursor: pointer; }
 
-  /* 右上：扑克核心操作区 (颜色区、牌池、用牌区同比例放大，紧凑排布) */
+  /* 右上：核心扑克操作区 (右侧预留安全边距防触碰苹果底部上滑条) */
   .panel-card-table {
     flex: 1;
     min-width: 0;
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
     border-radius: 7px;
-    padding: 2px 8px;
+    padding: 4px 14px 5px 8px;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: center;
     min-height: 0;
     overflow: hidden;
   }
 
-  /* 1. 颜色区 */
+  /* 颜色区：整体右移，飞与闲1之间双倍留白加竖杠，R/B与预之间加竖杠，预与竖状确认键之间加竖杠 */
   .color-bar {
     display: flex;
     align-items: center;
-    width: calc(var(--p-w) * 13 + 54px);
-    max-width: 100%;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 0 2px;
+  }
+  .cbar-divider {
+    width: 1.5px;
+    height: calc(var(--p-h) * 0.72);
+    background: #cbc7be;
+    flex-shrink: 0;
   }
   .c-pair {
     display: flex;
-    gap: 3.5px;
-    margin-right: 12px;
+    gap: 2.5px;
+    margin-right: 9px;
   }
   .c-pair:last-of-type { margin-right: 0; }
   .c-slot, .rb-src {
     width: var(--p-w);
     height: var(--p-h);
-    border-radius: 5.5px;
+    border-radius: 5px;
     background: #e6e4df;
     border: 1.5px solid #ccc8be;
     display: flex; align-items: center; justify-content: center;
-    font-size: clamp(13px, 3.6vh, 18px); font-weight: 900; color: #1e293b;
+    font-size: clamp(13px, calc(var(--app-h) * 0.038), 18px); font-weight: 900; color: #1e293b;
     position: relative;
     flex-shrink: 0;
   }
   .c-slot.fly-slot {
     border-style: dashed; border-color: #94a3b8; color: #64748b;
-    margin-right: auto;
   }
   .c-slot.next-fly-vert {
-    border-style: dashed; border-color: #94a3b8; font-size: clamp(11px, 2.8vh, 14px); color: #64748b;
-    margin-left: 7px;
+    border-style: dashed; border-color: #94a3b8; font-size: clamp(11px, calc(var(--app-h) * 0.03), 14px); color: #64748b;
   }
   .c-slot.red { background: var(--red-card); border-color: #c53932; color: #fff; }
   .c-slot.blue { background: var(--blue-card); border-color: #2b67ce; color: #fff; }
   .c-slot .check-mark {
-    font-size: 11px; font-weight: 900; color: #16a34a;
-    background: rgba(255,255,255,0.92); width: 17px; height: 17px;
+    font-size: 10.5px; font-weight: 900; color: #16a34a;
+    background: rgba(255,255,255,0.92); width: 16px; height: 16px;
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
     pointer-events: none;
   }
   .rb-btn-group {
-    display: flex; gap: 4.5px;
-    margin-left: auto;
-    padding-left: 10px;
-    border-left: 1.5px solid #dfdcd5;
+    display: flex; gap: 3.5px;
   }
   .rb-src {
     color: #fff;
     box-shadow: 0 1.5px 3px rgba(0,0,0,0.18);
   }
-  .rb-src:active { opacity: 0.85; }
+  .rb-src:active { transform: scale(0.92); }
   .rb-src.red-src { background: var(--red-card); border-color: #c53932; }
   .rb-src.blue-src { background: var(--blue-card); border-color: #2b67ce; }
 
-  /* 2. 13列牌池：外框保持绝对静止防止iOS指针磁吸抖动，鼠标经过时仅内部牌值数字(.c-rank)微放大 */
-  .pool-section { display: flex; flex-direction: column; gap: 3px; align-items: center; }
-  .pool-row { display: grid; grid-template-columns: repeat(13, var(--p-w)); gap: 4.5px; justify-content: center; }
+  /* 确认按钮：改为竖状卡片版型 */
+  .btn-confirm-wide {
+    width: calc(var(--p-w) * 1.15);
+    height: var(--p-h);
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    border: 1.5px solid #86efac;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.1;
+    gap: 1px;
+    box-shadow: 0 2px 4px rgba(22,163,74,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .btn-confirm-wide.warn-step {
+    background: linear-gradient(180deg, #f59e0b, #d97706);
+    border-color: #fde68a;
+    font-size: 8.5px;
+  }
+  .btn-confirm-wide:active { transform: scale(0.95); }
+
+  /* 13列牌池：按比例放大，红蓝两排之间保持清晰留白距离，鼠标经过牌值微放大 */
+  .pool-section { display: flex; flex-direction: column; gap: 4.5px; width: 100%; align-items: center; }
+  .pool-row { display: flex; justify-content: space-between; width: 100%; padding: 0 2px; }
   .p-card {
     width: var(--p-w);
     height: var(--p-h);
-    border-radius: 5.5px;
-    border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.1);
     position: relative;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    padding-top: 2.5px;
+    padding-top: 3px;
+    flex-shrink: 0;
+    transition: border-color 0.08s ease, box-shadow 0.08s ease;
   }
   .p-card:hover {
-    border-color: rgba(0,0,0,0.42);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+    border-color: #1e293b;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.16);
   }
   .p-card:hover .c-rank {
-    transform: scale(1.18);
+    transform: scale(1.22);
+    color: #000;
   }
+  .p-card:active { transform: scale(0.93); }
   .p-card.red-pool { background: var(--pool-red); color: #1e293b; }
   .p-card.blue-pool { background: var(--pool-blue); color: #1e293b; }
   .p-card.zero-gray { background: #d6d3cd !important; color: #9ca3af !important; opacity: 0.55; }
   .p-card .c-rank {
-    font-size: clamp(14px, 3.9vh, 19px); font-weight: 900; line-height: 1;
-    pointer-events: none; transition: transform 0.08s ease;
+    font-size: clamp(14.5px, calc(var(--app-h) * 0.042), 19px); font-weight: 900; line-height: 1;
+    pointer-events: none;
+    transition: transform 0.08s ease;
   }
   .p-card .c-num {
     position: absolute; bottom: 1.5px;
-    font-size: clamp(7.5px, 1.9vh, 9.5px); font-weight: 700; color: #64748b; opacity: 0.9;
+    font-size: clamp(7.5px, calc(var(--app-h) * 0.02), 9.5px); font-weight: 700; color: #64748b; opacity: 0.9;
     line-height: 1; pointer-events: none;
   }
 
-  /* 3. 用牌区：同步按比例放大，醒目清晰 */
+  /* 用牌区 + 左下角(龙七正上方)实时胜率横框 */
   .hands-pure-row {
+    position: relative;
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 20px;
+    align-items: flex-end;
+    gap: 18px;
     width: 100%;
+    padding-left: 110px; /* 为左下实时胜率横框留出充足留白，绝不挤压闲家用牌区 */
+  }
+  .live-stage-prob-box {
+    position: absolute;
+    left: 2px;
+    bottom: 0;
+    height: 24px;
+    padding: 0 7px;
+    border-radius: 5px;
+    background: #1e293b;
+    border: 1px solid #475569;
+    color: #f8fafc;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 8.8px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    visibility: hidden;
+  }
+  .live-stage-prob-box.active {
+    visibility: visible;
   }
   .hand-group {
     background: #ebe8e0;
@@ -312,23 +398,23 @@
     align-items: center;
     gap: 2px;
   }
-  .hand-hdr { font-size: clamp(10px, 2.6vh, 12px); font-weight: 900; color: #1e293b; line-height: 1.1; }
-  .hand-slots { display: flex; gap: 5.5px; justify-content: center; }
+  .hand-hdr { font-size: clamp(9.5px, calc(var(--app-h) * 0.025), 11.5px); font-weight: 900; color: #1e293b; line-height: 1.1; }
+  .hand-slots { display: flex; gap: 5px; justify-content: center; }
   .u-slot {
-    width: calc(var(--p-w) * 1.15);
-    height: calc(var(--p-h) * 1.12);
+    width: calc(var(--p-w) * 1.12);
+    height: calc(var(--p-h) * 1.06);
     border-radius: 6px;
     background: #f7f6f2;
     border: 1.5px solid #cbd5e1;
     display: flex; align-items: center; justify-content: center;
-    font-size: clamp(15px, 4.2vh, 21px); font-weight: 900;
+    font-size: clamp(14.5px, calc(var(--app-h) * 0.041), 20px); font-weight: 900;
   }
   .u-slot.red-card { background: var(--red-card); border-color: #c53932; color: #fff; }
   .u-slot.blue-card { background: var(--blue-card); border-color: #2b67ce; color: #fff; }
   .u-slot.locked-gray { background: #dedbd3 !important; border-color: #c5c1b8 !important; color: #78716c !important; border-style: dotted; font-size: 12px; }
-  .c-slot.drag-over, .u-slot.drag-over { outline: 2.5px solid #16a34a; background-color: rgba(34,197,94,0.15); }
+  .c-slot.drag-over, .u-slot.drag-over { outline: 2.5px solid #111; transform: scale(1.06); }
 
-  /* ==================== 下半工作区：左下【此靴统计(11%) + 三段EV(16%-4px) = 27%】与上方【本靴记录(27%)】完全等宽对齐 ==================== */
+  /* ==================== 下半工作区(36%高)：左下【此靴统计(11.2%) + 三段EV(15.8%-4px) = 27%】 + 右下三舱下注区(73%) ==================== */
   .lower-workspace {
     flex: 1;
     min-height: 0;
@@ -336,27 +422,28 @@
     gap: 4px;
   }
 
-  /* 1. 左下：窄版积分统计台账 */
+  /* 1. 左下：深色积分统计台账 (11.2% 宽) */
   .panel-ledger {
-    width: 11%;
+    width: 11.2%;
     flex-shrink: 0;
     background: #1e2430;
     color: #f8fafc;
     border-radius: 7px;
-    padding: 2.5px 4px;
+    padding: 3px 5px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    font-size: 8px;
+    font-size: 8.5px;
+    cursor: pointer;
     overflow: hidden;
   }
-  .st-row { display: flex; justify-content: space-between; align-items: center; white-space: nowrap; line-height: 1.08; }
+  .st-row { display: flex; justify-content: space-between; align-items: center; white-space: nowrap; line-height: 1.1; }
   .st-lbl { color: #cbd5e1; font-weight: 600; }
   .st-val { font-family: "SF Mono", Menlo, Consolas, monospace; font-weight: 800; }
 
-  /* 2. 右下左：窄版三段EV与概率增益面板 (右边缘与上方本靴记录100%对齐) */
+  /* 2. 右下左：三段EV与概率增益面板 (与左侧台账相加恰好等于上方本靴记录的 27% 宽度) */
   .panel-ev-data {
-    width: calc(16% - 4px);
+    width: calc(15.8% - 4px);
     flex-shrink: 0;
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
@@ -418,7 +505,7 @@
     line-height: 1;
   }
 
-  /* 3. 右下右：【左4旁注 | 中间(闲·保·庄 + 注码) | 右4旁注】三舱对称布局 */
+  /* 3. 右下右：【左4旁注 | 中央主舱(闲·保·庄 + 加高注码区) | 右4旁注】对称三舱 */
   .panel-dual-cabins {
     flex: 1;
     display: flex;
@@ -428,9 +515,8 @@
     overflow: hidden;
   }
 
-  /* 左右对称四格旁注列：左(龙七/熊八/小老虎/大老虎) | 右(庄对/闲对/幸运6/和局) */
   .side-wing-col {
-    width: 18.5%;
+    width: 18.2%;
     flex-shrink: 0;
     background: var(--panel-bg);
     border: 1.5px solid #cfccc4;
@@ -443,16 +529,16 @@
     min-height: 0;
   }
 
-  /* 中央主舱：上排【闲·保·庄】，下排【专属注码区】 */
+  /* 中央主舱：上排【闲·保·庄】，下排【30px高注码区，与上方留出 5px 清晰间距】 */
   .center-main-cabin {
     flex: 1;
     background: var(--panel-bg);
     border: 1.5px solid #b8b3a8;
     border-radius: 7px;
-    padding: 3px 4px;
+    padding: 3px 4px 4px 4px;
     display: grid;
-    grid-template-rows: minmax(0, 1fr) 26px;
-    gap: 3px;
+    grid-template-rows: minmax(0, 1fr) 30px;
+    gap: 5px;
     min-width: 0;
     min-height: 0;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
@@ -467,13 +553,13 @@
   }
   .ins-col-wrap {
     display: grid;
-    grid-template-rows: 23px minmax(0, 1fr);
+    grid-template-rows: 22px minmax(0, 1fr);
     gap: 2px;
     min-width: 0;
     height: 100%;
   }
   .lamp-bar {
-    height: 23px;
+    height: 22px;
     border-radius: 4.5px;
     background: #e5e3dc;
     border: 1.5px solid #cfccc4;
@@ -481,7 +567,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    font-size: 8.5px;
+    font-size: 8px;
     font-weight: 900;
     min-width: 0;
     overflow: hidden;
@@ -496,7 +582,7 @@
     line-height: 1.05;
     white-space: nowrap;
   }
-  .lamp-r2 { font-size: 7.5px; opacity: 0.94; }
+  .lamp-r2 { font-size: 7.2px; opacity: 0.94; }
 
   .main-box {
     background: #eceae4;
@@ -506,6 +592,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    cursor: pointer;
     min-width: 0;
     overflow: hidden;
     height: 100%;
@@ -520,14 +607,14 @@
     background: #fef9c3;
     border-color: #eab308;
   }
-  .mb-hdr { display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; font-weight: 900; white-space: nowrap; }
+  .mb-hdr { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 900; white-space: nowrap; }
   .mb-amt {
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 16.5px; font-weight: 900; text-align: center; color: #0f172a;
-    line-height: 1; min-height: 16.5px;
+    font-size: 15.5px; font-weight: 900; text-align: center; color: #0f172a;
+    line-height: 1; min-height: 15.5px;
     display: flex; align-items: center; justify-content: center;
   }
-  .main-box.ins-flat .mb-amt { font-size: 13px; min-height: 13px; }
+  .main-box.ins-flat .mb-amt { font-size: 12.5px; min-height: 12.5px; }
   .mb-lock-sub {
     font-size: 7px; color: #b45309; background: rgba(254,243,199,0.9);
     border-radius: 3px; padding: 0 2px; text-align: center; font-weight: 800;
@@ -535,29 +622,30 @@
     min-height: 9px; line-height: 9px;
   }
 
-  /* 中央主舱底部：注码区 */
+  /* 注码区：加高至 30px，配 24px 大圆筹码 */
   .chip-strip {
-    height: 26px;
+    height: 30px;
     background: #e5e2dc;
     border: 1px solid #cfccc4;
-    border-radius: 5px;
-    padding: 0 5px;
+    border-radius: 5.5px;
+    padding: 0 6px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 3px;
   }
   .m-chip {
-    width: 22px; height: 22px;
+    width: 24px; height: 24px;
     border-radius: 50%;
     border: 1.5px dashed rgba(255,255,255,0.85);
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 8.5px; font-weight: 900; color: #fff;
+    font-size: 9px; font-weight: 900; color: #fff;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    cursor: pointer;
     flex-shrink: 0;
   }
-  .m-chip:active { opacity: 0.8; }
+  .m-chip:active { transform: scale(0.9); }
   .chip-5 { background: #dc2626; }
   .chip-10 { background: #16a34a; }
   .chip-50 { background: #2563eb; }
@@ -565,12 +653,12 @@
   .chip-500 { background: #7e22ce; }
   .chip-1000 { background: #d97706; }
   .btn-clear-all {
-    height: 20px; padding: 0 5px; border-radius: 4px;
+    height: 22px; padding: 0 6px; border-radius: 4px;
     border: 1px solid #cbd5e1; background: #fff; color: #dc2626;
-    font-size: 8.5px; font-weight: 900; white-space: nowrap;
+    font-size: 9px; font-weight: 900; cursor: pointer; white-space: nowrap;
   }
 
-  /* 旁注卡片：下注金额严格水平居中显示 */
+  /* 旁注卡片：金额居中显示 */
   .bet-card {
     background: #eceae4;
     border: 1.5px solid #d5d2c9;
@@ -580,6 +668,7 @@
     flex-direction: column;
     justify-content: space-between;
     position: relative;
+    cursor: pointer;
     min-width: 0;
     overflow: hidden;
   }
@@ -628,97 +717,152 @@
   .bc-rec-btn.hot { visibility: visible; background: #16a34a; color: #fff; }
   .bc-rec-btn.forbid-btn { visibility: visible; background: #fef3c7; color: #b45309; border: 1px solid #f59e0b; }
 
-  /* 弹窗通用样式 */
-  .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 8px; }
-  .modal-box { width: 100%; max-width: 680px; max-height: 92dvh; background: #faf8f5; border-radius: 12px; border: 1px solid #d4cfc5; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.35); }
-  .modal-head { padding: 7px 12px; background: #1e2430; color: #fff; font-weight: 800; font-size: 12.5px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-  .modal-body { padding: 8px 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; font-size: 11px; -webkit-overflow-scrolling: touch; }
-  .modal-foot { padding: 6px 10px; background: #ebe7df; display: flex; justify-content: space-between; align-items: center; gap: 5px; flex-wrap: wrap; flex-shrink: 0; }
-  .odds-group-title { font-weight: 800; color: #1d4ed8; border-bottom: 1px solid #e2ddd3; padding-bottom: 2px; margin-bottom: 3px; font-size: 11px; }
+  /* ==================== 弹窗通用样式（严格限制在横屏 #app-viewport 88% 高度内，绝不溢出屏幕！） ==================== */
+  .modal-mask {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.62);
+    z-index: 9000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+  }
+  .modal-box {
+    width: 92%;
+    max-width: 660px;
+    max-height: 88%;
+    background: #faf8f5;
+    border-radius: 10px;
+    border: 1.5px solid #d4cfc5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  }
+  .modal-head {
+    padding: 6px 12px;
+    background: #1e2430;
+    color: #fff;
+    font-weight: 800;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .modal-close-x {
+    background: #dc2626;
+    color: #fff;
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+  .modal-body {
+    flex: 1;
+    min-height: 0;
+    padding: 8px 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal-foot {
+    padding: 6px 10px;
+    background: #ebe7df;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    border-top: 1px solid #d4cfc5;
+  }
+  .odds-group-title { font-weight: 800; color: #1d4ed8; border-bottom: 1px solid #e2ddd3; padding-bottom: 2px; margin-bottom: 3px; font-size: 10.5px; }
   .odds-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-  .odds-item { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #dcd7cd; border-radius: 5px; padding: 3px 5px; font-size: 10px; font-weight: 700; }
-  .odds-item input, .odds-item select { width: 52px; border: 1px solid #bbb; border-radius: 4px; text-align: center; font-weight: 800; font-size: 10.5px; padding: 1px 0; }
+  .odds-item { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #dcd7cd; border-radius: 5px; padding: 2.5px 5px; font-size: 9.5px; font-weight: 700; }
+  .odds-item input, .odds-item select { width: 48px; border: 1px solid #bbb; border-radius: 4px; text-align: center; font-weight: 800; font-size: 10px; padding: 1px 0; }
 
-  .rp-table { width: 100%; border-collapse: collapse; font-size: 10px; background: #fff; border-radius: 6px; overflow: hidden; }
+  .rp-table { width: 100%; border-collapse: collapse; font-size: 9.8px; background: #fff; border-radius: 6px; overflow: hidden; }
   .rp-table th { background: #1e2430; color: #fff; padding: 4px 3px; text-align: center; font-weight: 800; white-space: nowrap; }
   .rp-table td { padding: 3.5px 3px; border-bottom: 1px solid #e5e2dc; text-align: center; }
   .rp-table td:first-child { text-align: left; font-weight: 800; }
 
-  /* 拖拽影子：与扑克牌等大、半透明不挡视线、使用GPU硬件加速translate3d零延迟移动 */
   #drag-ghost {
     position: fixed;
-    top: 0; left: 0;
-    width: var(--p-w);
-    height: var(--p-h);
-    border-radius: 5.5px;
+    width: 38px;
+    height: 50px;
+    border-radius: 6px;
     pointer-events: none;
     z-index: 9999;
     display: none;
     align-items: center;
     justify-content: center;
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 900;
     color: #fff;
-    opacity: 0.78;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.32);
-    will-change: transform;
+    opacity: 0.92;
+    box-shadow: 0 5px 14px rgba(0,0,0,0.35);
+    transform: translate(-50%, -50%);
   }
-  #drag-ghost.red { background: var(--red-card); border: 1.5px solid #fff; }
-  #drag-ghost.blue { background: var(--blue-card); border: 1.5px solid #fff; }
-  #drag-ghost.card { background: #1e293b; border: 1.5px solid #fbbf24; }
+  #drag-ghost.red { background: var(--red-card); }
+  #drag-ghost.blue { background: var(--blue-card); }
+  #drag-ghost.card { background: #1e293b; }
 </style>
 </head>
 <body>
 
+<div id="app-viewport">
 <div id="toast-banner">⚠️ 提示信息</div>
 
 <div class="landscape-shell">
-  <!-- ==================== 顶部栏：设置按钮全部靠左，与右侧大确认键明显隔开防误触 ==================== -->
-  <div class="top-bar">
-    <div class="tb-left">
-      <div class="tb-stat-pill">
-        <span id="top-shoe-info" style="color:#94a3b8;">第1靴·第1手</span>
-        <span>总:<b id="top-balance" style="color:#fbbf24;margin-left:2px;">20,000</b></span>
-        <span id="top-shoe-pl" style="color:#4ade80;">本靴:+0</span>
-      </div>
-      <label class="m-check" id="lbl-fly-priority">
-        <input type="checkbox" id="chk-fly-priority" onchange="toggleFlyPriority(this.checked)">
-        <span>飞牌</span>
-      </label>
-      <div class="reb-box">
-        <span id="top-reb-mode-lbl" onclick="toggleQuickRebateMode()" style="color:#38bdf8;cursor:pointer;padding:2px 3px;" title="点击切换：按输口返 / 按赢额返">输返</span>
-        <input type="number" step="0.1" class="reb-inp" id="top-rebate-inp" value="1.3" onchange="onQuickRebateChange(this.value)">
-        <span>%</span>
-      </div>
-      <div class="tb-mini-btn blue" id="btn-new-shoe" onclick="archiveAndStartNewShoe()">新靴</div>
-      <div class="tb-mini-btn red" id="btn-reset-day" onclick="resetAllTodayLedger()">重置</div>
-      <div class="tb-mini-btn purple" id="btn-open-replay" onclick="openReplayModal('today')">复盘</div>
-      <div class="tb-mini-btn amber" id="btn-open-history" onclick="openHistoryDaysModal()">账本</div>
-      <div class="tb-mini-btn" id="btn-open-settings" onclick="openSettingsModal()">⚙️</div>
-    </div>
-
-    <div class="btn-confirm-wide" id="btn-confirm-hand" onclick="confirmHandRecord()">
-      <span id="confirm-icon">✅</span>
-      <span id="confirm-txt">确 认</span>
-    </div>
-  </div>
-
-  <!-- ==================== 上半工作区：左上用牌记录(27%) + 右上扑克核心操作区(73%) ==================== -->
+  <!-- ==================== 上半工作区：左侧【双行控制栏 + 本靴记录(28%)】 + 右侧【直接到顶扑克操作区(72%)】 ==================== -->
   <div class="upper-workspace">
-    <!-- 左上：本靴用牌记录 -->
-    <div class="panel-history">
-      <div class="ph-hdr">
-        <span>📋 本靴记录 <b id="rec-count-tag" style="color:#2563eb;">(0手)</b></span>
-        <span id="status-tip" style="color:#0284c7;font-size:9.5px;"></span>
+    <!-- 左上列：双行标题栏 + 本靴用牌记录 -->
+    <div class="upper-left-col">
+      <div class="left-top-bar">
+        <div class="ltb-row1">
+          <span id="top-shoe-info" style="color:#94a3b8;">第1靴·第1手</span>
+          <span>总:<b id="top-balance" style="color:#fbbf24;margin-left:1px;">20,000</b></span>
+          <span id="top-shoe-pl" style="color:#4ade80;">本靴:+0</span>
+          <span id="btn-flip-rot" onclick="toggleManualLandscapeFlip()" style="color:#38bdf8;background:#1e293b;padding:0 4px;border-radius:3px;border:1px solid #475569;cursor:pointer;" title="切换横屏左右方向">🔄转屏</span>
+        </div>
+        <div class="ltb-row2">
+          <div class="ltb-btns-left">
+            <button class="tb-mini-btn blue" id="btn-new-shoe" onclick="archiveAndStartNewShoe()">新靴</button>
+            <button class="tb-mini-btn red" id="btn-reset-day" onclick="resetAllTodayLedger()">重置</button>
+            <button class="tb-mini-btn purple" id="btn-open-replay" onclick="openReplayModal('today')">复盘</button>
+            <button class="tb-mini-btn amber" id="btn-open-history" onclick="openHistoryDaysModal()">账本</button>
+            <button class="tb-mini-btn" id="btn-open-settings" onclick="openSettingsModal()">⚙️</button>
+          </div>
+          <label class="m-check" id="lbl-fly-priority">
+            <input type="checkbox" id="chk-fly-priority" onchange="toggleFlyPriority(this.checked)">
+            <span>飞牌</span>
+          </label>
+        </div>
       </div>
-      <div class="rec-scroll" id="record-list"></div>
+
+      <div class="panel-history">
+        <div class="ph-hdr">
+          <span>📋 本靴记录 <b id="rec-count-tag" style="color:#2563eb;">(0手)</b></span>
+          <span id="status-tip" style="color:#0284c7;font-size:8.5px;"></span>
+        </div>
+        <div class="rec-scroll" id="record-list"></div>
+      </div>
     </div>
 
-    <!-- 右上：扑克核心操作区 -->
+    <!-- 右上：扑克核心操作区 (直接到顶！确认按钮置于颜色栏右侧并与预选颜色留白) -->
     <div class="panel-card-table">
-      <!-- 1. 颜色行 -->
+      <!-- 1. 颜色行：整体右移，飞与闲1之间双倍留白加竖杠，R/B与预之间加竖杠，预与确认之间加竖杠 -->
       <div class="color-bar">
         <div class="c-slot fly-slot" data-cslot="fly" id="slot-fly"><span id="fly-content">飞</span></div>
+        <div class="cbar-divider" style="margin: 0 18px;"></div>
         <div class="c-pair">
           <div class="c-slot" data-cslot="0" id="slot-0"><span id="cmark-0"></span></div>
           <div class="c-slot" data-cslot="1" id="slot-1"><span id="cmark-1"></span></div>
@@ -731,13 +875,20 @@
           <div class="c-slot" data-cslot="4" id="slot-4"><span id="cmark-4"></span></div>
           <div class="c-slot" data-cslot="5" id="slot-5"><span id="cmark-5"></span></div>
         </div>
+        <div class="cbar-divider" style="margin: 0 8px;"></div>
         <div class="rb-btn-group">
           <div class="rb-src red-src" id="src-red" data-color="red">R</div>
           <div class="rb-src blue-src" id="src-blue" data-color="blue">B</div>
         </div>
+        <div class="cbar-divider" style="margin: 0 8px;"></div>
         <div class="c-slot next-fly-vert" data-cslot="next_fly" id="slot-next-fly">
           <span id="next-fly-content">预</span>
         </div>
+        <div class="cbar-divider" style="margin: 0 9px;"></div>
+        <button class="btn-confirm-wide" id="btn-confirm-hand" onclick="confirmHandRecord()">
+          <span id="confirm-icon">✅</span>
+          <span id="confirm-txt">确 认</span>
+        </button>
       </div>
 
       <!-- 2. 13列牌池 -->
@@ -746,8 +897,13 @@
         <div class="pool-row" id="blue-pool-row"></div>
       </div>
 
-      <!-- 3. 纯净用牌区 -->
+      <!-- 3. 用牌区 + 左下角(龙七上方)实时胜率横框 -->
       <div class="hands-pure-row">
+        <div class="live-stage-prob-box" id="live-stage-prob-bar">
+          <span id="lsp-b" style="color:#f87171;">庄:--%</span>
+          <span id="lsp-p" style="color:#60a5fa;">闲:--%</span>
+          <span id="lsp-t" style="color:#4ade80;">和:--%</span>
+        </div>
         <div class="hand-group">
           <span class="hand-hdr" id="p-hand-title">闲家</span>
           <div class="hand-slots">
@@ -874,7 +1030,7 @@
           <div class="m-chip chip-100" id="chip-btn-3" onclick="onChipSlotClick(3)">100</div>
           <div class="m-chip chip-500" id="chip-btn-4" onclick="onChipSlotClick(4)">500</div>
           <div class="m-chip chip-1000" id="chip-btn-5" onclick="onChipSlotClick(5)">1K</div>
-          <div class="btn-clear-all" id="btn-clear-bets" onclick="clearCurrentBets()">🗑️全清</div>
+          <button class="btn-clear-all" id="btn-clear-bets" onclick="clearCurrentBets()">🗑️全清</button>
         </div>
       </div>
 
@@ -902,11 +1058,11 @@
 </div>
 
 <!-- ==================== 弹窗 1：大数据深度复盘中心 ==================== -->
-<div class="modal-mask" id="replay-modal">
+<div class="modal-mask" id="replay-modal" onclick="if(event.target===this)closeReplayModal()">
   <div class="modal-box">
     <div class="modal-head">
       <span id="replay-modal-title">📊 大数据深度复盘中心</span>
-      <span style="cursor:pointer;padding:2px 6px;" onclick="closeReplayModal()">✕</span>
+      <span class="modal-close-x" onclick="closeReplayModal()">✕ 关闭</span>
     </div>
     <div class="modal-body" id="replay-modal-body"></div>
     <div class="modal-foot">
@@ -916,17 +1072,17 @@
         <button class="tb-mini-btn amber" style="padding:0 7px;" onclick="exportReadableHtmlReport()">📄 网页账单</button>
         <button class="tb-mini-btn" style="padding:0 7px;" onclick="exportReplayCsv()">📊 CSV表</button>
       </div>
-      <button class="tb-mini-btn" style="padding:0 8px;" onclick="closeReplayModal()">关闭</button>
+      <button class="tb-mini-btn red" style="padding:0 10px;" onclick="closeReplayModal()">关闭</button>
     </div>
   </div>
 </div>
 
 <!-- ==================== 弹窗 2：📅 历史日期账本库 ==================== -->
-<div class="modal-mask" id="history-days-modal">
+<div class="modal-mask" id="history-days-modal" onclick="if(event.target===this)closeHistoryDaysModal()">
   <div class="modal-box">
     <div class="modal-head">
       <span>📅 历史日期账本库 (本地永久保存·防丢失)</span>
-      <span style="cursor:pointer;padding:2px 6px;" onclick="closeHistoryDaysModal()">✕</span>
+      <span class="modal-close-x" onclick="closeHistoryDaysModal()">✕ 关闭</span>
     </div>
     <div class="modal-body" id="history-days-body"></div>
     <div class="modal-foot">
@@ -936,31 +1092,34 @@
           📂 导入恢复 <input type="file" accept=".json,.html" style="display:none;" onchange="importRecordsBackup(event)">
         </label>
       </div>
-      <button class="tb-mini-btn" style="padding:0 8px;" onclick="closeHistoryDaysModal()">关闭</button>
+      <button class="tb-mini-btn red" style="padding:0 10px;" onclick="closeHistoryDaysModal()">关闭</button>
     </div>
   </div>
 </div>
 
 <!-- ==================== 弹窗 3：25项保护增益明细 ==================== -->
-<div class="modal-mask" id="gain-modal">
+<div class="modal-mask" id="gain-modal" onclick="if(event.target===this)closeGainModal()">
   <div class="modal-box">
     <div class="modal-head">
       <span>📊 庄闲三段式 EV 拆分 & 25项保护增益明细</span>
-      <span style="cursor:pointer;padding:2px 6px;" onclick="closeGainModal()">✕</span>
+      <span class="modal-close-x" onclick="closeGainModal()">✕ 关闭</span>
     </div>
     <div class="modal-body" id="gain-modal-body" style="font-family:'SF Mono',Consolas,monospace;"></div>
     <div class="modal-foot" style="justify-content:flex-end;">
-      <button class="tb-mini-btn blue" style="padding:0 10px;" onclick="closeGainModal()">关闭</button>
+      <button class="tb-mini-btn blue" style="padding:0 12px;" onclick="closeGainModal()">关闭</button>
     </div>
   </div>
 </div>
 
-<!-- ==================== 弹窗 4：5.0 多能体参数设置 ==================== -->
-<div class="modal-mask" id="settings-modal">
+<!-- ==================== 弹窗 4：5.1 多能体参数设置 ==================== -->
+<div class="modal-mask" id="settings-modal" onclick="if(event.target===this)closeSettingsModal()">
   <div class="modal-box">
     <div class="modal-head">
-      <span>⚙️ 5.0 多能体参数、积分档位与倍率设置</span>
-      <span style="cursor:pointer;padding:2px 6px;" onclick="closeSettingsModal()">✕</span>
+      <span>⚙️ 5.1 多能体参数、积分档位与倍率设置</span>
+      <div style="display:flex;gap:6px;">
+        <span class="modal-close-x" style="background:#2563eb;" onclick="saveSettingsModal()">💾 保存</span>
+        <span class="modal-close-x" onclick="closeSettingsModal()">✕ 关闭</span>
+      </div>
     </div>
     <div class="modal-body">
       <div>
@@ -1005,19 +1164,19 @@
     <div class="modal-foot">
       <button class="tb-mini-btn" style="padding:0 8px;" onclick="resetDefaultInsOdds()">恢复默认倍率</button>
       <div style="display:flex;gap:6px;">
-        <button class="tb-mini-btn" style="padding:0 8px;" onclick="closeSettingsModal()">取消</button>
-        <button class="tb-mini-btn blue" style="padding:0 10px;" onclick="saveSettingsModal()">保存设置</button>
+        <button class="tb-mini-btn red" style="padding:0 10px;" onclick="closeSettingsModal()">取消</button>
+        <button class="tb-mini-btn blue" style="padding:0 12px;" onclick="saveSettingsModal()">💾 保存设置</button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ==================== 弹窗 5：历史手修改弹窗 ==================== -->
-<div class="modal-mask" id="edit-modal">
+<div class="modal-mask" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
   <div class="modal-box">
     <div class="modal-head">
       <span id="edit-modal-title">✏️ 修改本靴历史记录</span>
-      <span style="cursor:pointer;padding:2px 6px;" onclick="closeEditModal()">✕</span>
+      <span class="modal-close-x" onclick="closeEditModal()">✕ 关闭</span>
     </div>
     <div class="modal-body" id="edit-modal-body"></div>
     <div class="modal-foot">
@@ -1029,6 +1188,7 @@
     </div>
   </div>
 </div>
+</div><!-- /#app-viewport -->
 
 <div id="drag-ghost"></div>
 
@@ -1290,7 +1450,8 @@ function loadStateFromLocal() {
   try {
     const raw = localStorage.getItem('bac_mob_v4_full');
     if (raw) applySnapshotData(JSON.parse(raw));
-    document.getElementById('top-rebate-inp').value = appCfg.rebatePct;
+    const rebInp = document.getElementById('top-rebate-inp');
+    if (rebInp) rebInp.value = appCfg.rebatePct;
     document.getElementById('chk-fly-priority').checked = isFlyPriority;
     updateTopRebateModeLabel();
   } catch (e) {}
@@ -2034,14 +2195,12 @@ function evaluateBrain2Insurance() {
     }
   }
 
-  if (!cond) {
+  // 只要用牌区有牌（AB / CD / ABCD / ABCDE / ABCDF 等任意状态），实时计算此时庄/闲/和条件胜率并显示在左下横框
+  const probBarEl = document.getElementById('live-stage-prob-bar');
+  if (!hasAnyUsedCard()) {
+    if (probBarEl) probBarEl.className = 'live-stage-prob-box';
     liveInsCond = null;
     renderInsuranceUI('none', '', '', '', '');
-    return;
-  }
-  if (!isColorsAllFilled()) {
-    liveInsCond = null;
-    renderInsuranceUI('none', '待底色', '', `1赔${cond.odds}`, cond.typeName);
     return;
   }
 
@@ -2049,6 +2208,13 @@ function evaluateBrain2Insurance() {
   const aL = A !== null ? [A] : [0,1,2,3,4,5,6,7,8,9], bL = B !== null ? [B] : [0,1,2,3,4,5,6,7,8,9];
   const cL = C !== null ? [C] : [0,1,2,3,4,5,6,7,8,9], dL = D !== null ? [D] : [0,1,2,3,4,5,6,7,8,9];
   const eL = E !== null ? [E] : [0,1,2,3,4,5,6,7,8,9], fL = F !== null ? [F] : [0,1,2,3,4,5,6,7,8,9];
+
+  // 若某个未知槽位尚未填底色，兼容按红+蓝总余牌计算；若已填底色则严格按对应红/蓝牌池计算
+  const combShoe = [0,0,0,0,0,0,0,0,0,0];
+  for (let i = 0; i <= 9; i++) combShoe[i] = redShoe[i] + blueShoe[i];
+  const shoeAt = idx => card_colors[idx] === 'red' ? redShoe : (card_colors[idx] === 'blue' ? blueShoe : combShoe);
+
+  const s0 = shoeAt(0), s1 = shoeAt(1), s2 = shoeAt(2), s3 = shoeAt(3), s4 = shoeAt(4), s5 = shoeAt(5);
 
   for (let a of aL) for (let b of bL) for (let c of cL) for (let d of dL) for (let e of eL) for (let f of fL) {
     let p1 = (a + b) % 10, b1 = (c + d) % 10, banker = 0, player = 0;
@@ -2061,23 +2227,43 @@ function evaluateBrain2Insurance() {
     }
 
     let temp = 1.0;
-    if (A === null) { if (card_colors[0] === 'red') { temp *= redShoe[a]; redShoe[a]--; } else { temp *= blueShoe[a]; blueShoe[a]--; } }
-    if (B === null) { if (card_colors[1] === 'red') { temp *= redShoe[b]; redShoe[b]--; } else { temp *= blueShoe[b]; blueShoe[b]--; } }
-    if (C === null) { if (card_colors[2] === 'red') { temp *= redShoe[c]; redShoe[c]--; } else { temp *= blueShoe[c]; blueShoe[c]--; } }
-    if (D === null) { if (card_colors[3] === 'red') { temp *= redShoe[d]; redShoe[d]--; } else { temp *= blueShoe[d]; blueShoe[d]--; } }
-    if (E === null) { if (card_colors[4] === 'red') { temp *= redShoe[e]; redShoe[e]--; } else { temp *= blueShoe[e]; blueShoe[e]--; } }
-    if (F === null) { if (card_colors[5] === 'red') { temp *= redShoe[f]; } else { temp *= blueShoe[f]; } }
+    if (A === null) { temp *= s0[a]; s0[a]--; }
+    if (B === null) { temp *= s1[b]; s1[b]--; }
+    if (C === null) { temp *= s2[c]; s2[c]--; }
+    if (D === null) { temp *= s3[d]; s3[d]--; }
+    if (E === null) { temp *= s4[e]; s4[e]--; }
+    if (F === null) { temp *= s5[f]; }
 
-    if (A === null) { if (card_colors[0] === 'red') redShoe[a]++; else blueShoe[a]++; }
-    if (B === null) { if (card_colors[1] === 'red') redShoe[b]++; else blueShoe[b]++; }
-    if (C === null) { if (card_colors[2] === 'red') redShoe[c]++; else blueShoe[c]++; }
-    if (D === null) { if (card_colors[3] === 'red') redShoe[d]++; else blueShoe[d]++; }
-    if (E === null) { if (card_colors[4] === 'red') redShoe[e]++; else blueShoe[e]++; }
+    if (A === null) s0[a]++;
+    if (B === null) s1[b]++;
+    if (C === null) s2[c]++;
+    if (D === null) s3[d]++;
+    if (E === null) s4[e]++;
 
     if (temp > 0) {
       subTotal += temp;
       if (banker > player) bWin += temp; else if (player > banker) pWin += temp; else tWin += temp;
     }
+  }
+
+  if (subTotal > 0 && probBarEl) {
+    probBarEl.className = 'live-stage-prob-box active';
+    document.getElementById('lsp-b').textContent = `庄:${(bWin / subTotal * 100).toFixed(1)}%`;
+    document.getElementById('lsp-p').textContent = `闲:${(pWin / subTotal * 100).toFixed(1)}%`;
+    document.getElementById('lsp-t').textContent = `和:${(tWin / subTotal * 100).toFixed(1)}%`;
+  } else if (probBarEl) {
+    probBarEl.className = 'live-stage-prob-box';
+  }
+
+  if (!cond) {
+    liveInsCond = null;
+    renderInsuranceUI('none', '', '', '', '');
+    return;
+  }
+  if (!isColorsAllFilled()) {
+    liveInsCond = null;
+    renderInsuranceUI('none', '待底色', '', `1赔${cond.odds}`, cond.typeName);
+    return;
   }
 
   if (subTotal <= 0) {
@@ -3770,7 +3956,8 @@ function saveSettingsModal() {
   appCfg.betUnit = parseInt(document.getElementById('cfg-bet-unit').value, 10) || 10;
   appCfg.sideUnit = parseInt(document.getElementById('cfg-side-unit').value, 10) || 10;
   appCfg.insUnit = parseInt(document.getElementById('cfg-ins-unit').value, 10) || 5;
-  document.getElementById('top-rebate-inp').value = appCfg.rebatePct;
+  const rebInp = document.getElementById('top-rebate-inp');
+  if (rebInp) rebInp.value = appCfg.rebatePct;
   ODDS_SECTIONS.forEach(sec => sec.items.forEach(([k]) => {
     const v = parseFloat(document.getElementById('inp-' + k).value);
     if (!isNaN(v) && v >= 0) insOdds[k] = v;
@@ -3785,84 +3972,39 @@ function saveSettingsModal() {
 }
 
 // ============================================================================
-// 零冷却极速连续双击与拖拽交互
-// ============================================================================
-// 零冷却极速连续双击与 120fps 丝滑硬件加速拖拽交互
+// 零冷却极速连续双击与拖拽交互（100% 恢复为与竖版 BJ_Mobile_4.0.html 完全相同的稳定机制，消除鼠标乱跳）
 // ============================================================================
 let dragPayload = null, isDraggingMoved = false, startX = 0, startY = 0;
-let cachedTargetRects = [];
-let lastHoveredTarget = null;
-let ghostHalfW = 22, ghostHalfH = 28;
 const ghostEl = document.getElementById('drag-ghost');
+let manualLandscapeDir = localStorage.getItem('bac_rot_dir_v5') || 'cw';
 
-// 强制锁定 iOS 横屏视口坐标零偏移，解决顶栏下半截点击偏移问题
-function lockViewportZeroScroll() {
-  if (window.scrollX !== 0 || window.scrollY !== 0) {
-    window.scrollTo(0, 0);
-  }
-}
-window.addEventListener('resize', lockViewportZeroScroll);
-window.addEventListener('orientationchange', () => { setTimeout(lockViewportZeroScroll, 80); });
-
-// 为顶栏按钮与常用功能键绑定按下即刻响应（防止鼠标点击时微移被iOS当成滑动吞掉click事件）
-function bindReliableButtonTap(id, handler) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  let lastFire = 0;
-  const trigger = (e) => {
-    const now = performance.now();
-    if (now - lastFire < 260) return;
-    lastFire = now;
-    if (e && e.cancelable) e.preventDefault();
-    lockViewportZeroScroll();
-    handler();
-  };
-  el.addEventListener('mousedown', e => { if (e.button === 0) trigger(e); });
-  el.addEventListener('touchend', e => { trigger(e); }, { passive: false });
-  el.onclick = e => { trigger(e); };
-}
-
-function cacheDragTargets(kind) {
-  const selector = (kind === 'color') ? '.c-slot' : '.u-slot, #slot-fly';
-  const els = document.querySelectorAll(selector);
-  cachedTargetRects = [];
-  for (let i = 0; i < els.length; i++) {
-    const el = els[i];
-    const r = el.getBoundingClientRect();
-    cachedTargetRects.push({
-      el,
-      left: r.left - 8,
-      right: r.right + 8,
-      top: r.top - 8,
-      bottom: r.bottom + 8,
-      cx: (r.left + r.right) * 0.5,
-      cy: (r.top + r.bottom) * 0.5
-    });
-  }
-  const sampleSlot = document.getElementById('slot-0');
-  if (sampleSlot) {
-    const sr = sampleSlot.getBoundingClientRect();
-    ghostHalfW = sr.width * 0.5;
-    ghostHalfH = sr.height * 0.5;
+function syncAutoLandscapeViewport() {
+  const w = window.innerWidth || document.documentElement.clientWidth || 844;
+  const h = window.innerHeight || document.documentElement.clientHeight || 390;
+  const root = document.documentElement;
+  if (w < h) {
+    root.style.setProperty('--app-w', h + 'px');
+    root.style.setProperty('--app-h', w + 'px');
+    document.body.classList.remove('force-rot-cw', 'force-rot-ccw');
+    document.body.classList.add(manualLandscapeDir === 'ccw' ? 'force-rot-ccw' : 'force-rot-cw');
+  } else {
+    root.style.setProperty('--app-w', w + 'px');
+    root.style.setProperty('--app-h', h + 'px');
+    document.body.classList.remove('force-rot-cw', 'force-rot-ccw');
   }
 }
 
-function findTargetSlotAt(x, y) {
-  let bestEl = null;
-  let bestDist = 999999;
-  for (let i = 0; i < cachedTargetRects.length; i++) {
-    const item = cachedTargetRects[i];
-    if (x >= item.left && x <= item.right && y >= item.top && y <= item.bottom) {
-      const d = Math.hypot(x - item.cx, y - item.cy);
-      if (d < bestDist) {
-        bestDist = d;
-        bestEl = item.el;
-      }
-    }
-  }
-  return bestEl;
+function toggleManualLandscapeFlip() {
+  manualLandscapeDir = (manualLandscapeDir === 'cw') ? 'ccw' : 'cw';
+  try { localStorage.setItem('bac_rot_dir_v5', manualLandscapeDir); } catch (e) {}
+  syncAutoLandscapeViewport();
+  showToast(manualLandscapeDir === 'cw' ? '🔄 已切换为：正横屏' : '🔄 已切换为：反横屏', 'ok');
 }
 
+window.addEventListener('resize', syncAutoLandscapeViewport);
+window.addEventListener('orientationchange', () => { setTimeout(syncAutoLandscapeViewport, 80); });
+
+// 100% 原封不动采用《手机竖版旗舰 5.1》的鼠标与触控双击/拖拽引擎
 function bindFastDoubleTap(el, callback) {
   let lastTouchTime = 0;
   el.addEventListener('touchend', function(e) {
@@ -3882,7 +4024,7 @@ function bindFastDoubleTap(el, callback) {
     if (e.button !== 0) return;
     const now = performance.now();
     const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
-    if (now - lastClickTime <= 360 && dist < 22) {
+    if (now - lastClickTime <= 360 && dist < 20) {
       e.preventDefault();
       lastClickTime = 0;
       callback();
@@ -3894,15 +4036,6 @@ function bindFastDoubleTap(el, callback) {
   });
 }
 
-function startDragSession(kind, value, x, y) {
-  startX = x;
-  startY = y;
-  dragPayload = { kind, value };
-  isDraggingMoved = false;
-  lastHoveredTarget = null;
-  cacheDragTargets(kind);
-}
-
 function bindPoolCardEvents(cardEl, rIdx, poolColor) {
   cardEl.addEventListener('click', () => {
     const cnt = poolColor === 'red' ? redPool[rIdx] : bluePool[rIdx];
@@ -3911,27 +4044,11 @@ function bindPoolCardEvents(cardEl, rIdx, poolColor) {
     }
   });
   bindFastDoubleTap(cardEl, () => fillNextCardByDoubleTap(rIdx));
-  cardEl.addEventListener('touchstart', e => {
-    startDragSession('card', rIdx, e.touches[0].clientX, e.touches[0].clientY);
-  }, { passive: true });
-  cardEl.addEventListener('mousedown', e => {
-    if (e.button !== 0) return;
-    e.preventDefault();
-    startDragSession('card', rIdx, e.clientX, e.clientY);
-  });
+  cardEl.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; dragPayload = { kind: 'card', value: rIdx }; isDraggingMoved = false; }, { passive: true });
+  cardEl.addEventListener('mousedown', e => { if (e.button !== 0) return; startX = e.clientX; startY = e.clientY; dragPayload = { kind: 'card', value: rIdx }; isDraggingMoved = false; });
 }
 
 function initInteractions() {
-  // 顶栏按钮全部接入防吞点击直连触发器
-  bindReliableButtonTap('btn-new-shoe', archiveAndStartNewShoe);
-  bindReliableButtonTap('btn-reset-day', resetAllTodayLedger);
-  bindReliableButtonTap('btn-open-replay', () => openReplayModal('today'));
-  bindReliableButtonTap('btn-open-history', openHistoryDaysModal);
-  bindReliableButtonTap('btn-open-settings', openSettingsModal);
-  bindReliableButtonTap('btn-confirm-hand', confirmHandRecord);
-  bindReliableButtonTap('top-reb-mode-lbl', toggleQuickRebateMode);
-  bindReliableButtonTap('btn-clear-bets', clearCurrentBets);
-
   bindFastDoubleTap(document.getElementById('slot-fly'), () => { if (fly_rank !== null) removeFlyCard(); else if (fly_color !== null) setSlotColor('fly', null); });
   bindFastDoubleTap(document.getElementById('slot-next-fly'), () => { if (next_fly_color !== null) setSlotColor('next_fly', null); });
   for (let i = 0; i < 6; i++) bindFastDoubleTap(document.getElementById('slot-' + i), () => { if (card_colors[i] !== null) setSlotColor(String(i), null); });
@@ -3940,49 +4057,28 @@ function initInteractions() {
   ['src-red', 'src-blue'].forEach(id => {
     const src = document.getElementById(id), color = src.getAttribute('data-color');
     bindFastDoubleTap(src, () => fillNextColorByDoubleTap(color));
-    src.addEventListener('touchstart', e => {
-      startDragSession('color', color, e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: true });
-    src.addEventListener('mousedown', e => {
-      if (e.button !== 0) return;
-      e.preventDefault();
-      startDragSession('color', color, e.clientX, e.clientY);
-    });
+    src.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; dragPayload = { kind: 'color', value: color }; isDraggingMoved = false; }, { passive: true });
+    src.addEventListener('mousedown', e => { if (e.button !== 0) return; startX = e.clientX; startY = e.clientY; dragPayload = { kind: 'color', value: color }; isDraggingMoved = false; });
   });
 
   const onMove = (x, y, ev) => {
     if (!dragPayload) return;
-    if (!isDraggingMoved) {
-      if (Math.abs(x - startX) > 3 || Math.abs(y - startY) > 3) {
-        isDraggingMoved = true;
-        ghostEl.style.display = 'flex';
-        ghostEl.className = dragPayload.kind === 'color' ? dragPayload.value : 'card';
-        ghostEl.textContent = dragPayload.kind === 'color' ? (dragPayload.value === 'red' ? 'R' : 'B') : rankLabel(dragPayload.value);
-      } else {
-        return;
-      }
-    }
-    if (ev && ev.cancelable) ev.preventDefault();
-    ghostEl.style.transform = `translate3d(${x - ghostHalfW}px, ${y - ghostHalfH}px, 0)`;
-    const t = findTargetSlotAt(x, y);
-    if (t !== lastHoveredTarget) {
-      if (lastHoveredTarget) lastHoveredTarget.classList.remove('drag-over');
-      if (t) t.classList.add('drag-over');
-      lastHoveredTarget = t;
+    if (Math.abs(x - startX) > 6 || Math.abs(y - startY) > 6) isDraggingMoved = true;
+    if (isDraggingMoved) {
+      if (ev && ev.cancelable) ev.preventDefault();
+      ghostEl.style.display = 'flex';
+      ghostEl.className = dragPayload.kind === 'color' ? dragPayload.value : 'card';
+      ghostEl.textContent = dragPayload.kind === 'color' ? (dragPayload.value === 'red' ? 'R' : 'B') : rankLabel(dragPayload.value);
+      ghostEl.style.left = x + 'px'; ghostEl.style.top = y + 'px';
+      document.querySelectorAll('.c-slot, .u-slot').forEach(s => s.classList.remove('drag-over'));
+      const t = findTargetSlotAt(x, y); if (t) t.classList.add('drag-over');
     }
   };
-  window.addEventListener('touchmove', e => {
-    if (!dragPayload) return;
-    onMove(e.touches[0].clientX, e.touches[0].clientY, e);
-  }, { passive: false });
-  window.addEventListener('mousemove', e => {
-    if (!dragPayload) return;
-    onMove(e.clientX, e.clientY, e);
-  });
+  window.addEventListener('touchmove', e => onMove(e.touches[0].clientX, e.touches[0].clientY, e), { passive: false });
+  window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY, null));
 
   const onEnd = (x, y) => {
-    if (!dragPayload) return;
-    if (isDraggingMoved) {
+    if (dragPayload && isDraggingMoved) {
       const target = findTargetSlotAt(x, y);
       if (target) {
         if (dragPayload.kind === 'color') setSlotColor(target.getAttribute('data-cslot'), dragPayload.value);
@@ -3990,25 +4086,25 @@ function initInteractions() {
         else if (target.hasAttribute('data-uslot')) placeCardIntoUsedSlot(parseInt(target.getAttribute('data-uslot'), 10), dragPayload.value);
       }
     }
-    if (lastHoveredTarget) {
-      lastHoveredTarget.classList.remove('drag-over');
-      lastHoveredTarget = null;
-    }
-    dragPayload = null;
-    ghostEl.style.display = 'none';
-    ghostEl.style.transform = 'translate3d(-9999px, -9999px, 0)';
-    setTimeout(() => { isDraggingMoved = false; }, 30);
+    dragPayload = null; ghostEl.style.display = 'none';
+    document.querySelectorAll('.c-slot, .u-slot').forEach(s => s.classList.remove('drag-over'));
+    setTimeout(() => { isDraggingMoved = false; }, 40);
   };
-  window.addEventListener('touchend', e => {
-    if (!dragPayload) return;
-    onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-  });
-  window.addEventListener('mouseup', e => {
-    if (!dragPayload) return;
-    onEnd(e.clientX, e.clientY);
-  });
+  window.addEventListener('touchend', e => onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY));
+  window.addEventListener('mouseup', e => onEnd(e.clientX, e.clientY));
 }
 
+function findTargetSlotAt(x, y) {
+  const els = document.querySelectorAll(dragPayload.kind === 'color' ? '.c-slot' : '.u-slot, #slot-fly');
+  for (let el of els) {
+    const r = el.getBoundingClientRect();
+    if (x >= r.left - 3 && x <= r.right + 3 && y >= r.top - 4 && y <= r.bottom + 4) return el;
+  }
+  return null;
+}
+
+syncAutoLandscapeViewport();
+window.addEventListener('load', () => { setTimeout(syncAutoLandscapeViewport, 50); });
 initIndexedDB();
 loadStateFromLocal();
 renderChipStrip();
@@ -4022,3 +4118,5 @@ initInteractions();
 </script>
 </body>
 </html>
+
+
