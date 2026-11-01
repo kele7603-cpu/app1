@@ -318,36 +318,30 @@
   }
   .btn-confirm-wide:active { transform: scale(0.95); }
 
-  /* 13列牌池：按比例放大，红蓝两排之间保持清晰留白距离，鼠标经过牌值微放大 */
+  /* 13列牌池：按比例放大，红蓝两排之间保持清晰留白距离，采用与桌面版一致的鼠标悬停微浮效果 */
   .pool-section { display: flex; flex-direction: column; gap: 4.5px; width: 100%; align-items: center; }
   .pool-row { display: flex; justify-content: space-between; width: 100%; padding: 0 2px; }
   .p-card {
     width: var(--p-w);
     height: var(--p-h);
     border-radius: 5px;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1.5px solid rgba(0,0,0,0.08);
     position: relative;
+    cursor: pointer;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     padding-top: 3px;
     flex-shrink: 0;
-    transition: border-color 0.08s ease, box-shadow 0.08s ease;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.04);
+    transition: transform 0.06s, border-color 0.06s;
   }
-  .p-card:hover {
-    border-color: #1e293b;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.16);
-  }
-  .p-card:hover .c-rank {
-    transform: scale(1.22);
-    color: #000;
-  }
-  .p-card:active { transform: scale(0.93); }
+  .p-card:hover { transform: translateY(-1px); border-color: rgba(0,0,0,0.28); }
+  .p-card:active { transform: scale(0.95); }
   .p-card.red-pool { background: var(--pool-red); color: #1e293b; }
   .p-card.blue-pool { background: var(--pool-blue); color: #1e293b; }
-  .p-card.zero-gray { background: #d6d3cd !important; color: #9ca3af !important; opacity: 0.55; }
+  .p-card.zero-gray { background: #d6d3cd !important; color: #9ca3af !important; opacity: 0.55; cursor: not-allowed; }
   .p-card .c-rank {
     font-size: clamp(14.5px, calc(var(--app-h) * 0.042), 19px); font-weight: 900; line-height: 1;
     pointer-events: none;
-    transition: transform 0.08s ease;
   }
   .p-card .c-num {
     position: absolute; bottom: 1.5px;
@@ -596,7 +590,9 @@
     min-width: 0;
     overflow: hidden;
     height: 100%;
+    transition: 0.1s;
   }
+  .main-box:hover { border-color: #94a3b8; }
   .main-box.ins-flat { padding: 1px 4px; }
   .main-box.selected-box, .bet-card.selected-box {
     border-color: #2563eb;
@@ -644,7 +640,9 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.25);
     cursor: pointer;
     flex-shrink: 0;
+    transition: transform 0.08s;
   }
+  .m-chip:hover { transform: translateY(-2px) scale(1.04); }
   .m-chip:active { transform: scale(0.9); }
   .chip-5 { background: #dc2626; }
   .chip-10 { background: #16a34a; }
@@ -671,7 +669,9 @@
     cursor: pointer;
     min-width: 0;
     overflow: hidden;
+    transition: 0.1s;
   }
+  .bet-card:hover { border-color: #94a3b8; }
   .bc-top {
     display: flex;
     justify-content: space-between;
@@ -796,20 +796,26 @@
 
   #drag-ghost {
     position: fixed;
-    width: 38px;
-    height: 50px;
+    width: var(--p-w, 38px);
+    height: var(--p-h, 50px);
     border-radius: 6px;
     pointer-events: none;
     z-index: 9999;
     display: none;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 900;
     color: #fff;
     opacity: 0.92;
     box-shadow: 0 5px 14px rgba(0,0,0,0.35);
     transform: translate(-50%, -50%);
+  }
+  body.force-rot-cw #drag-ghost {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  body.force-rot-ccw #drag-ghost {
+    transform: translate(-50%, -50%) rotate(-90deg);
   }
   #drag-ghost.red { background: var(--red-card); }
   #drag-ghost.blue { background: var(--blue-card); }
