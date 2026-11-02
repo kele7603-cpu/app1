@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -46,7 +46,7 @@
     background: var(--bg-main);
   }
   body.force-rot-cw #app-viewport {
-    top: 0;
+    top: var(--island-offset, 0px);
     left: 100%;
     width: var(--app-w, 100vh);
     height: var(--app-h, 100vw);
@@ -3987,15 +3987,22 @@ let manualLandscapeDir = localStorage.getItem('bac_rot_dir_v5') || 'cw';
 function syncAutoLandscapeViewport() {
   const w = window.innerWidth || document.documentElement.clientWidth || 844;
   const h = window.innerHeight || document.documentElement.clientHeight || 390;
+  const screenLong = Math.max(window.screen ? window.screen.width : 0, window.screen ? window.screen.height : 0, w, h);
   const root = document.documentElement;
   if (w < h) {
-    root.style.setProperty('--app-w', h + 'px');
+    // 若系统已进入横屏状态栏模式(如图1，全屏高h未被系统扣除状态栏)，自动留出48px灵动岛安全区，保持与图2尺寸100%一致
+    const islandOffset = (screenLong - h < 30) ? 48 : 0;
+    root.style.setProperty('--island-offset', islandOffset + 'px');
+    root.style.setProperty('--app-w', (h - islandOffset) + 'px');
     root.style.setProperty('--app-h', w + 'px');
     document.body.classList.remove('force-rot-cw', 'force-rot-ccw');
     document.body.classList.add(manualLandscapeDir === 'ccw' ? 'force-rot-ccw' : 'force-rot-cw');
   } else {
-    root.style.setProperty('--app-w', w + 'px');
+    const islandOffset = (screenLong - w < 30) ? 48 : 0;
+    root.style.setProperty('--island-offset', '0px');
+    root.style.setProperty('--app-w', (w - islandOffset) + 'px');
     root.style.setProperty('--app-h', h + 'px');
+    document.getElementById('app-viewport').style.left = islandOffset + 'px';
     document.body.classList.remove('force-rot-cw', 'force-rot-ccw');
   }
 }
@@ -4125,4 +4132,4 @@ initInteractions();
 </body>
 </html>
 
-
+```
